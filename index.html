@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./public/main.css">
+  </head>
+  <body>
+    <div id="root-window">
+      <div id="render-target"></div>
+    </div>
+
+    <script type="module">
+      import { createScene } from './src/scene.js';
+
+      window.onload = () => {
+        window.scene = createScene();
+        window.scene.start();
+      }
+    </script>
+  </body>
+</html>
