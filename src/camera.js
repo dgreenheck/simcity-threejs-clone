@@ -20,8 +20,8 @@ export function createCamera(gameWindow) {
   const camera = new THREE.PerspectiveCamera(75, gameWindow.offsetWidth / gameWindow.offsetHeight, 0.1, 1000);
   let cameraOrigin = new THREE.Vector3();
   let cameraRadius = 4;  
-  let cameraAzimuth = 0;
-  let cameraElevation = 0;
+  let cameraAzimuth = 45;
+  let cameraElevation = 45;
   let isLeftMouseDown = false;
   let isRightMouseDown = false;
   let isMiddleMouseDown = false;
