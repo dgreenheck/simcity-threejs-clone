@@ -12,7 +12,7 @@ export function createScene() {
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   gameWindow.appendChild(renderer.domElement);
-
+  
   let terrain = [];
   let buildings = [];
 
