@@ -40,16 +40,18 @@ export function createScene() {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
         const building = city.data[x][y].building;
+        // Is there a building at this location?
         if (building) {
-          // If building exists at this location and it doesn't match the model,
+          // If a mesh exists at this location and it doesn't match the model,
           // remove it and add the new one
           if (buildings[x][y] && buildings[x][y].name !== building) {
             scene.remove(buildings[x][y]);
           }
+          // Load the mesh for the new building and add it to the scene
           buildings[x][y] = loadMesh(building, x, y);
           scene.add(buildings[x][y]);
         } else {
-          // If building exists at this location, remove it
+          // If a mesh already exists at this location, remove it
           if (buildings[x][y]) {
             scene.remove(buildings[x][y]);
           }
