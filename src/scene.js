@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createCamera } from './camera.js';
+import { loadMesh } from './resources.js';
 
 export function createScene() {
   // Initial scene setup
@@ -23,11 +24,8 @@ export function createScene() {
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
-        // Grass geometry
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshLambertMaterial({ color: 0x00aa00 });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(x, -0.5, y);
+        const terrain = city.data[x][y].terrain;
+        const mesh = loadMesh(terrain, x, y);
         scene.add(mesh);
         column.push(mesh);
       }
@@ -41,21 +39,21 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
-        // Building geometry
-        const tile = city.data[x][y];
-        if (tile.building && tile.building.startsWith('building')) {
-          const height = Number(tile.building.slice(-1));
-          const buildingGeometry = new THREE.BoxGeometry(1, height, 1);
-          const buildingMaterial = new THREE.MeshLambertMaterial({ color: 0x777777 });
-          const buildingMesh = new THREE.Mesh(buildingGeometry, buildingMaterial);
-          buildingMesh.position.set(x, height / 2, y);
-
+        const building = city.data[x][y].building;
+        if (building) {
+          // If building exists at this location and it doesn't match the model,
+          // remove it and add the new one
+          if (buildings[x][y] && buildings[x][y].name !== building) {
+            scene.remove(buildings[x][y]);
+          }
+          buildings[x][y] = loadMesh(building, x, y);
+          scene.add(buildings[x][y]);
+        } else {
+          // If building exists at this location, remove it
           if (buildings[x][y]) {
             scene.remove(buildings[x][y]);
           }
-
-          scene.add(buildingMesh);
-          buildings[x][y] = buildingMesh
+          buildings[x][y] = undefined;
         }
       }
     }

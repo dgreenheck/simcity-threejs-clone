@@ -10,6 +10,7 @@ export function createCity(size) {
         const tile = { 
           x, 
           y,
+          terrain: 'grass',
           building: undefined,
           update() {
             const x = Math.random();
