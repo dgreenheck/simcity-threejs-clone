@@ -24,7 +24,7 @@ export function createScene() {
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
-        const terrain = city.data[x][y].terrain;
+        const terrain = city.data[x][y].terrainId;
         const mesh = loadMesh(terrain, x, y);
         scene.add(mesh);
         column.push(mesh);
@@ -39,8 +39,8 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
-        const newBuildingId = city.data[x][y].building;
-        const oldBuildingId = buildings[x][y]?.userDataId;
+        const newBuildingId = city.data[x][y].buildingId;
+        const oldBuildingId = buildings[x][y]?.userData.id;
 
         // Building no longer exists, remove it
         if (!newBuildingId && oldBuildingId) {
