@@ -33,8 +33,8 @@ function createTile(x, y) {
   return { 
     x, 
     y,
-    terrain: 'grass',
-    building: undefined,
+    terrainId: 'grass',
+    buildingId: undefined,
     update() {
       const x = Math.random();
       if (x < 0.01) {
