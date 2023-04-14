@@ -45,17 +45,29 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
+<<<<<<< HEAD
         const newBuildingId = city.data[x][y].building;
         const oldBuildingId = buildings[x][y]?.userData.id;
 
         // Building was removed, remove the old
+=======
+        const newBuildingId = city.data[x][y].buildingId;
+        const oldBuildingId = buildings[x][y]?.userData.id;
+
+        // Building no longer exists, remove it
+>>>>>>> 6e3bb032812ef40b5e1afdcac1080cabe296364e
         if (!newBuildingId && oldBuildingId) {
           scene.remove(buildings[x][y]);
           buildings[x][y] = undefined;
         }
 
+<<<<<<< HEAD
         // Building has changed, replace old with new
         if (newBuildingId && (newBuildingId !== oldBuildingId)) {
+=======
+        // Building has changed, replace it
+        if (newBuildingId !== oldBuildingId) {
+>>>>>>> 6e3bb032812ef40b5e1afdcac1080cabe296364e
           scene.remove(buildings[x][y]);
           buildings[x][y] = loadMesh(newBuildingId, x, y);
           scene.add(buildings[x][y]);

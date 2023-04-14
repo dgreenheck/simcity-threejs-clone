@@ -5,11 +5,19 @@ const box = new THREE.BoxGeometry(1, 1, 1);
 function createMesh(id, x, y, color, geometry) {
   const material = new THREE.MeshLambertMaterial({ color: color });
   const mesh = new THREE.Mesh(geometry, material);
+<<<<<<< HEAD
   mesh.userData = {
     id,
     x,
     y
   }
+=======
+  mesh.userData = { 
+    id,
+    x,
+    y
+  };
+>>>>>>> 6e3bb032812ef40b5e1afdcac1080cabe296364e
   return mesh;
 }
 
