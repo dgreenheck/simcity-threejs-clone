@@ -13,9 +13,16 @@ export function createScene() {
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   gameWindow.appendChild(renderer.domElement);
-  
+
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let selectedObject = undefined;
+
   let terrain = [];
   let buildings = [];
+
+  // Event handler for when an object is selected
+  let onObjectSelected = undefined;
 
   function initialize(city) {
     scene.clear();
@@ -32,7 +39,6 @@ export function createScene() {
       terrain.push(column);
       buildings.push([...Array(city.size)]);
     }
-
     setupLights();
   }
 
@@ -87,6 +93,25 @@ export function createScene() {
 
   function onMouseDown(event) {
     camera.onMouseDown(event);
+
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera.camera);
+
+    var intersects = raycaster.intersectObjects(scene.children, false)
+
+    if (intersects.length > 0) {
+      // Un-highlight the previously selected object
+      if (selectedObject) selectedObject.material.emissive.setHex(0);
+      // Highlight the new selected object
+      selectedObject = intersects[0].object;
+      selectedObject.material.emissive.setHex(0x555555);
+
+      if (this.onObjectSelected) {
+        this.onObjectSelected(selectedObject);
+      }
+    }
   }
 
   function onMouseUp(event) {
@@ -98,6 +123,10 @@ export function createScene() {
   }
 
   return {
+    /* Properties */
+    onObjectSelected,
+
+    /* Methods */
     initialize,
     update,
     start,
