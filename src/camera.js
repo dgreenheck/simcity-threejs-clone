@@ -17,7 +17,7 @@ export function createCamera(gameWindow) {
 
   const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
-  const camera = new THREE.PerspectiveCamera(75, gameWindow.offsetWidth / gameWindow.offsetHeight, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(45, gameWindow.offsetWidth / gameWindow.offsetHeight, 0.1, 1000);
   let cameraOrigin = new THREE.Vector3();
   let cameraRadius = (MIN_CAMERA_RADIUS + MAX_CAMERA_RADIUS) / 2;  
   let cameraAzimuth = 135;
