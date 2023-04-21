@@ -1,10 +1,6 @@
 import * as THREE from 'three';
 import { createCamera } from './camera.js';
-<<<<<<< HEAD
-import { loadMesh } from './resources.js';
-=======
 import { createAssetInstance } from './assets.js';
->>>>>>> bf4790099f122173773192214d16292c32c4f473
 
 export function createScene() {
   // Initial scene setup
