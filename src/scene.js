@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { createCamera } from './camera.js';
+<<<<<<< HEAD
 import { loadMesh } from './resources.js';
+=======
+import { createAssetInstance } from './assets.js';
+>>>>>>> bf4790099f122173773192214d16292c32c4f473
 
 export function createScene() {
   // Initial scene setup
@@ -31,8 +35,8 @@ export function createScene() {
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
-        const terrain = city.data[x][y].terrainId;
-        const mesh = loadMesh(terrain, x, y);
+        const terrainId = city.data[x][y].terrainId;
+        const mesh = createAssetInstance(terrainId, x, y);
         scene.add(mesh);
         column.push(mesh);
       }
@@ -45,19 +49,19 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
+        const currentBuildingId = buildings[x][y]?.userData.id;
         const newBuildingId = city.data[x][y].buildingId;
-        const oldBuildingId = buildings[x][y]?.userData.id;
 
-        // Building no longer exists, remove it
-        if (!newBuildingId && oldBuildingId) {
+        // If the player removes a building, remove it from the scene
+        if (!newBuildingId && currentBuildingId) {
           scene.remove(buildings[x][y]);
           buildings[x][y] = undefined;
         }
 
-        // Building has changed, replace it
-        if (newBuildingId !== oldBuildingId) {
+        // If the data model has changed, update the mesh
+        if (newBuildingId !== currentBuildingId) {
           scene.remove(buildings[x][y]);
-          buildings[x][y] = loadMesh(newBuildingId, x, y);
+          buildings[x][y] = createAssetInstance(newBuildingId, x, y);
           scene.add(buildings[x][y]);
         }
       }

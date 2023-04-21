@@ -47,5 +47,5 @@ function createTile(x, y) {
         }
       }
     }
-  }
+  };
 }
