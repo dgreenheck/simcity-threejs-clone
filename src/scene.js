@@ -56,31 +56,41 @@ export function createScene() {
   }
 
   /**
-   * Updates the scene to reflect the latest changes in the city
-   * data model
+   * Updates the scene to reflect the latest changes in the city data model
    * @param {object} city 
    */
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
-        // Current building is the one currently in the scene
-        // New building is the one in the data model.
-        const currentBuildingId = buildings[x][y]?.userData.id;
-        const newBuildingId = city.data[x][y].buildingId;
-
-        // If the player removes a building, remove it from the scene
-        if (!newBuildingId && currentBuildingId) {
-          scene.remove(buildings[x][y]);
-          buildings[x][y] = undefined;
-        }
-
-        // If the data model has changed, update the mesh
-        if (newBuildingId !== currentBuildingId) {
-          scene.remove(buildings[x][y]);
-          buildings[x][y] = createAssetInstance(newBuildingId, x, y);
-          scene.add(buildings[x][y]);
-        }
+        updateTile(city.data[x][y]);
       }
+    }
+  }
+
+  /**
+   * Updates the mesh at the specified (`x`,`y`) coordinates, if needed
+   * @param {*} x 
+   * @param {*} y 
+   */
+  function updateTile(tile) {
+    const { x, y } = tile;
+
+    // Current building is the one currently in the scene
+    // New building is the one in the data model.
+    const currentBuildingId = buildings[x][y]?.userData.id;
+    const newBuildingId = tile.buildingId;
+
+    // If the player removes a building, remove it from the scene
+    if (!newBuildingId && currentBuildingId) {
+      scene.remove(buildings[x][y]);
+      buildings[x][y] = undefined;
+    }
+
+    // If the data model has changed, update the mesh
+    if (newBuildingId !== currentBuildingId) {
+      scene.remove(buildings[x][y]);
+      buildings[x][y] = createAssetInstance(newBuildingId, x, y);
+      scene.add(buildings[x][y]);
     }
   }
 
@@ -141,7 +151,6 @@ export function createScene() {
       // Highlight the new selected object
       selectedObject = intersections[0].object;
       selectedObject.material.emissive.setHex(0x555555);
-      console.log(selectedObject.userData);
       
       // Notify event handler of new selected object
       if (this.onObjectSelected) {
@@ -170,6 +179,7 @@ export function createScene() {
     onObjectSelected,
     initialize,
     update,
+    updateTile,
     start,
     stop,
     onMouseDown,

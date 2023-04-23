@@ -33,12 +33,14 @@
         window.game = createGame();
       }
 
-      window.setActiveTool = (event, gameMode) => {
+      window.setActiveTool = (event, toolId) => {
         if (selectedControl) {
           selectedControl.classList.remove('selected')
         }
-        selectedControl = e.target;
+        selectedControl = event.target;
         selectedControl.classList.add('selected')
+
+        window.game.setActiveToolId(toolId);
       }
     </script>
   </body>

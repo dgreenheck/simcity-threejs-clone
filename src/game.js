@@ -1,7 +1,13 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
 
+/**
+ * Creates a new Game object
+ * @returns {object}
+ */
 export function createGame() {
+  let activeToolId = '';
+
   const scene = createScene();
   const city = createCity(16);
 
@@ -11,6 +17,23 @@ export function createGame() {
   scene.onObjectSelected = (selectedObject) => {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
+    console.log('Tile Selected');
+    console.log(tile);
+
+    if (activeToolId === 'residential') {
+      // Add new building if none exists
+      if (!tile.buildingId) {
+        tile.buildingId = 'building-1';
+        scene.updateTile(tile);
+      }
+    }
+    if (activeToolId === 'road') {
+      // Add new building if none exists
+      if (!tile.buildingId) {
+        tile.buildingId = 'road';
+        scene.updateTile(tile);
+      }
+    }
   }
 
   // Hook up mouse event handlers
@@ -27,6 +50,15 @@ export function createGame() {
     update() {
       city.update();
       scene.update(city);
+    },
+
+    /**
+     * Sets the active tool
+     * @param {string} toolId 
+     */
+    setActiveToolId(toolId) {
+      activeToolId = toolId;
+      console.log(activeToolId);
     }
   }
 

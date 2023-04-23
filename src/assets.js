@@ -34,6 +34,14 @@ const assets = {
     mesh.scale.set(1, 3, 1);
     mesh.position.set(x, 1.5, y);
     return mesh;
+  },
+  'road': (x, y) => {
+    const material = new THREE.MeshLambertMaterial({ color: 0x222222 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.userData = { id: 'road', x, y };
+    mesh.scale.set(1, 0.1, 1);
+    mesh.position.set(x, 0.05, y);
+    return mesh;
   }
 }
 
