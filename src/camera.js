@@ -29,6 +29,10 @@ export function createCamera(gameWindow) {
   let prevMouseY = 0;
   updateCameraPosition();
 
+  /**
+   * Event handler for 'mousedown' event
+   * @param {MouseEvent} event 
+   */
   function onMouseDown(event) {
     if (event.button === LEFT_MOUSE_BUTTON) {
       isLeftMouseDown = true;
@@ -41,6 +45,10 @@ export function createCamera(gameWindow) {
     }
   }
 
+  /**
+   * Event handler for 'mouseup' event
+   * @param {MouseEvent} event 
+   */
   function onMouseUp(event) {
     if (event.button === LEFT_MOUSE_BUTTON) {
       isLeftMouseDown = false;
@@ -53,6 +61,10 @@ export function createCamera(gameWindow) {
     }
   }
 
+  /**
+   * Event handler for 'mousemove' event
+   * @param {MouseEvent} event 
+   */
   function onMouseMove(event) {
     const deltaX = (event.clientX - prevMouseX);
     const deltaY = (event.clientY - prevMouseY);
@@ -85,6 +97,10 @@ export function createCamera(gameWindow) {
     prevMouseY = event.clientY;
   }
 
+  /**
+   * Updates the camera position to reflect any changes in the
+   * translation, rotation or zoom
+   */
   function updateCameraPosition() {
     camera.position.x = cameraRadius * Math.sin(cameraAzimuth * DEG2RAD) * Math.cos(cameraElevation * DEG2RAD);
     camera.position.y = cameraRadius * Math.sin(cameraElevation * DEG2RAD);

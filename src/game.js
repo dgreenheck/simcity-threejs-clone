@@ -6,26 +6,31 @@ export function createGame() {
   const city = createCity(16);
 
   scene.initialize(city);
-  scene.onObjectSelected = (selectedObject) => {
-    console.log(selectedObject);
 
+  // Hook up event handler for when user selects an object
+  scene.onObjectSelected = (selectedObject) => {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
-    console.log(tile);
   }
 
+  // Hook up mouse event handlers
   document.addEventListener('mousedown', scene.onMouseDown.bind(scene), false);
   document.addEventListener('mouseup', scene.onMouseUp.bind(scene), false);
   document.addEventListener('mousemove', scene.onMouseMove.bind(scene), false);
   document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
 
   const game = {
+    /**
+     * Updates the data model and updates the scene to reflect
+     * any changes in the data model
+     */
     update() {
       city.update();
       scene.update(city);
     }
   }
 
+  // Update loop for the game
   setInterval(() => {
     game.update();
   }, 1000)

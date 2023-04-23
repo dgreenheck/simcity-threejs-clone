@@ -8,25 +8,38 @@ export function createScene() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x777777);
 
-  const camera = createCamera(gameWindow);
-
+  // Renderer setsup
   const renderer = new THREE.WebGLRenderer();
+  const camera = createCamera(gameWindow);
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   gameWindow.appendChild(renderer.domElement);
   
+  // --- Variables for raycasting ---
   const raycaster = new THREE.Raycaster();
+  // Normalized mouse coordinates (-1 to 1)
   const mouse = new THREE.Vector2();
+  // Currently selected object in the scene
   let selectedObject = undefined;
 
-  let terrain = [];
-  let buildings = [];
+  // 2D array of terrain objects in the scene
+  let terrain = [[THREE.Mesh]];
+  // 2D array of building objects in the scene
+  let buildings = [[THREE.Mesh]];
 
+  // Event handler for when an object is selected.
+  // This is set in the Game object
   let onObjectSelected = undefined;
 
+  /**
+   * Initializes the scene with the city data model
+   * @param {object} city 
+   */
   function initialize(city) {
     scene.clear();
     terrain = [];
     buildings = [];
+
+    // Load terrain for each tile, initialize buildings array
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
@@ -42,9 +55,16 @@ export function createScene() {
     setupLights();
   }
 
+  /**
+   * Updates the scene to reflect the latest changes in the city
+   * data model
+   * @param {object} city 
+   */
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
+        // Current building is the one currently in the scene
+        // New building is the one in the data model.
         const currentBuildingId = buildings[x][y]?.userData.id;
         const newBuildingId = city.data[x][y].buildingId;
 
@@ -64,6 +84,9 @@ export function createScene() {
     }
   }
 
+  /**
+   * Defines the lighting and adds it to the scene
+   */
   function setupLights() {
     const lights = [
       new THREE.AmbientLight(0xffffff, 0.2),
@@ -79,6 +102,9 @@ export function createScene() {
     scene.add(...lights);
   }
 
+  /**
+   * Draw loop for the scene
+   */
   function draw() {
     renderer.render(scene, camera.camera);
   }
@@ -91,32 +117,51 @@ export function createScene() {
     renderer.setAnimationLoop(null);
   }
 
+  /**
+   * Event handler for 'mousedown' event
+   * @param {MouseEvent} event 
+   */
   function onMouseDown(event) {
     camera.onMouseDown(event);
 
+    // Compute normalized mouse coordinates
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
+    // Update raycaster to have ray directed to where mouse was pointing
     raycaster.setFromCamera(mouse, camera.camera);
 
+    // Find any scene objects intersected by the ray
     let intersections = raycaster.intersectObjects(scene.children, false);
 
     if (intersections.length > 0) {
+      // Un-highlight the previously selected object
       if (selectedObject) selectedObject.material.emissive.setHex(0);
+
+      // Highlight the new selected object
       selectedObject = intersections[0].object;
       selectedObject.material.emissive.setHex(0x555555);
       console.log(selectedObject.userData);
-
+      
+      // Notify event handler of new selected object
       if (this.onObjectSelected) {
         this.onObjectSelected(selectedObject);
       }
     }
   }
 
+  /**
+   * Event handler for 'mouseup' event
+   * @param {MouseEvent} event 
+   */
   function onMouseUp(event) {
     camera.onMouseUp(event);
   }
 
+  /**
+   * Event handler for 'mousemove' event
+   * @param {MouseEvent} event 
+   */
   function onMouseMove(event) {
     camera.onMouseMove(event);
   }

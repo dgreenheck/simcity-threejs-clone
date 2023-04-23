@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 
+// Common geometry definitions
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 
+// Library of game assets/meshes
 const assets = { 
   'grass': (x, y) => {
     const material = new THREE.MeshLambertMaterial({ color: 0x339933 });
@@ -35,6 +37,14 @@ const assets = {
   }
 }
 
+/**
+ * Creates a new mesh from the specified `assetId`. The mesh is
+ * positioned at the (`x`,`y`) coordinates.
+ * @param {string} assetId 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {THREE.Mesh}
+ */
 export function createAssetInstance(assetId, x, y) {
   if (assetId in assets) {
     return assets[assetId](x, y);

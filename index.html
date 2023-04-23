@@ -14,13 +14,31 @@
   </head>
   <body>
     <div id="root-window">
-      <div id="render-target"></div>
+      <div id="render-target">
+        <div id="ui-toolbar">
+          <button class="ui-button" onclick="setActiveTool(event,'residential')">RESIDENTIAL</button>
+          <button class="ui-button" onclick="setActiveTool(event,'commercial')">COMMERCIAL</button>
+          <button class="ui-button" onclick="setActiveTool(event,'industrial')">INDUSTRIAL</button>
+          <button class="ui-button" onclick="setActiveTool(event,'road')">ROAD</button>
+        </div>
+      </div>
     </div>
 
     <script type="module">
-      import { createGame } from './src/game.js';
+      import { createGame } from './src/game.js'
+
+      let selectedControl = undefined;
+
       window.onload = () => {
         window.game = createGame();
+      }
+
+      window.setActiveTool = (event, gameMode) => {
+        if (selectedControl) {
+          selectedControl.classList.remove('selected')
+        }
+        selectedControl = e.target;
+        selectedControl.classList.add('selected')
       }
     </script>
   </body>

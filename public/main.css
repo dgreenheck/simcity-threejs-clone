@@ -8,5 +8,32 @@ html, body {
 }
 
 #render-target {
+  position: relative;
   height: 100%;
+}
+
+#ui-toolbar {
+  position: absolute;
+  width: 150px;
+  height: 100%;
+  padding: 16px;
+  background-color: #00000033;
+}
+
+.ui-button {
+  background-color: #00000055;
+  border: 1px solid black;
+  color: lightgray;
+  height: 40px;
+  width: 100%;
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.ui-button.selected {
+  background-color: #55558855;
+}
+
+.ui-button:not(.selected):hover {
+  background-color: #33333355;
 }
