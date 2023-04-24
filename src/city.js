@@ -36,12 +36,14 @@ function createTile(x, y) {
     terrainId: 'grass',
     buildingId: undefined,
     update() {
-      const x = Math.random();
-      if (x < 0.01) {
-        if (this.buildingId === 'building-1') {
-          this.buildingId = 'building-2';
-        } else if (this.buildingId === 'building-2') {
-          this.buildingId = 'building-3';
+      if (this.buildingId.startsWith('residential') ||
+          this.buildingId.startsWith('commercial') ||
+          this.buildingId.startsWith('industrial')) {
+        const x = Math.random();
+        if (x < 0.01) {
+          let height = Number(this.buildingId.slice(-1));
+          // NEED THE BUILDING TYPE FOR THE UPDATE LOGIC
+          // THEN NEED TO STORE SEPARATE METADATA
         }
       }
     }

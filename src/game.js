@@ -20,19 +20,13 @@ export function createGame() {
     console.log('Tile Selected');
     console.log(tile);
 
-    if (activeToolId === 'residential') {
-      // Add new building if none exists
-      if (!tile.buildingId) {
-        tile.buildingId = 'building-1';
-        scene.updateTile(tile);
-      }
-    }
-    if (activeToolId === 'road') {
-      // Add new building if none exists
-      if (!tile.buildingId) {
-        tile.buildingId = 'road';
-        scene.updateTile(tile);
-      }
+    if (activeToolId === 'bulldoze') {
+      tile.buildingId = undefined;
+      scene.updateTile(tile);
+    // Only add building if one doesn't already exist
+    } else if (!tile.buildingId) {
+      tile.buildingId = activeToolId;
+      scene.updateTile(tile);
     }
   }
 

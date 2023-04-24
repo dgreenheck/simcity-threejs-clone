@@ -73,7 +73,7 @@ export function createScene() {
    * @param {*} y 
    */
   function updateTile(tile) {
-    const { x, y } = tile;
+    const { x, y, height } = tile;
 
     // Current building is the one currently in the scene
     // New building is the one in the data model.
@@ -89,7 +89,7 @@ export function createScene() {
     // If the data model has changed, update the mesh
     if (newBuildingId !== currentBuildingId) {
       scene.remove(buildings[x][y]);
-      buildings[x][y] = createAssetInstance(newBuildingId, x, y);
+      buildings[x][y] = createAssetInstance(newBuildingId, x, y, height);
       scene.add(buildings[x][y]);
     }
   }

@@ -12,27 +12,28 @@ const assets = {
     mesh.position.set(x, -0.5, y);
     return mesh;
   },
-  'building-1': (x, y) => {
-    const material = new THREE.MeshLambertMaterial({ color: 0xbb5555 });
+  'residential': (x, y, height) => {
+    const material = new THREE.MeshLambertMaterial({ color: 0x55bb55 });
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.userData = { id: 'building-1', x, y };
-    mesh.position.set(x, 0.5, y);
+    mesh.userData = { id: 'residential', x, y };
+    mesh.scale.set(1, height, 1);
+    mesh.position.set(x, height / 2, y);
     return mesh;
   },
-  'building-2': (x, y) => {
-    const material = new THREE.MeshLambertMaterial({ color: 0xbbbb55 });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.userData = { id: 'building-2', x, y };
-    mesh.scale.set(1, 2, 1);
-    mesh.position.set(x, 1, y);
-    return mesh;
-  },
-  'building-3': (x, y) => {
+  'commercial': (x, y, height) => {
     const material = new THREE.MeshLambertMaterial({ color: 0x5555bb });
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.userData = { id: 'building-3', x, y };
-    mesh.scale.set(1, 3, 1);
-    mesh.position.set(x, 1.5, y);
+    mesh.userData = { id: 'commercial', x, y };
+    mesh.scale.set(1, height, 1);
+    mesh.position.set(x, height / 2, y);
+    return mesh;
+  },
+  'industrial': (x, y, height) => {
+    const material = new THREE.MeshLambertMaterial({ color: 0xbbbb55 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.userData = { id: 'industrial', x, y };
+    mesh.scale.set(1, height, 1);
+    mesh.position.set(x, height / 2, y);
     return mesh;
   },
   'road': (x, y) => {
@@ -51,11 +52,12 @@ const assets = {
  * @param {string} assetId 
  * @param {number} x 
  * @param {number} y 
+ * @param {number} height
  * @returns {THREE.Mesh}
  */
-export function createAssetInstance(assetId, x, y) {
+export function createAssetInstance(assetId, x, y, height) {
   if (assetId in assets) {
-    return assets[assetId](x, y);
+    return assets[assetId](x, y, height);
   } else {
     console.warn(`Asset Id ${assetId} is not found.`);
     return undefined;
