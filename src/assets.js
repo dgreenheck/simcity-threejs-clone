@@ -12,28 +12,28 @@ const assets = {
     mesh.position.set(x, -0.5, y);
     return mesh;
   },
-  'residential': (x, y, height) => {
+  'residential': (x, y, data) => {
     const material = new THREE.MeshLambertMaterial({ color: 0x55bb55 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.userData = { id: 'residential', x, y };
-    mesh.scale.set(1, height, 1);
-    mesh.position.set(x, height / 2, y);
+    mesh.scale.set(1, data.height, 1);
+    mesh.position.set(x, data.height / 2, y);
     return mesh;
   },
-  'commercial': (x, y, height) => {
+  'commercial': (x, y, data) => {
     const material = new THREE.MeshLambertMaterial({ color: 0x5555bb });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.userData = { id: 'commercial', x, y };
-    mesh.scale.set(1, height, 1);
-    mesh.position.set(x, height / 2, y);
+    mesh.scale.set(1, data.height, 1);
+    mesh.position.set(x, data.height / 2, y);
     return mesh;
   },
-  'industrial': (x, y, height) => {
+  'industrial': (x, y, data) => {
     const material = new THREE.MeshLambertMaterial({ color: 0xbbbb55 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.userData = { id: 'industrial', x, y };
-    mesh.scale.set(1, height, 1);
-    mesh.position.set(x, height / 2, y);
+    mesh.scale.set(1, data.height, 1);
+    mesh.position.set(x, data.height / 2, y);
     return mesh;
   },
   'road': (x, y) => {
@@ -55,9 +55,9 @@ const assets = {
  * @param {number} height
  * @returns {THREE.Mesh}
  */
-export function createAssetInstance(assetId, x, y, height) {
+export function createAssetInstance(assetId, x, y, data) {
   if (assetId in assets) {
-    return assets[assetId](x, y, height);
+    return assets[assetId](x, y, data);
   } else {
     console.warn(`Asset Id ${assetId} is not found.`);
     return undefined;

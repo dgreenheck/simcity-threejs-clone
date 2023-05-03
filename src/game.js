@@ -1,5 +1,6 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
+import buildingFactory from './buildingFactory.js';
 
 /**
  * Creates a new Game object
@@ -17,15 +18,14 @@ export function createGame() {
   scene.onObjectSelected = (selectedObject) => {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
-    console.log('Tile Selected');
-    console.log(tile);
 
     if (activeToolId === 'bulldoze') {
-      tile.buildingId = undefined;
+      tile.building = undefined;
       scene.updateTile(tile);
     // Only add building if one doesn't already exist
-    } else if (!tile.buildingId) {
-      tile.buildingId = activeToolId;
+    } else if (!tile.building) {
+      tile.building = buildingFactory[activeToolId]();
+
       scene.updateTile(tile);
     }
   }

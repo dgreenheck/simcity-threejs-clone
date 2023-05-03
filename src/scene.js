@@ -73,23 +73,17 @@ export function createScene() {
    * @param {*} y 
    */
   function updateTile(tile) {
-    const { x, y, height } = tile;
-
-    // Current building is the one currently in the scene
-    // New building is the one in the data model.
-    const currentBuildingId = buildings[x][y]?.userData.id;
-    const newBuildingId = tile.buildingId;
+    const { x, y } = tile;
 
     // If the player removes a building, remove it from the scene
-    if (!newBuildingId && currentBuildingId) {
+    if (!tile.building && buildings[x][y]) {
       scene.remove(buildings[x][y]);
       buildings[x][y] = undefined;
     }
-
     // If the data model has changed, update the mesh
-    if (newBuildingId !== currentBuildingId) {
+    else if (tile.building && tile.building.updated) {
       scene.remove(buildings[x][y]);
-      buildings[x][y] = createAssetInstance(newBuildingId, x, y, height);
+      buildings[x][y] = createAssetInstance(tile.building.id, x, y, tile.building);
       scene.add(buildings[x][y]);
     }
   }
