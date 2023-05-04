@@ -2,6 +2,10 @@ import { createScene } from './scene.js';
 import { createCity } from './city.js';
 import buildingFactory from './buildingFactory.js';
 
+/**
+ * Creates a new Game object
+ * @returns a Game object
+ */
 export function createGame() {
   let activeToolId = '';
 
@@ -25,13 +29,14 @@ export function createGame() {
     }
   }
 
+  // Hook up mouse event handlers to the scene
   document.addEventListener('mousedown', scene.onMouseDown.bind(scene), false);
-  document.addEventListener('mouseup', scene.onMouseUp.bind(scene), false);
   document.addEventListener('mousemove', scene.onMouseMove.bind(scene), false);
   document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
 
   const game = {
     update() {
+      // Update the city data model first, then update the scene
       city.update();
       scene.update(city);
     },
@@ -41,6 +46,7 @@ export function createGame() {
     }
   }
 
+  // Start update interval
   setInterval(() => {
     game.update();
   }, 1000)

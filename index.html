@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="./public/main.css">
+    <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
+
+    <!-- Import Three.js library-->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
       {
@@ -11,9 +14,11 @@
         }
       }
     </script>
+
   </head>
   <body>
     <div id="root-window">
+      <!-- Three.js adds a `canvas` element to this element-->      
       <div id="render-target">
         <div id="ui-toolbar">
           <button class="ui-button" onclick="setActiveTool(event,'bulldoze')">BULLDOZE</button>
