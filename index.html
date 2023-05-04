@@ -33,7 +33,7 @@
     <script type="module">
       import { createGame } from './src/game.js'
 
-      let selectedControl = undefined;
+      let selectedControl = document.getElementById('button-bulldoze');
 
       window.onload = () => {
         window.game = createGame();
