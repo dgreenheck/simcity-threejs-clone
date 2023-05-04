@@ -3,37 +3,24 @@ import { createCamera } from './camera.js';
 import { createAssetInstance } from './assets.js';
 
 export function createScene() {
-  // Initial scene setup
   const gameWindow = document.getElementById('render-target');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x777777);
 
-  // Renderer setsup
   const renderer = new THREE.WebGLRenderer();
   const camera = createCamera(gameWindow);
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   gameWindow.appendChild(renderer.domElement);
   
-  // --- Variables for raycasting ---
   const raycaster = new THREE.Raycaster();
-  // Normalized mouse coordinates (-1 to 1)
   const mouse = new THREE.Vector2();
-  // Currently selected object in the scene
   let selectedObject = undefined;
-
-  // 2D array of terrain objects in the scene
+e
   let terrain = [[THREE.Mesh]];
-  // 2D array of building objects in the scene
   let buildings = [[THREE.Mesh]];
 
-  // Event handler for when an object is selected.
-  // This is set in the Game object
   let onObjectSelected = undefined;
 
-  /**
-   * Initializes the scene with the city data model
-   * @param {object} city 
-   */
   function initialize(city) {
     scene.clear();
     terrain = [];
@@ -55,10 +42,6 @@ export function createScene() {
     setupLights();
   }
 
-  /**
-   * Updates the scene to reflect the latest changes in the city data model
-   * @param {object} city 
-   */
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
@@ -67,11 +50,6 @@ export function createScene() {
     }
   }
 
-  /**
-   * Updates the mesh at the specified (`x`,`y`) coordinates, if needed
-   * @param {*} x 
-   * @param {*} y 
-   */
   function updateTile(tile) {
     const { x, y } = tile;
 
@@ -88,9 +66,6 @@ export function createScene() {
     }
   }
 
-  /**
-   * Defines the lighting and adds it to the scene
-   */
   function setupLights() {
     const lights = [
       new THREE.AmbientLight(0xffffff, 0.2),
@@ -106,9 +81,6 @@ export function createScene() {
     scene.add(...lights);
   }
 
-  /**
-   * Draw loop for the scene
-   */
   function draw() {
     renderer.render(scene, camera.camera);
   }
@@ -121,10 +93,6 @@ export function createScene() {
     renderer.setAnimationLoop(null);
   }
 
-  /**
-   * Event handler for 'mousedown' event
-   * @param {MouseEvent} event 
-   */
   function onMouseDown(event) {
     camera.onMouseDown(event);
 
@@ -153,18 +121,10 @@ export function createScene() {
     }
   }
 
-  /**
-   * Event handler for 'mouseup' event
-   * @param {MouseEvent} event 
-   */
   function onMouseUp(event) {
     camera.onMouseUp(event);
   }
 
-  /**
-   * Event handler for 'mousemove' event
-   * @param {MouseEvent} event 
-   */
   function onMouseMove(event) {
     camera.onMouseMove(event);
   }

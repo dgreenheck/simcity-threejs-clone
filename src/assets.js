@@ -46,15 +46,6 @@ const assets = {
   }
 }
 
-/**
- * Creates a new mesh from the specified `assetId`. The mesh is
- * positioned at the (`x`,`y`) coordinates.
- * @param {string} assetId 
- * @param {number} x 
- * @param {number} y 
- * @param {number} height
- * @returns {THREE.Mesh}
- */
 export function createAssetInstance(assetId, x, y, data) {
   if (assetId in assets) {
     return assets[assetId](x, y, data);

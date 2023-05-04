@@ -2,10 +2,6 @@ import { createScene } from './scene.js';
 import { createCity } from './city.js';
 import buildingFactory from './buildingFactory.js';
 
-/**
- * Creates a new Game object
- * @returns {object}
- */
 export function createGame() {
   let activeToolId = '';
 
@@ -37,19 +33,10 @@ export function createGame() {
   document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
 
   const game = {
-    /**
-     * Updates the data model and updates the scene to reflect
-     * any changes in the data model
-     */
     update() {
       city.update();
       scene.update(city);
     },
-
-    /**
-     * Sets the active tool
-     * @param {string} toolId 
-     */
     setActiveToolId(toolId) {
       activeToolId = toolId;
       console.log(activeToolId);
