@@ -18,16 +18,16 @@ export function createGame() {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
 
-    console.log(tile);
-
     // If bulldoze is active, delete the building
     if (activeToolId === 'bulldoze') {
-      tile.buildingId = undefined;
+      tile.building.id = undefined;
       scene.updateTile(tile);
     // Only add building if one doesn't already exist
-    } else if (!tile.buildingId) {
+    } else if (!tile.building?.id) {
       tile.building = buildingFactory[activeToolId]();
       scene.updateTile(tile);
+    } else {
+      console.log('Object Selected' + JSON.stringify(tile));
     }
   }
 
