@@ -21,11 +21,11 @@
       <!-- Three.js adds a `canvas` element to this element-->      
       <div id="render-target">
         <div id="ui-toolbar">
-          <button class="ui-button" onclick="setActiveTool(event,'bulldoze')">BULLDOZE</button>
-          <button class="ui-button" onclick="setActiveTool(event,'residential')">RESIDENTIAL</button>
-          <button class="ui-button" onclick="setActiveTool(event,'commercial')">COMMERCIAL</button>
-          <button class="ui-button" onclick="setActiveTool(event,'industrial')">INDUSTRIAL</button>
-          <button class="ui-button" onclick="setActiveTool(event,'road')">ROAD</button>
+          <button id='button-bulldoze' class="ui-button selected" onclick="setActiveTool(event,'bulldoze')">BULLDOZE</button>
+          <button id='button-residential' class="ui-button" onclick="setActiveTool(event,'residential')">RESIDENTIAL</button>
+          <button id='button-commercial' class="ui-button" onclick="setActiveTool(event,'commercial')">COMMERCIAL</button>
+          <button id='button-industrial' class="ui-button" onclick="setActiveTool(event,'industrial')">INDUSTRIAL</button>
+          <button id='button-road' class="ui-button" onclick="setActiveTool(event,'road')">ROAD</button>
         </div>
       </div>
     </div>
