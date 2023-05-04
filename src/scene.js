@@ -15,7 +15,6 @@ export function createScene() {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let selectedObject = undefined;
-
   let terrain = [[THREE.Mesh]];
   let buildings = [[THREE.Mesh]];
 
