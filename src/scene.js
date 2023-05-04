@@ -3,23 +3,21 @@ import { createCamera } from './camera.js';
 import { createAssetInstance } from './assets.js';
 
 export function createScene() {
-  // Initial scene setup
   const gameWindow = document.getElementById('render-target');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x777777);
 
-  const camera = createCamera(gameWindow);
-
   const renderer = new THREE.WebGLRenderer();
+  const camera = createCamera(gameWindow);
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   gameWindow.appendChild(renderer.domElement);
   
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let selectedObject = undefined;
-
-  let terrain = [];
-  let buildings = [];
+e
+  let terrain = [[THREE.Mesh]];
+  let buildings = [[THREE.Mesh]];
 
   let onObjectSelected = undefined;
 
@@ -27,6 +25,7 @@ export function createScene() {
     scene.clear();
     terrain = [];
     buildings = [];
+
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
@@ -45,22 +44,24 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
-        const currentBuildingId = buildings[x][y]?.userData.id;
-        const newBuildingId = city.data[x][y].buildingId;
-
-        // If the player removes a building, remove it from the scene
-        if (!newBuildingId && currentBuildingId) {
-          scene.remove(buildings[x][y]);
-          buildings[x][y] = undefined;
-        }
-
-        // If the data model has changed, update the mesh
-        if (newBuildingId && newBuildingId !== currentBuildingId) {
-          scene.remove(buildings[x][y]);
-          buildings[x][y] = createAssetInstance(newBuildingId, x, y);
-          scene.add(buildings[x][y]);
-        }
+        updateTile(city.data[x][y]);
       }
+    }
+  }
+
+  function updateTile(tile) {
+    const { x, y } = tile;
+
+    // If the player removes a building, remove it from the scene
+    if (!tile.building && buildings[x][y]) {
+      scene.remove(buildings[x][y]);
+      buildings[x][y] = undefined;
+    }
+    // If the data model has changed, update the mesh
+    else if (tile.building && tile.building.updated) {
+      scene.remove(buildings[x][y]);
+      buildings[x][y] = createAssetInstance(tile.building.id, x, y, tile.building);
+      scene.add(buildings[x][y]);
     }
   }
 
@@ -115,9 +116,10 @@ export function createScene() {
 
     if (intersections.length > 0) {
       if (selectedObject) selectedObject.material.emissive.setHex(0);
+
       selectedObject = intersections[0].object;
       selectedObject.material.emissive.setHex(0x555555);
-
+      
       if (this.onObjectSelected) {
         this.onObjectSelected(selectedObject);
       }
@@ -136,6 +138,7 @@ export function createScene() {
     onObjectSelected,
     initialize,
     update,
+    updateTile,
     start,
     stop,
     onMouseDown,
