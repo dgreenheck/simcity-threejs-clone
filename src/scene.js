@@ -26,7 +26,6 @@ e
     terrain = [];
     buildings = [];
 
-    // Load terrain for each tile, initialize buildings array
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
@@ -96,25 +95,19 @@ e
   function onMouseDown(event) {
     camera.onMouseDown(event);
 
-    // Compute normalized mouse coordinates
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
-    // Update raycaster to have ray directed to where mouse was pointing
     raycaster.setFromCamera(mouse, camera.camera);
 
-    // Find any scene objects intersected by the ray
     let intersections = raycaster.intersectObjects(scene.children, false);
 
     if (intersections.length > 0) {
-      // Un-highlight the previously selected object
       if (selectedObject) selectedObject.material.emissive.setHex(0);
 
-      // Highlight the new selected object
       selectedObject = intersections[0].object;
       selectedObject.material.emissive.setHex(0x555555);
       
-      // Notify event handler of new selected object
       if (this.onObjectSelected) {
         this.onObjectSelected(selectedObject);
       }

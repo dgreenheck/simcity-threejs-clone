@@ -1,9 +1,7 @@
 import * as THREE from 'three';
 
-// Common geometry definitions
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-// Library of game assets/meshes
 const assets = { 
   'grass': (x, y) => {
     const material = new THREE.MeshLambertMaterial({ color: 0x339933 });

@@ -10,7 +10,6 @@ export function createGame() {
 
   scene.initialize(city);
 
-  // Hook up event handler for when user selects an object
   scene.onObjectSelected = (selectedObject) => {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
@@ -26,7 +25,6 @@ export function createGame() {
     }
   }
 
-  // Hook up mouse event handlers
   document.addEventListener('mousedown', scene.onMouseDown.bind(scene), false);
   document.addEventListener('mouseup', scene.onMouseUp.bind(scene), false);
   document.addEventListener('mousemove', scene.onMouseMove.bind(scene), false);
@@ -43,7 +41,6 @@ export function createGame() {
     }
   }
 
-  // Update loop for the game
   setInterval(() => {
     game.update();
   }, 1000)
