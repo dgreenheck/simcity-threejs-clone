@@ -15,7 +15,7 @@ html, body {
 #ui-toolbar {
   position: absolute;
   width: 150px;
-  height: 100%;
+  height: 100vh;
   padding: 16px;
   background-color: #00000033;
 }
@@ -27,7 +27,7 @@ html, body {
   height: 40px;
   width: 100%;
   font-size: 16px;
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .ui-button.selected {

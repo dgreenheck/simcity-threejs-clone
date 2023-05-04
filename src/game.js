@@ -1,6 +1,5 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
-import buildingFactory from './buildingFactory.js';
 
 /**
  * Creates a new Game object
@@ -18,14 +17,16 @@ export function createGame() {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
 
-    if (activeToolId === 'bulldoze') {
-      tile.building = undefined;
-      scene.updateTile(tile);
-    // Only add building if one doesn't already exist
-    } else if (!tile.building) {
-      tile.building = buildingFactory[activeToolId]();
+    console.log(tile);
 
-      scene.updateTile(tile);
+    // If bulldoze is active, delete the building
+    if (activeToolId === 'bulldoze') {
+      tile.buildingId = undefined;
+      scene.update(city);
+    // Only add building if one doesn't already exist
+    } else if (!tile.buildingId) {
+      tile.buildingId = activeToolId;
+      scene.update(city);
     }
   }
 
