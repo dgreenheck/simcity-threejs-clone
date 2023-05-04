@@ -79,21 +79,33 @@ export function createScene() {
     scene.add(...lights);
   }
 
+  /**
+   * Render the contents of the scene
+   */
   function draw() {
     renderer.render(scene, camera.camera);
   }
 
+  /**
+   * Starts the renderer
+   */
   function start() {
     renderer.setAnimationLoop(draw);
   }
 
+  /**
+   * Stops the renderer
+   */
   function stop() {
     renderer.setAnimationLoop(null);
   }
 
+  /**
+   * Event handler for `onMouseDown` event
+   * @param {MouseEvent} event 
+   */
   function onMouseDown(event) {
-    camera.onMouseDown(event);
-
+    // Compute normalized mouse coordinates
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
@@ -113,10 +125,10 @@ export function createScene() {
     }
   }
 
-  function onMouseUp(event) {
-    camera.onMouseUp(event);
-  }
-
+  /**
+   * Event handler for 'onMouseMove' event
+   * @param {MouseEvent} event 
+   */
   function onMouseMove(event) {
     camera.onMouseMove(event);
   }
@@ -128,7 +140,6 @@ export function createScene() {
     start,
     stop,
     onMouseDown,
-    onMouseUp,
     onMouseMove
   }
 }
