@@ -7,7 +7,7 @@ import buildingFactory from './buildingFactory.js';
  * @returns a Game object
  */
 export function createGame() {
-  let activeToolId = '';
+  let activeToolId = 'bulldoze';
 
   const scene = createScene();
   const city = createCity(16);
