@@ -55,7 +55,7 @@ export function createScene() {
         }
 
         // If the data model has changed, update the mesh
-        if (newBuildingId !== currentBuildingId) {
+        if (newBuildingId && newBuildingId !== currentBuildingId) {
           scene.remove(buildings[x][y]);
           buildings[x][y] = createAssetInstance(newBuildingId, x, y);
           scene.add(buildings[x][y]);
@@ -117,7 +117,6 @@ export function createScene() {
       if (selectedObject) selectedObject.material.emissive.setHex(0);
       selectedObject = intersections[0].object;
       selectedObject.material.emissive.setHex(0x555555);
-      console.log(selectedObject.userData);
 
       if (this.onObjectSelected) {
         this.onObjectSelected(selectedObject);
