@@ -118,7 +118,6 @@ export function createScene() {
       if (selectedObject) selectedObject.material.emissive.setHex(0);
       selectedObject = intersections[0].object;
       selectedObject.material.emissive.setHex(0x555555);
-      console.log(selectedObject.userData);
 
       if (this.onObjectSelected) {
         this.onObjectSelected(selectedObject);
