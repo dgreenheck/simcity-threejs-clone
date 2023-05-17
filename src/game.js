@@ -1,22 +1,30 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
+import buildingFactory from './buildings.js';
 
 /**
  * Creates a new Game object
  * @returns a Game object
  */
 export function createGame() {
+  let activeToolId = '';
+
   const scene = createScene();
   const city = createCity(16);
 
   scene.initialize(city);
 
   scene.onObjectSelected = (selectedObject) => {
-    console.log(selectedObject);
-
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
-    console.log(tile);
+
+    if (activeToolId === 'bulldoze') {
+      tile.building = undefined;
+      scene.update(city);
+    } else if (!tile.building) {
+      tile.building = buildingFactory[activeToolId]();
+      scene.update(city);
+    }
   }
 
   // Hook up mouse event handlers to the scene
@@ -29,6 +37,10 @@ export function createGame() {
       // Update the city data model first, then update the scene
       city.update();
       scene.update(city);
+    },
+    setActiveToolId(toolId) {
+      activeToolId = toolId;
+      console.log(activeToolId);
     }
   }
 

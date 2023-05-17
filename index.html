@@ -18,14 +18,35 @@
   </head>
   <body>
     <div id="root-window">
-      <!-- Three.js adds a `canvas` element to this elemtn-->
-      <div id="render-target"></div>
+      <!-- Three.js adds a `canvas` element to this element-->
+      <div id="render-target">
+        <div id="ui-toolbar">
+          <button id='button-bulldoze' class="ui-button selected" onclick="setActiveTool(event,'bulldoze')">BULLDOZE</button>
+          <button id='button-residential' class="ui-button" onclick="setActiveTool(event,'residential')">RESIDENTIAL</button>
+          <button id='button-commercial' class="ui-button" onclick="setActiveTool(event,'commercial')">COMMERCIAL</button>
+          <button id='button-industrial' class="ui-button" onclick="setActiveTool(event,'industrial')">INDUSTRIAL</button>
+          <button id='button-road' class="ui-button" onclick="setActiveTool(event,'road')">ROAD</button>
+        </div>
+      </div>
     </div>
 
     <script type="module">
       import { createGame } from './src/game.js';
+
+      let selectedControl = document.getElementById('button-bulldoze');
+
       window.onload = () => {
         window.game = createGame();
+      }
+       
+      window.setActiveTool = (event, toolId) => {
+        if (selectedControl) {
+          selectedControl.classList.remove('selected');
+        }
+        selectedControl = event.target;
+        selectedControl.classList.add('selected');
+
+        window.game.setActiveToolId(toolId);
       }
     </script>
   </body>
