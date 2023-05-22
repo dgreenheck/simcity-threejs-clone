@@ -2,6 +2,7 @@ export default {
   'residential': () => {
     return {
       id: 'residential',
+      style: Math.floor(3 * Math.random()) + 1,
       height: 1,
       updated: true,
       update: function() {
@@ -17,6 +18,7 @@ export default {
   'commercial': () => {
     return {
       id: 'commercial',
+      style: Math.floor(3 * Math.random()) + 1,
       height: 1,
       updated: true,
       update: function() {
@@ -32,6 +34,7 @@ export default {
   'industrial': () => {
     return {
       id: 'industrial',
+      style: Math.floor(3 * Math.random()) + 1,
       height: 1,
       updated: true,
       update: function() {

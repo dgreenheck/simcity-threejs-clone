@@ -40,10 +40,10 @@ export function createCameraManager(gameWindow) {
     if (event.key === 's') speed.rotation.y = 1;
 
     // Translate
-    if (event.key === 'A') speed.translate.x = -1;
-    if (event.key === 'D') speed.translate.x = 1;
-    if (event.key === 'W') speed.translate.y = -1;
-    if (event.key === 'S') speed.translate.y = 1;
+    if (event.key === 'A') speed.translate.x = 1;
+    if (event.key === 'D') speed.translate.x = -1;
+    if (event.key === 'W') speed.translate.y = 1;
+    if (event.key === 'S') speed.translate.y = -1;
   }
 
   function onKeyUp(event) {

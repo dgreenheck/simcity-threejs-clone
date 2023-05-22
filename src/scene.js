@@ -12,6 +12,8 @@ export function createScene() {
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   gameWindow.appendChild(renderer.domElement);
   
   // Variables for object selection
@@ -70,18 +72,19 @@ export function createScene() {
   }
 
   function setupLights() {
-    const lights = [
-      new THREE.AmbientLight(0xffffff, 0.2),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-      new THREE.DirectionalLight(0xffffff, 0.3)
-    ];
-
-    lights[1].position.set(0, 1, 0);
-    lights[2].position.set(1, 1, 0);
-    lights[3].position.set(0, 1, 1);
-
-    scene.add(...lights);
+    const sun = new THREE.DirectionalLight(0xffffff, 1)
+    sun.position.set(20, 20, 20);
+    sun.castShadow = true;
+    sun.shadow.camera.left = -10;
+    sun.shadow.camera.right = 10;
+    sun.shadow.camera.top = 0;
+    sun.shadow.camera.bottom = -10;
+    sun.shadow.mapSize.width = 1024; // default
+    sun.shadow.mapSize.height = 1024; // default
+    sun.shadow.camera.near = 0.5; // default
+    sun.shadow.camera.far = 50; // default
+    scene.add(sun);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
   }
 
   /**
@@ -151,7 +154,7 @@ export function createScene() {
 
     // Unhighlight the previously hovered object (if it isn't currently selected)
     if (hoverObject && hoverObject !== selectedObject) {
-      hoverObject.material.emissive.setHex(0);
+      setObjectHightlight(hoverObject, 0x000000);
     }
 
     // Get object mouse is currently hovering over
@@ -159,9 +162,7 @@ export function createScene() {
     
     if (hoverObject) {
       // Highlight the new hovered object (if it isn't currently selected))
-      if (hoverObject !== selectedObject) {
-        hoverObject.material.emissive.setHex(0x555555);
-      }
+      setObjectHightlight(hoverObject, 0x555555);
 
       // If left mouse-button is down, also update the selected object
       if (event.buttons & LEFT_MOUSE_BUTTON) {
@@ -205,19 +206,22 @@ export function createScene() {
    * @param {object} object 
    */
   function setSelectedObject(object) {
-    // Clear highlight on currently selected object
-    if (selectedObject) {
-      selectedObject.material.emissive.setHex(0x000000)
-    }
-
+    setObjectHightlight(selectedObject, 0x000000);
     selectedObject = object;
-
-    // Highlight the newly selected object
-    selectedObject.material.emissive.setHex(0xaaaa55)
+    setObjectHightlight(selectedObject, 0xaaaa55);
   }
 
   function setOnObjectSelected(eventHandler) {
     onObjectSelected = eventHandler;
+  }
+
+  function setObjectHightlight(object, color) {
+    if (!object) return;
+    if (Array.isArray(object.material)) {
+      object.material.forEach(material => material.emissive.setHex(color));
+    } else {
+      object.material.emissive.setHex(color);
+    }
   }
 
   return {

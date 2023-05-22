@@ -20,17 +20,21 @@ export function createGame() {
 
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
-      console.log(`Selected object at ${x},${y}`);
-      console.log( JSON.stringify(tile, ' ', 2))
+      console.log(activeToolId);
       scene.setSelectedObject(selectedObject);
       document.getElementById('selected-object-info').innerHTML = JSON.stringify(tile, ' ', 2);
+      console.log(tile);
     } else if (activeToolId === 'bulldoze') {
+      console.log(activeToolId);
       tile.building = undefined;
       scene.update(city);
+      console.log(tile);
     // Otherwise, place the building if this tile doesn't have one
     } else if (!tile.building) {
+      console.log(activeToolId);
       tile.building = buildingFactory[activeToolId]();
       scene.update(city);
+      console.log(tile);
     }
   });
 
