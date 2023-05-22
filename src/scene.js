@@ -1,41 +1,45 @@
 import * as THREE from 'three';
-import { createCamera } from './camera.js';
+import { createCameraManager } from './cameraManager.js';
 import { createAssetInstance } from './assets.js';
 
 export function createScene() {
   // Initial scene setup
   const gameWindow = document.getElementById('render-target');
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x777777);
 
-  const camera = createCamera(gameWindow);
+  const cameraManager = createCameraManager(gameWindow);
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
+  renderer.setClearColor(0x000000, 0);
   gameWindow.appendChild(renderer.domElement);
   
+  // Variables for object selection
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  let selectedObject = undefined;
-
-  let terrain = [];
-  let buildings = [];
-
+  const LEFT_MOUSE_BUTTON = 1;
+  const lastMove = new Date();
   let onObjectSelected = undefined;
+
+  // Last object the user has clicked on
+  let selectedObject = undefined;
+  // Object the mouse is currently hovering over
+  let hoverObject = undefined;
+
+  // 2D array of building meshes at each tile location
+  let buildings = [];
 
   function initialize(city) {
     scene.clear();
-    terrain = [];
     buildings = [];
+
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
-        const terrainId = city.data[x][y].terrainId;
-        const mesh = createAssetInstance(terrainId, x, y);
+        const mesh = createAssetInstance(city.data[x][y].terrainId, x, y);
         scene.add(mesh);
         column.push(mesh);
       }
-      terrain.push(column);
       buildings.push([...Array(city.size)]);
     }
 
@@ -84,7 +88,8 @@ export function createScene() {
    * Render the contents of the scene
    */
   function draw() {
-    renderer.render(scene, camera.camera);
+    cameraManager.updateCameraPosition();
+    renderer.render(scene, cameraManager.camera);
   }
 
   /**
@@ -102,26 +107,37 @@ export function createScene() {
   }
 
   /**
-   * Event handler for `onMouseDown` event
+   * Event handler for 'keydown' event
+   * @param {KeyboardEvent} event 
+   */
+  function onKeyDown(event) {
+    cameraManager.onKeyDown(event);
+  }
+
+  /**
+   * Event handler for 'keyup' event
+   * @param {KeyboardEvent} event 
+   */
+  function onKeyUp(event) {
+    cameraManager.onKeyUp(event);
+  }
+
+  /**
+   * Event handler for 'wheel' event
+   * @param {MouseEvent} event 
+   */
+  function onMouseScroll(event) {
+    cameraManager.onMouseScroll(event);
+  }
+
+  /**
+   * Event handler for `mousedown` event
    * @param {MouseEvent} event 
    */
   function onMouseDown(event) {
-    // Compute normalized mouse coordinates
-    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera.camera);
-
-    let intersections = raycaster.intersectObjects(scene.children, false);
-
-    if (intersections.length > 0) {
-      if (selectedObject) selectedObject.material.emissive.setHex(0);
-      selectedObject = intersections[0].object;
-      selectedObject.material.emissive.setHex(0x555555);
-
-      if (this.onObjectSelected) {
-        this.onObjectSelected(selectedObject);
-      }
+    const object = getObjectUnderMouse(event);
+    if (object && onObjectSelected) {
+      onObjectSelected(object);
     }
   }
 
@@ -130,16 +146,92 @@ export function createScene() {
    * @param {MouseEvent} event 
    */
   function onMouseMove(event) {
-    camera.onMouseMove(event);
+    // Throttle raycasting so it doesn't kill the browser
+    if (Date.now() - lastMove < (1 / 60.0)) return;
+
+    // Unhighlight the previously hovered object (if it isn't currently selected)
+    if (hoverObject && hoverObject !== selectedObject) {
+      hoverObject.material.emissive.setHex(0);
+    }
+
+    // Get object mouse is currently hovering over
+    hoverObject = getObjectUnderMouse(event);
+    
+    if (hoverObject) {
+      // Highlight the new hovered object (if it isn't currently selected))
+      if (hoverObject !== selectedObject) {
+        hoverObject.material.emissive.setHex(0x555555);
+      }
+
+      // If left mouse-button is down, also update the selected object
+      if (event.buttons & LEFT_MOUSE_BUTTON) {
+        onObjectSelected(hoverObject);
+      }
+    }
+  }
+
+  /**
+   * Gets the object currently under the mouse cursor. If there is nothing under
+   * the mouse cursor, returns null
+   * @param {MouseEvent} event Mouse event
+   */
+  function getObjectUnderMouse(event) {
+    // Compute normalized mouse coordinates
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, cameraManager.camera);
+
+    let intersections = raycaster.intersectObjects(scene.children, false);
+
+    if (intersections.length > 0) {
+      return intersections[0].object;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Resizes the renderer to fit the current game window
+   */
+  function resizeRenderer() {
+    cameraManager.camera.aspect = gameWindow.offsetWidth / gameWindow.offsetHeight;
+    cameraManager.camera.updateProjectionMatrix();
+    renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
+  }
+
+  /**
+   * Sets the currently selected object and highlights it
+   * @param {object} object 
+   */
+  function setSelectedObject(object) {
+    // Clear highlight on currently selected object
+    if (selectedObject) {
+      selectedObject.material.emissive.setHex(0x000000)
+    }
+
+    selectedObject = object;
+
+    // Highlight the newly selected object
+    selectedObject.material.emissive.setHex(0xaaaa55)
+  }
+
+  function setOnObjectSelected(eventHandler) {
+    onObjectSelected = eventHandler;
   }
 
   return {
-    onObjectSelected,
     initialize,
     update,
     start,
     stop,
+    onKeyDown,
+    onKeyUp,
+    onMouseScroll,
     onMouseDown,
-    onMouseMove
+    onMouseMove,
+    resizeRenderer,
+    setSelectedObject,
+    setOnObjectSelected
   }
 }

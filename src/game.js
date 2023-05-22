@@ -7,19 +7,24 @@ import buildingFactory from './buildings.js';
  * @returns a Game object
  */
 export function createGame() {
-  let activeToolId = '';
+  let activeToolId = 'select';
 
   const scene = createScene();
-  const city = createCity(16);
+  const city = createCity(12);
 
   scene.initialize(city);
 
-  scene.onObjectSelected = (selectedObject) => {
+  scene.setOnObjectSelected((selectedObject) => {
     let { x, y } = selectedObject.userData;
     const tile = city.data[x][y];
 
     // If bulldoze is active, delete the building
-    if (activeToolId === 'bulldoze') {
+    if (activeToolId === 'select') {
+      console.log(`Selected object at ${x},${y}`);
+      console.log( JSON.stringify(tile, ' ', 2))
+      scene.setSelectedObject(selectedObject);
+      document.getElementById('selected-object-info').innerHTML = JSON.stringify(tile, ' ', 2);
+    } else if (activeToolId === 'bulldoze') {
       tile.building = undefined;
       scene.update(city);
     // Otherwise, place the building if this tile doesn't have one
@@ -27,11 +32,16 @@ export function createGame() {
       tile.building = buildingFactory[activeToolId]();
       scene.update(city);
     }
-  }
+  });
 
-  // Hook up mouse event handlers to the scene
-  document.addEventListener('mousedown', scene.onMouseDown.bind(scene), false);
-  document.addEventListener('mousemove', scene.onMouseMove.bind(scene), false);
+  // Hookup event listeners
+  document.addEventListener('keydown', scene.onKeyDown, false);
+  document.addEventListener('keyup', scene.onKeyUp, false);
+  document.addEventListener('wheel', scene.onMouseScroll, false);
+  document.addEventListener('mousedown', scene.onMouseDown, false);
+  document.addEventListener('mousemove', scene.onMouseMove, false);
+  window.addEventListener('resize', scene.resizeRenderer, false);
+  // Prevent context menu from popping up
   document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
 
   const game = {
