@@ -36,8 +36,8 @@ export function createCameraManager(gameWindow) {
     // Rotate
     if (event.key === 'a') speed.rotation.x = 1;
     if (event.key === 'd') speed.rotation.x = -1;
-    if (event.key === 'w') speed.rotation.y = -1;
-    if (event.key === 's') speed.rotation.y = 1;
+    if (event.key === 'w') speed.rotation.y = 1;
+    if (event.key === 's') speed.rotation.y = -1;
 
     // Translate
     if (event.key === 'A') speed.translate.x = 1;
