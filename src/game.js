@@ -14,39 +14,92 @@ export function createGame() {
 
   scene.initialize(city);
 
-  scene.setOnObjectSelected((selectedObject) => {
-    let { x, y } = selectedObject.userData;
+  // Hookup event listeners
+  document.addEventListener('keydown', scene.cameraManager.onKeyDown, false);
+  document.addEventListener('keyup', scene.cameraManager.onKeyUp, false);
+  document.addEventListener('wheel', scene.cameraManager.onMouseScroll, false);
+  document.addEventListener('mousedown', onMouseDown, false);
+  document.addEventListener('mousemove', onMouseMove, false);
+  window.addEventListener('resize', scene.onResize, false);
+
+  // Prevent context menu from popping up
+  document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
+
+  /**
+   * Event handler for `mousedown` event
+   * @param {MouseEvent} event 
+   */
+  function onMouseDown(event) {
+    const selectedObject = scene.getSelectedObject(event);
+    useActiveTool(selectedObject);
+  };
+
+  // Last time mouse was moved
+  const lastMove = new Date();
+
+  /**
+   * Event handler for 'mousemove' event
+   * @param {MouseEvent} event 
+   */
+  function onMouseMove(event) {
+    // Throttle event handler so it doesn't kill the browser
+    if (Date.now() - lastMove < (1 / 60.0)) return;
+
+    // Get the object the mouse is currently hovering over
+    const hoverObject = scene.getSelectedObject(event);
+
+    scene.setHighlightedObject();
+
+    // If left mouse-button is down, use the tool as well
+    if (hoverObject && event.buttons & 1) {
+      useActiveTool(hoverObject);
+    }
+  }
+
+  function useActiveTool(object) {
+    if (!object) {
+      updateInfoPanel(null);
+      return;
+    }
+
+    const { x, y } = object.userData;
     const tile = city.data[x][y];
 
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
-      console.log(activeToolId);
-      scene.setSelectedObject(selectedObject);
-      document.getElementById('selected-object-info').innerHTML = JSON.stringify(tile, ' ', 2);
-      console.log(tile);
+      scene.setActiveObject(object);
+      updateInfoPanel(tile);
     } else if (activeToolId === 'bulldoze') {
-      console.log(activeToolId);
-      tile.building = undefined;
-      scene.update(city);
-      console.log(tile);
-    // Otherwise, place the building if this tile doesn't have one
+      bulldoze(tile);
+      // Otherwise, place the building if this tile doesn't have one
     } else if (!tile.building) {
-      console.log(activeToolId);
-      tile.building = buildingFactory[activeToolId]();
-      scene.update(city);
-      console.log(tile);
+      placeBuilding(tile);
     }
-  });
+  }
 
-  // Hookup event listeners
-  document.addEventListener('keydown', scene.onKeyDown, false);
-  document.addEventListener('keyup', scene.onKeyUp, false);
-  document.addEventListener('wheel', scene.onMouseScroll, false);
-  document.addEventListener('mousedown', scene.onMouseDown, false);
-  document.addEventListener('mousemove', scene.onMouseMove, false);
-  window.addEventListener('resize', scene.resizeRenderer, false);
-  // Prevent context menu from popping up
-  document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
+  function updateInfoPanel(tile) {
+    console.log(activeToolId);
+    if (tile) {
+      document.getElementById('selected-object-info').innerHTML = JSON.stringify(tile, ' ', 2);
+    } else {
+      document.getElementById('selected-object-info').innerHTML = '';
+    }
+    console.log(tile);
+  }
+
+  function bulldoze(tile) {
+    console.log(activeToolId);
+    tile.building = undefined;
+    scene.update(city);
+    console.log(tile);
+  }
+
+  function placeBuilding(tile) {
+    console.log(activeToolId);
+    tile.building = buildingFactory[activeToolId]();
+    scene.update(city);
+    console.log(tile);
+  }
 
   const game = {
     update() {

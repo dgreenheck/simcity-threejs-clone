@@ -19,12 +19,9 @@ export function createScene() {
   // Variables for object selection
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  const LEFT_MOUSE_BUTTON = 1;
-  const lastMove = new Date();
-  let onObjectSelected = undefined;
 
   // Last object the user has clicked on
-  let selectedObject = undefined;
+  let activeObject = undefined;
   // Object the mouse is currently hovering over
   let hoverObject = undefined;
 
@@ -110,64 +107,29 @@ export function createScene() {
   }
 
   /**
-   * Event handler for 'keydown' event
-   * @param {KeyboardEvent} event 
+   * Resizes the renderer to fit the current game window
    */
-  function onKeyDown(event) {
-    cameraManager.onKeyDown(event);
+  function onResize() {
+    cameraManager.camera.aspect = gameWindow.offsetWidth / gameWindow.offsetHeight;
+    cameraManager.camera.updateProjectionMatrix();
+    renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   }
 
   /**
-   * Event handler for 'keyup' event
-   * @param {KeyboardEvent} event 
+   * Sets the object that is currently highlighted
+   * @param {THREE.Mesh} object 
    */
-  function onKeyUp(event) {
-    cameraManager.onKeyUp(event);
-  }
-
-  /**
-   * Event handler for 'wheel' event
-   * @param {MouseEvent} event 
-   */
-  function onMouseScroll(event) {
-    cameraManager.onMouseScroll(event);
-  }
-
-  /**
-   * Event handler for `mousedown` event
-   * @param {MouseEvent} event 
-   */
-  function onMouseDown(event) {
-    const object = getObjectUnderMouse(event);
-    if (object && onObjectSelected) {
-      onObjectSelected(object);
-    }
-  }
-
-  /**
-   * Event handler for 'onMouseMove' event
-   * @param {MouseEvent} event 
-   */
-  function onMouseMove(event) {
-    // Throttle raycasting so it doesn't kill the browser
-    if (Date.now() - lastMove < (1 / 60.0)) return;
-
+  function setHighlightedObject(object) {
     // Unhighlight the previously hovered object (if it isn't currently selected)
-    if (hoverObject && hoverObject !== selectedObject) {
+    if (hoverObject && hoverObject !== activeObject) {
       setObjectHightlight(hoverObject, 0x000000);
     }
 
-    // Get object mouse is currently hovering over
-    hoverObject = getObjectUnderMouse(event);
-    
+    hoverObject = object;
+
     if (hoverObject) {
       // Highlight the new hovered object (if it isn't currently selected))
       setObjectHightlight(hoverObject, 0x555555);
-
-      // If left mouse-button is down, also update the selected object
-      if (event.buttons & LEFT_MOUSE_BUTTON) {
-        onObjectSelected(hoverObject);
-      }
     }
   }
 
@@ -176,7 +138,7 @@ export function createScene() {
    * the mouse cursor, returns null
    * @param {MouseEvent} event Mouse event
    */
-  function getObjectUnderMouse(event) {
+  function getSelectedObject(event) {
     // Compute normalized mouse coordinates
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
@@ -193,29 +155,25 @@ export function createScene() {
   }
 
   /**
-   * Resizes the renderer to fit the current game window
-   */
-  function resizeRenderer() {
-    cameraManager.camera.aspect = gameWindow.offsetWidth / gameWindow.offsetHeight;
-    cameraManager.camera.updateProjectionMatrix();
-    renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
-  }
-
-  /**
    * Sets the currently selected object and highlights it
    * @param {object} object 
    */
-  function setSelectedObject(object) {
-    setObjectHightlight(selectedObject, 0x000000);
-    selectedObject = object;
-    setObjectHightlight(selectedObject, 0xaaaa55);
+  function setActiveObject(object) {
+    // Clear highlight on previously active object
+    setObjectEmission(activeObject, 0x000000);
+    activeObject = object;
+    // Highlight new active object
+    setObjectEmission(activeObject, 0xaaaa55);
   }
 
-  function setOnObjectSelected(eventHandler) {
-    onObjectSelected = eventHandler;
-  }
-
-  function setObjectHightlight(object, color) {
+  /**
+   * Updates the material properties of the object to have the
+   * specified emission color
+   * @param {THREE.Mesh} object 
+   * @param {number} color 
+   * @returns 
+   */
+  function setObjectEmission(object, color) {
     if (!object) return;
     if (Array.isArray(object.material)) {
       object.material.forEach(material => material.emissive.setHex(color));
@@ -225,17 +183,17 @@ export function createScene() {
   }
 
   return {
+    // Properties
+    cameraManager,
+
+    // Methods
     initialize,
     update,
     start,
     stop,
-    onKeyDown,
-    onKeyUp,
-    onMouseScroll,
-    onMouseDown,
-    onMouseMove,
-    resizeRenderer,
-    setSelectedObject,
-    setOnObjectSelected
+    onResize,
+    getSelectedObject,
+    setActiveObject,
+    setHighlightedObject
   }
 }
