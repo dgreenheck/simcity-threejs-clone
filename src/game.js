@@ -15,8 +15,6 @@ export function createGame() {
   scene.initialize(city);
 
   // Hookup event listeners
-  document.addEventListener('keydown', scene.cameraManager.onKeyDown, false);
-  document.addEventListener('keyup', scene.cameraManager.onKeyUp, false);
   document.addEventListener('wheel', scene.cameraManager.onMouseScroll, false);
   document.addEventListener('mousedown', onMouseDown, false);
   document.addEventListener('mousemove', onMouseMove, false);
@@ -30,8 +28,11 @@ export function createGame() {
    * @param {MouseEvent} event 
    */
   function onMouseDown(event) {
-    const selectedObject = scene.getSelectedObject(event);
-    useActiveTool(selectedObject);
+    // Check if left mouse button pressed
+    if (event.button === 0) {
+      const selectedObject = scene.getSelectedObject(event);
+      useActiveTool(selectedObject);
+    }
   };
 
   // Last time mouse was moved
@@ -54,6 +55,8 @@ export function createGame() {
     if (hoverObject && event.buttons & 1) {
       useActiveTool(hoverObject);
     }
+
+    scene.cameraManager.onMouseMove(event);
   }
 
   function useActiveTool(object) {

@@ -3,6 +3,9 @@ import * as THREE from 'three';
 export function createCameraManager(gameWindow) {
   // -- Constants --
   const DEG2RAD = Math.PI / 180.0;
+  const LEFT_MOUSE_BUTTON = 1;
+  const MIDDLE_MOUSE_BUTTON = 4;
+  const RIGHT_MOUSE_BUTTON = 2;
 
   // Camera constraints
   const MIN_CAMERA_RADIUS = 10;
@@ -11,10 +14,10 @@ export function createCameraManager(gameWindow) {
   const MAX_CAMERA_ELEVATION = 90;
 
   // Camera sensitivity
-  const AZIMUTH_SENSITIVITY = 1;
-  const ELEVATION_SENSITIVITY = 0.5;
+  const AZIMUTH_SENSITIVITY = 0.2;
+  const ELEVATION_SENSITIVITY = 0.2;
   const ZOOM_SENSITIVITY = 0.01;
-  const PAN_SENSITIVITY = -0.1;
+  const PAN_SENSITIVITY = -0.01;
 
   const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
@@ -30,34 +33,27 @@ export function createCameraManager(gameWindow) {
     translate: { x: 0, y: 0}
   }
 
-  updateCameraPosition();
+  /**
+   * Event handler for `mousemove` event
+   * @param {MouseEvent} event Mouse event arguments
+   */
+  function onMouseMove(event) {
+    // Handles the rotation of the camera
+    if (event.buttons & RIGHT_MOUSE_BUTTON) {
+      cameraAzimuth += -(event.movementX * AZIMUTH_SENSITIVITY);
+      cameraElevation += (event.movementY * ELEVATION_SENSITIVITY);
+      cameraElevation = Math.min(MAX_CAMERA_ELEVATION, Math.max(MIN_CAMERA_ELEVATION, cameraElevation));
+    }
 
-  function onKeyDown(event) {
-    // Rotate
-    if (event.key === 'a') speed.rotation.x = 1;
-    if (event.key === 'd') speed.rotation.x = -1;
-    if (event.key === 'w') speed.rotation.y = 1;
-    if (event.key === 's') speed.rotation.y = -1;
+    // Handles the panning of the camera
+    if (event.buttons & MIDDLE_MOUSE_BUTTON) {
+      const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(Y_AXIS, cameraAzimuth * DEG2RAD);
+      const left = new THREE.Vector3(1, 0, 0).applyAxisAngle(Y_AXIS, cameraAzimuth * DEG2RAD);
+      cameraOrigin.add(forward.multiplyScalar(PAN_SENSITIVITY * event.movementY));
+      cameraOrigin.add(left.multiplyScalar(PAN_SENSITIVITY * event.movementX));
+    }
 
-    // Translate
-    if (event.key === 'A') speed.translate.x = 1;
-    if (event.key === 'D') speed.translate.x = -1;
-    if (event.key === 'W') speed.translate.y = 1;
-    if (event.key === 'S') speed.translate.y = -1;
-  }
-
-  function onKeyUp(event) {
-    // Rotate
-    if (event.key === 'a') speed.rotation.x = 0;
-    if (event.key === 'd') speed.rotation.x = 0;
-    if (event.key === 'w') speed.rotation.y = 0;
-    if (event.key === 's') speed.rotation.y = 0;
-
-    // Translate
-    if (event.key === 'A') speed.translate.x = 0;
-    if (event.key === 'D') speed.translate.x = 0;
-    if (event.key === 'W') speed.translate.y = 0;
-    if (event.key === 'S') speed.translate.y = 0;
+    updateCameraPosition();
   }
 
   /**
@@ -90,8 +86,7 @@ export function createCameraManager(gameWindow) {
   return {
     camera,
     updateCameraPosition,
-    onKeyDown,
-    onKeyUp,
+    onMouseMove,
     onMouseScroll
   }
 }
