@@ -7,18 +7,18 @@ const cube = new THREE.BoxGeometry(1, 1, 1);
 
 /**
  * Creates a new 3D asset
- * @param {string} assetId The id of the asset to create
+ * @param {string} type The type of the asset to create
  * @param {number} x The x-coordinate of the asset
  * @param {number} y The y-coordinate of the asset
  * @param {object} data Additional metadata needed for creating the asset
  * @returns 
  */
-export function createAssetInstance(assetId, x, y, data) {
+export function createAssetInstance(type, x, y, data) {
   // If asset exists, configure it and return it
-  if (assetId in assets) {
-    return assets[assetId](x, y, data);
+  if (type in assets) {
+    return assets[type](x, y, data);
   } else {
-    console.warn(`Asset Id ${assetId} is not found.`);
+    console.warn(`Asset Type ${type} is not found.`);
     return undefined;
   }
 }
@@ -48,7 +48,7 @@ const assets = {
 }
 
 function createZoneMesh(x, y, data) {
-  const textureName = data.id + data.style;
+  const textureName = data.type + data.style;
 
   const topMaterial = getTopMaterial();
   const sideMaterial = getSideMaterial(textureName);

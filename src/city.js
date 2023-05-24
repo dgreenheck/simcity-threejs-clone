@@ -4,7 +4,7 @@
  * @returns a City object
  */
 export function createCity(size) {
-  const data = [];
+  const tiles = [];
 
   initialize();
   
@@ -18,7 +18,7 @@ export function createCity(size) {
         const tile = createTile(x, y);
         column.push(tile);
       }
-      data.push(column);
+      tiles.push(column);
     }
   }
 
@@ -28,14 +28,14 @@ export function createCity(size) {
   function update() {
     for (let x = 0; x < size; x++) {
       for (let y = 0; y < size; y++) {
-        data[x][y].building?.update();
+        tiles[x][y].building?.update();
       }
     }
   }
 
   return {
     size,
-    data,
+    tiles,
     update
   }
 }

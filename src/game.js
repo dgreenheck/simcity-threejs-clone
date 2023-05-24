@@ -2,12 +2,19 @@ import { createScene } from './scene.js';
 import { createCity } from './city.js';
 import buildingFactory from './buildings.js';
 
+// Create a new game when the window is loaded
+window.onload = () => {
+  window.game = createGame();
+}
+
 /**
  * Creates a new Game object
  * @returns a Game object
  */
 export function createGame() {
+  let selectedControl = document.getElementById('button-select');
   let activeToolId = 'select';
+  let isPaused = false;
 
   const scene = createScene();
   const city = createCity(12);
@@ -22,6 +29,21 @@ export function createGame() {
 
   // Prevent context menu from popping up
   document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
+
+  /**
+   * Main update method for the game
+   */
+  function update() {
+    if (isPaused) return;
+    // Update the city data model first, then update the scene
+    city.update();
+    scene.update(city);
+  }
+
+  function togglePause() {
+    isPaused = !isPaused;
+    document.getElementById('button-pause').innerHTML = isPaused ? 'RESUME' : 'PAUSE';
+  }
 
   /**
    * Event handler for `mousedown` event
@@ -49,7 +71,7 @@ export function createGame() {
     // Get the object the mouse is currently hovering over
     const hoverObject = scene.getSelectedObject(event);
 
-    scene.setHighlightedObject();
+    scene.setHighlightedObject(hoverObject);
 
     // If left mouse-button is down, use the tool as well
     if (hoverObject && event.buttons & 1) {
@@ -59,6 +81,22 @@ export function createGame() {
     scene.cameraManager.onMouseMove(event);
   }
 
+  /**
+   * 
+   * @param {*} event 
+   */
+  function onToolSelected(event) {
+    // Deselect previously selected button and selected this one
+    if (selectedControl) {
+      selectedControl.classList.remove('selected');
+    }
+    selectedControl = event.target;
+    selectedControl.classList.add('selected');
+
+    activeToolId = selectedControl.getAttribute('data-type');
+    console.log(activeToolId);
+  }
+
   function useActiveTool(object) {
     if (!object) {
       updateInfoPanel(null);
@@ -66,7 +104,7 @@ export function createGame() {
     }
 
     const { x, y } = object.userData;
-    const tile = city.data[x][y];
+    const tile = city.tiles[x][y];
 
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
@@ -81,13 +119,7 @@ export function createGame() {
   }
 
   function updateInfoPanel(tile) {
-    console.log(activeToolId);
-    if (tile) {
-      document.getElementById('selected-object-info').innerHTML = JSON.stringify(tile, ' ', 2);
-    } else {
-      document.getElementById('selected-object-info').innerHTML = '';
-    }
-    console.log(tile);
+    document.getElementById('selected-object-info').innerHTML = tile ? JSON.stringify(tile, ' ', 2) : '';
   }
 
   function bulldoze(tile) {
@@ -104,24 +136,17 @@ export function createGame() {
     console.log(tile);
   }
 
-  const game = {
-    update() {
-      // Update the city data model first, then update the scene
-      city.update();
-      scene.update(city);
-    },
-    setActiveToolId(toolId) {
-      activeToolId = toolId;
-      console.log(activeToolId);
-    }
-  }
-
   // Start update interval
   setInterval(() => {
     game.update();
   }, 1000)
 
+  // Start the renderer
   scene.start();
 
-  return game;
+  return {
+    update,
+    onToolSelected,
+    togglePause
+  };
 }

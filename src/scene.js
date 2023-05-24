@@ -35,7 +35,7 @@ export function createScene() {
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
-        const mesh = createAssetInstance(city.data[x][y].terrainId, x, y);
+        const mesh = createAssetInstance(city.tiles[x][y].terrainId, x, y);
         scene.add(mesh);
         column.push(mesh);
       }
@@ -48,7 +48,7 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
-        const tile = city.data[x][y];
+        const tile = city.tiles[x][y];
         const existingBuildingMesh = buildings[x][y];
 
         // If the player removes a building, remove it from the scene
@@ -60,7 +60,7 @@ export function createScene() {
         // If the data model has changed, update the mesh
         if (tile.building && tile.building.updated) {
           scene.remove(existingBuildingMesh);
-          buildings[x][y] = createAssetInstance(tile.building.id, x, y, tile.building);
+          buildings[x][y] = createAssetInstance(tile.building.type, x, y, tile.building);
           scene.add(buildings[x][y]);
           tile.building.updated = false;
         }
@@ -122,14 +122,14 @@ export function createScene() {
   function setHighlightedObject(object) {
     // Unhighlight the previously hovered object (if it isn't currently selected)
     if (hoverObject && hoverObject !== activeObject) {
-      setObjectHightlight(hoverObject, 0x000000);
+      setObjectEmission(hoverObject, 0x000000);
     }
 
     hoverObject = object;
 
     if (hoverObject) {
       // Highlight the new hovered object (if it isn't currently selected))
-      setObjectHightlight(hoverObject, 0x555555);
+      setObjectEmission(hoverObject, 0x555555);
     }
   }
 
