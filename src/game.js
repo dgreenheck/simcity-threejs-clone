@@ -58,7 +58,7 @@ export function createGame() {
   };
 
   // Last time mouse was moved
-  const lastMove = new Date();
+  let lastMove = new Date();
 
   /**
    * Event handler for 'mousemove' event
@@ -67,6 +67,7 @@ export function createGame() {
   function onMouseMove(event) {
     // Throttle event handler so it doesn't kill the browser
     if (Date.now() - lastMove < (1 / 60.0)) return;
+    lastMove = Date.now();
 
     // Get the object the mouse is currently hovering over
     const hoverObject = scene.getSelectedObject(event);

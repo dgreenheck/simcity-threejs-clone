@@ -1,9 +1,39 @@
 import * as THREE from 'three';
 
+const cube = new THREE.BoxGeometry(1, 1, 1);
+
 let loader = new THREE.TextureLoader();
 
-/* Geometry */
-const cube = new THREE.BoxGeometry(1, 1, 1);
+function loadTexture(url) {
+  const tex = loader.load(url)
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 1);
+  return tex;
+}
+
+/* Texture library */
+// Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-fronts
+const textures = {
+  'grass': loadTexture('public/textures/grass.png'),
+  'residential1': loadTexture('public/textures/residential1.png'),
+  'residential2': loadTexture('public/textures/residential2.png'),
+  'residential3': loadTexture('public/textures/residential3.png'),
+  'commercial1': loadTexture('public/textures/commercial1.png'),
+  'commercial2': loadTexture('public/textures/commercial2.png'),
+  'commercial3': loadTexture('public/textures/commercial3.png'),
+  'industrial1': loadTexture('public/textures/industrial1.png'),
+  'industrial2': loadTexture('public/textures/industrial2.png'),
+  'industrial3': loadTexture('public/textures/industrial3.png')
+};
+
+function getTopMaterial() {
+  return new THREE.MeshLambertMaterial({ color: 0x555555 });
+}
+
+function getSideMaterial(textureName) {
+  return new THREE.MeshLambertMaterial({ map: textures[textureName].clone() })
+}
 
 /**
  * Creates a new 3D asset
@@ -70,28 +100,3 @@ function createZoneMesh(x, y, data) {
   return mesh;
 }
 
-/* Texture library */
-// Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-front
-function loadTexture(url) {
-  const tex = loader.load(url)
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(1, 1);
-  return tex;
-}
-
-const textures = {
-  'residential1': loadTexture('public/textures/residential1.png'),
-  'residential2': loadTexture('public/textures/residential2.png'),
-  'residential3': loadTexture('public/textures/residential3.png'),
-  'commercial1': loadTexture('public/textures/commercial1.png'),
-  'commercial2': loadTexture('public/textures/commercial2.png'),
-  'commercial3': loadTexture('public/textures/commercial3.png'),
-  'industrial1': loadTexture('public/textures/industrial1.png'),
-  'industrial2': loadTexture('public/textures/industrial2.png'),
-  'industrial3': loadTexture('public/textures/industrial3.png'),
-  'grass': loadTexture('public/textures/grass.png')
-};
-
-const getTopMaterial = () => new THREE.MeshLambertMaterial({ color: 0x555555 });
-const getSideMaterial = (textureName) => new THREE.MeshLambertMaterial({ map: textures[textureName].clone() })

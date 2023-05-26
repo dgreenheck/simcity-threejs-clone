@@ -76,10 +76,10 @@ export function createScene() {
     sun.shadow.camera.right = 10;
     sun.shadow.camera.top = 0;
     sun.shadow.camera.bottom = -10;
-    sun.shadow.mapSize.width = 1024; // default
-    sun.shadow.mapSize.height = 1024; // default
-    sun.shadow.camera.near = 0.5; // default
-    sun.shadow.camera.far = 50; // default
+    sun.shadow.mapSize.width = 1024;
+    sun.shadow.mapSize.height = 1024;
+    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.far = 50;
     scene.add(sun);
     scene.add(new THREE.AmbientLight(0xffffff, 0.3));
   }
@@ -88,7 +88,6 @@ export function createScene() {
    * Render the contents of the scene
    */
   function draw() {
-    cameraManager.updateCameraPosition();
     renderer.render(scene, cameraManager.camera);
   }
 
@@ -176,9 +175,9 @@ export function createScene() {
   function setObjectEmission(object, color) {
     if (!object) return;
     if (Array.isArray(object.material)) {
-      object.material.forEach(material => material.emissive.setHex(color));
+      object.material.forEach(material => material.emissive?.setHex(color));
     } else {
-      object.material.emissive.setHex(color);
+      object.material.emissive?.setHex(color);
     }
   }
 
