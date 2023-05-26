@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="./public/main.css">
-    <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
 
-    <!-- Import Three.js library-->
-    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-    <script type="importmap">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./public/main.css">
+  <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
+
+  <!-- Import Three.js library-->
+  <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+  <script type="importmap">
       {
         "imports": {
           "three": "https://unpkg.com/three@v0.149.0/build/three.module.js"
@@ -15,39 +16,39 @@
       }
     </script>
 
-  </head>
-  <body>
-    <div id="root-window">
-      <!-- Three.js adds a `canvas` element to this element-->
-      <div id="render-target">
-        <div id="ui-toolbar">
-          <button id='button-bulldoze' class="ui-button selected" onclick="setActiveTool(event,'bulldoze')">BULLDOZE</button>
-          <button id='button-residential' class="ui-button" onclick="setActiveTool(event,'residential')">RESIDENTIAL</button>
-          <button id='button-commercial' class="ui-button" onclick="setActiveTool(event,'commercial')">COMMERCIAL</button>
-          <button id='button-industrial' class="ui-button" onclick="setActiveTool(event,'industrial')">INDUSTRIAL</button>
-          <button id='button-road' class="ui-button" onclick="setActiveTool(event,'road')">ROAD</button>
+</head>
+
+<body>
+  <div id="root-window">
+    <!-- Three.js adds a `canvas` element to this element-->
+    <div id="render-target">
+      <div id="ui-toolbar">
+        <div>
+          <button id='button-select' class="ui-button selected" data-type="select"
+            onclick="window.game.onToolSelected(event)">SELECT</button>
+          <button id='button-bulldoze' class="ui-button" data-type="bulldoze"
+            onclick="window.game.onToolSelected(event)">BULLDOZE</button>
+          <button id='button-residential' class="ui-button" data-type="residential"
+            onclick="window.game.onToolSelected(event)">RESIDENTIAL</button>
+          <button id='button-commercial' class="ui-button" data-type="commercial"
+            onclick="window.game.onToolSelected(event)">COMMERCIAL</button>
+          <button id='button-industrial' class="ui-button" data-type="industrial"
+            onclick="window.game.onToolSelected(event)">INDUSTRIAL</button>
+          <button id='button-road' class="ui-button" data-type="road"
+            onclick="window.game.onToolSelected(event)">ROAD</button>
         </div>
+        <div id="info-panel" class="ui-container">
+          <h1>INFO</h1>
+          <div id="selected-object-info"></div>
+        </div>
+        <button id='button-pause' class="ui-button" onclick="window.game.togglePause()">PAUSE</button>
       </div>
     </div>
+  </div>
 
-    <script type="module">
-      import { createGame } from './src/game.js';
+  <script type="module">
+    import { createGame } from './src/game.js';
+  </script>
+</body>
 
-      let selectedControl = document.getElementById('button-bulldoze');
-
-      window.onload = () => {
-        window.game = createGame();
-      }
-       
-      window.setActiveTool = (event, toolId) => {
-        if (selectedControl) {
-          selectedControl.classList.remove('selected');
-        }
-        selectedControl = event.target;
-        selectedControl.classList.add('selected');
-
-        window.game.setActiveToolId(toolId);
-      }
-    </script>
-  </body>
 </html>

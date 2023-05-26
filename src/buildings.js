@@ -1,7 +1,8 @@
 export default {
   'residential': () => {
     return {
-      id: 'residential',
+      type: 'residential',
+      style: Math.floor(3 * Math.random()) + 1,
       height: 1,
       updated: true,
       update: function() {
@@ -16,7 +17,8 @@ export default {
   },
   'commercial': () => {
     return {
-      id: 'commercial',
+      type: 'commercial',
+      style: Math.floor(3 * Math.random()) + 1,
       height: 1,
       updated: true,
       update: function() {
@@ -31,7 +33,8 @@ export default {
   },
   'industrial': () => {
     return {
-      id: 'industrial',
+      type: 'industrial',
+      style: Math.floor(3 * Math.random()) + 1,
       height: 1,
       updated: true,
       update: function() {
@@ -46,7 +49,7 @@ export default {
   },
   'road': () => {
     return {
-      id: 'road',
+      type: 'road',
       updated: true,
       update: function() {
         this.updated = false;

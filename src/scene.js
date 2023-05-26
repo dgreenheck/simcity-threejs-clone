@@ -1,41 +1,44 @@
 import * as THREE from 'three';
-import { createCamera } from './camera.js';
+import { createCameraManager } from './cameraManager.js';
 import { createAssetInstance } from './assets.js';
 
 export function createScene() {
   // Initial scene setup
   const gameWindow = document.getElementById('render-target');
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x777777);
 
-  const camera = createCamera(gameWindow);
+  const cameraManager = createCameraManager(gameWindow);
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
+  renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   gameWindow.appendChild(renderer.domElement);
   
+  // Variables for object selection
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  let selectedObject = undefined;
 
-  let terrain = [];
+  // Last object the user has clicked on
+  let activeObject = undefined;
+  // Object the mouse is currently hovering over
+  let hoverObject = undefined;
+
+  // 2D array of building meshes at each tile location
   let buildings = [];
-
-  let onObjectSelected = undefined;
 
   function initialize(city) {
     scene.clear();
-    terrain = [];
     buildings = [];
+
     for (let x = 0; x < city.size; x++) {
       const column = [];
       for (let y = 0; y < city.size; y++) {
-        const terrainId = city.data[x][y].terrainId;
-        const mesh = createAssetInstance(terrainId, x, y);
+        const mesh = createAssetInstance(city.tiles[x][y].terrainId, x, y);
         scene.add(mesh);
         column.push(mesh);
       }
-      terrain.push(column);
       buildings.push([...Array(city.size)]);
     }
 
@@ -45,7 +48,7 @@ export function createScene() {
   function update(city) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
-        const tile = city.data[x][y];
+        const tile = city.tiles[x][y];
         const existingBuildingMesh = buildings[x][y];
 
         // If the player removes a building, remove it from the scene
@@ -57,7 +60,7 @@ export function createScene() {
         // If the data model has changed, update the mesh
         if (tile.building && tile.building.updated) {
           scene.remove(existingBuildingMesh);
-          buildings[x][y] = createAssetInstance(tile.building.id, x, y, tile.building);
+          buildings[x][y] = createAssetInstance(tile.building.type, x, y, tile.building);
           scene.add(buildings[x][y]);
           tile.building.updated = false;
         }
@@ -66,25 +69,26 @@ export function createScene() {
   }
 
   function setupLights() {
-    const lights = [
-      new THREE.AmbientLight(0xffffff, 0.2),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-      new THREE.DirectionalLight(0xffffff, 0.3),
-      new THREE.DirectionalLight(0xffffff, 0.3)
-    ];
-
-    lights[1].position.set(0, 1, 0);
-    lights[2].position.set(1, 1, 0);
-    lights[3].position.set(0, 1, 1);
-
-    scene.add(...lights);
+    const sun = new THREE.DirectionalLight(0xffffff, 1)
+    sun.position.set(20, 20, 20);
+    sun.castShadow = true;
+    sun.shadow.camera.left = -10;
+    sun.shadow.camera.right = 10;
+    sun.shadow.camera.top = 0;
+    sun.shadow.camera.bottom = -10;
+    sun.shadow.mapSize.width = 1024;
+    sun.shadow.mapSize.height = 1024;
+    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.far = 50;
+    scene.add(sun);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
   }
 
   /**
    * Render the contents of the scene
    */
   function draw() {
-    renderer.render(scene, camera.camera);
+    renderer.render(scene, cameraManager.camera);
   }
 
   /**
@@ -102,44 +106,93 @@ export function createScene() {
   }
 
   /**
-   * Event handler for `onMouseDown` event
-   * @param {MouseEvent} event 
+   * Resizes the renderer to fit the current game window
    */
-  function onMouseDown(event) {
-    // Compute normalized mouse coordinates
-    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+  function onResize() {
+    cameraManager.camera.aspect = gameWindow.offsetWidth / gameWindow.offsetHeight;
+    cameraManager.camera.updateProjectionMatrix();
+    renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
+  }
 
-    raycaster.setFromCamera(mouse, camera.camera);
+  /**
+   * Sets the object that is currently highlighted
+   * @param {THREE.Mesh} object 
+   */
+  function setHighlightedObject(object) {
+    // Unhighlight the previously hovered object (if it isn't currently selected)
+    if (hoverObject && hoverObject !== activeObject) {
+      setObjectEmission(hoverObject, 0x000000);
+    }
 
-    let intersections = raycaster.intersectObjects(scene.children, false);
+    hoverObject = object;
 
-    if (intersections.length > 0) {
-      if (selectedObject) selectedObject.material.emissive.setHex(0);
-      selectedObject = intersections[0].object;
-      selectedObject.material.emissive.setHex(0x555555);
-
-      if (this.onObjectSelected) {
-        this.onObjectSelected(selectedObject);
-      }
+    if (hoverObject) {
+      // Highlight the new hovered object (if it isn't currently selected))
+      setObjectEmission(hoverObject, 0x555555);
     }
   }
 
   /**
-   * Event handler for 'onMouseMove' event
-   * @param {MouseEvent} event 
+   * Gets the object currently under the mouse cursor. If there is nothing under
+   * the mouse cursor, returns null
+   * @param {MouseEvent} event Mouse event
    */
-  function onMouseMove(event) {
-    camera.onMouseMove(event);
+  function getSelectedObject(event) {
+    // Compute normalized mouse coordinates
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, cameraManager.camera);
+
+    let intersections = raycaster.intersectObjects(scene.children, false);
+
+    if (intersections.length > 0) {
+      return intersections[0].object;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the currently selected object and highlights it
+   * @param {object} object 
+   */
+  function setActiveObject(object) {
+    // Clear highlight on previously active object
+    setObjectEmission(activeObject, 0x000000);
+    activeObject = object;
+    // Highlight new active object
+    setObjectEmission(activeObject, 0xaaaa55);
+  }
+
+  /**
+   * Updates the material properties of the object to have the
+   * specified emission color
+   * @param {THREE.Mesh} object 
+   * @param {number} color 
+   * @returns 
+   */
+  function setObjectEmission(object, color) {
+    if (!object) return;
+    if (Array.isArray(object.material)) {
+      object.material.forEach(material => material.emissive?.setHex(color));
+    } else {
+      object.material.emissive?.setHex(color);
+    }
   }
 
   return {
-    onObjectSelected,
+    // Properties
+    cameraManager,
+
+    // Methods
     initialize,
     update,
     start,
     stop,
-    onMouseDown,
-    onMouseMove
+    onResize,
+    getSelectedObject,
+    setActiveObject,
+    setHighlightedObject
   }
 }
