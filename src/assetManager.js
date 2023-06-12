@@ -14,13 +14,19 @@ export default function AssetManager() {
      * @param {object} data Additional metadata needed for creating the asset
      * @returns 
      */
-    createAssetInstance: function(type, x, y, data) {
-      // If asset exists, configure it and return it
-      if (type in meshFactory) {
-        return meshFactory[type](x, y, data);
-      } else {
-        console.warn(`Asset Type ${type} is not found.`);
-        return undefined;
+    createMesh: function (type, x, y, data) {
+      switch (type) {
+        case 'ground':
+          return createGroundMesh(x, y);
+        case 'residential':
+        case 'commercial':
+        case 'industrial':
+          return createZoneMesh(x, y, data);
+        case 'road':
+          return createRoadMesh(x, y);
+        default:
+          console.warn(`Mesh type ${type} is not recognized.`);
+          return null;
       }
     }
   }
@@ -55,25 +61,6 @@ function getTopMaterial() {
 
 function getSideMaterial(textureName) {
   return new THREE.MeshLambertMaterial({ map: textures[textureName].clone() })
-}
-
-/**
- * Factory for mesh assets
- */
-const meshFactory = {
-  createMesh: function(type, x, y, data) {
-    switch (type) {
-      case 'ground':
-        createGroundMesh(x, y);
-        break;
-      case 'residential':
-      case 'commercial':
-      case 'industrial':
-        createZoneMesh(x, y, data);
-      case 'road':
-        createRoadMesh(x, y);
-    }
-  }
 }
 
 /**

@@ -27,7 +27,7 @@ export default function Scene() {
   let hoverObject = undefined;
 
   // 2D array of building meshes at each tile location
-  let buildings = [];
+  let buildingMeshes = [];
 
   function setupLights() {
     const sun = new THREE.DirectionalLight(0xffffff, 1)
