@@ -5,7 +5,7 @@ import { createTile } from './tile.js';
  * @param {number} size The size of the city (# of tiles wide) 
  * @returns a City object
  */
-export function createCity(size) {
+export default function City(size) {
   const tiles = [];
   const citizens = [];
 
