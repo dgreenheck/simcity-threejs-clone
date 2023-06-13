@@ -42,7 +42,7 @@ export default function Scene() {
     sun.shadow.camera.near = 0.5;
     sun.shadow.camera.far = 50;
     scene.add(sun);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
   }
 
   /**

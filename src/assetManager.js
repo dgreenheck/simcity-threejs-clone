@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
+const loader = new THREE.TextureLoader();
+
 export default function AssetManager() {
   const cube = new THREE.BoxGeometry(1, 1, 1);
-  const loader = new THREE.TextureLoader();
 
   /* Texture library */
   // Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-fronts
@@ -36,6 +37,7 @@ export default function AssetManager() {
     tex.wrapS = THREE.RepeatWrapping;
     tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(1, 1);
+    tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
   }
 
@@ -81,9 +83,9 @@ export default function AssetManager() {
 
     let mesh = new THREE.Mesh(cube, materialArray);
     mesh.userData = { x, y };
-    mesh.scale.set(0.8, data.height / 2, 0.8);
-    mesh.material.forEach(material => material.map?.repeat.set(1, data.height - 1));
-    mesh.position.set(x, data.height / 4, y);
+    mesh.scale.set(0.8, 0.8 * data.height, 0.8);
+    mesh.material.forEach(material => material.map?.repeat.set(1, data.height));
+    mesh.position.set(x, 0.4 * data.height, y);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     return mesh;
