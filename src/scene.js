@@ -22,15 +22,15 @@ export default function Scene() {
   const mouse = new THREE.Vector2();
 
   // Last object the user has clicked on
-  let activeObject = undefined;
+  let activeObject = null;
   // Object the mouse is currently hovering over
-  let hoverObject = undefined;
+  let hoverObject = null;
 
   // 2D array of building meshes at each tile location
   let buildingMeshes = [];
 
   function setupLights() {
-    const sun = new THREE.DirectionalLight(0xffffff, 1)
+    const sun = new THREE.DirectionalLight(0xffffff, 0.8)
     sun.position.set(20, 20, 20);
     sun.castShadow = true;
     sun.shadow.camera.left = -10;
@@ -181,11 +181,31 @@ export default function Scene() {
      * @param {object} object 
      */
     setActiveObject(object) {
+      console.log('setActiveObject');
       // Clear highlight on previously active object
       setObjectEmission(activeObject, 0x000000);
       activeObject = object;
       // Highlight new active object
       setObjectEmission(activeObject, 0xaaaa55);
+    },
+
+    /**
+     * Sets the object that is currently highlighted
+     * @param {THREE.Mesh} object 
+     */
+    setHighlightedObject(object) {
+      // Don't highlight the currently selected object
+      if (activeObject && object === activeObject) return;
+
+      // Unhighlight the previously hovered object (if it isn't currently selected)
+      if (!activeObject || hoverObject !== activeObject) {
+        setObjectEmission(hoverObject, 0x000000);
+      }
+
+      hoverObject = object;
+
+      // Highlight the new hovered object
+      setObjectEmission(hoverObject, 0x555555);
     },
 
     /**

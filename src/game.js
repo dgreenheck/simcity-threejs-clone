@@ -73,6 +73,7 @@ export default function Game() {
 
   function useActiveTool(object) {
     if (!object) {
+      scene.setActiveObject(null);
       updateInfoPanel(null);
       return;
     }
