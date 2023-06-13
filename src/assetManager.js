@@ -1,8 +1,29 @@
 import * as THREE from 'three';
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
+const loader = new THREE.TextureLoader();
 
-let loader = new THREE.TextureLoader();
+/* Texture library */
+// Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-fronts
+const textures = {
+  'grass': loadTexture('public/textures/grass.png'),
+  'residential1': loadTexture('public/textures/residential1.png'),
+  'residential2': loadTexture('public/textures/residential2.png'),
+  'residential3': loadTexture('public/textures/residential3.png'),
+  'commercial1': loadTexture('public/textures/commercial1.png'),
+  'commercial2': loadTexture('public/textures/commercial2.png'),
+  'commercial3': loadTexture('public/textures/commercial3.png'),
+  'industrial1': loadTexture('public/textures/industrial1.png'),
+  'industrial2': loadTexture('public/textures/industrial2.png'),
+  'industrial3': loadTexture('public/textures/industrial3.png'),
+
+  getTopMaterial: () => {
+    return new THREE.MeshLambertMaterial({ color: 0x555555 });
+  },
+  getSideMaterial: (textureName) => {
+    return new THREE.MeshLambertMaterial({ map: textures[textureName].clone() })
+  }
+};
 
 export default function AssetManager() {
   return {
@@ -32,6 +53,11 @@ export default function AssetManager() {
   }
 }
 
+/**
+ * Loads the texture at the specified URL
+ * @param {string} url 
+ * @returns {THREE.Texture} A texture object
+ */
 function loadTexture(url) {
   const tex = loader.load(url)
   tex.wrapS = THREE.RepeatWrapping;
@@ -40,34 +66,11 @@ function loadTexture(url) {
   return tex;
 }
 
-/* Texture library */
-// Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-fronts
-const textures = {
-  'grass': loadTexture('public/textures/grass.png'),
-  'residential1': loadTexture('public/textures/residential1.png'),
-  'residential2': loadTexture('public/textures/residential2.png'),
-  'residential3': loadTexture('public/textures/residential3.png'),
-  'commercial1': loadTexture('public/textures/commercial1.png'),
-  'commercial2': loadTexture('public/textures/commercial2.png'),
-  'commercial3': loadTexture('public/textures/commercial3.png'),
-  'industrial1': loadTexture('public/textures/industrial1.png'),
-  'industrial2': loadTexture('public/textures/industrial2.png'),
-  'industrial3': loadTexture('public/textures/industrial3.png')
-};
-
-function getTopMaterial() {
-  return new THREE.MeshLambertMaterial({ color: 0x555555 });
-}
-
-function getSideMaterial(textureName) {
-  return new THREE.MeshLambertMaterial({ map: textures[textureName].clone() })
-}
-
 /**
  * Creates a new mesh for a ground tile
  * @param {number} x The x-coordinate of the tile
  * @param {number} y The y-coordinate of the tile
- * @returns 
+ * @returns {THREE.Mesh} A mesh object
  */
 function createGroundMesh(x, y) {
   const material = new THREE.MeshLambertMaterial({ map: textures.grass });
@@ -87,13 +90,13 @@ function createGroundMesh(x, y) {
  *  style: string,
  *  height: number
  * }} data Additional metadata for the tile
- * @returns 
+ * @returns {THREE.Mesh} A mesh object
  */
 function createZoneMesh(x, y, data) {
   const textureName = data.type + data.style;
 
-  const topMaterial = getTopMaterial();
-  const sideMaterial = getSideMaterial(textureName);
+  const topMaterial = textures.getTopMaterial();
+  const sideMaterial = textures.getSideMaterial(textureName);
   let materialArray = [
     sideMaterial, // +X
     sideMaterial, // -X
@@ -117,7 +120,7 @@ function createZoneMesh(x, y, data) {
  * Creates a new mesh for a road tile
  * @param {number} x The x-coordinate of the tile
  * @param {number} y The y-coordinate of the tile
- * @returns 
+ * @returns {THREE.Mesh} A mesh object
  */
 function createRoadMesh(x, y) {
   const material = new THREE.MeshLambertMaterial({ color: 0x222222 });

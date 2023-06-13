@@ -120,6 +120,17 @@ function createRoad() {
      */
     update(city) {
       this.updated = false;
+    },
+    
+    /**
+      * Returns an HTML representation of this object
+      * @returns {string}
+      */
+    toHTML() {
+      let result = '';
+      result += '<br><strong>Building</strong><br>';
+      result += `Type: ${this.type}<br>`;
+      return result;
     }
   }
 }

@@ -21,32 +21,44 @@
   <div id="root-window">
     <!-- Three.js adds a `canvas` element to this element-->
     <div id="render-target">
-      <div id="ui-toolbar">
-        <div>
-          <button id='button-select' class="ui-button selected" data-type="select"
-            onclick="window.game.onToolSelected(event)">SELECT</button>
-          <button id='button-bulldoze' class="ui-button" data-type="bulldoze"
-            onclick="window.game.onToolSelected(event)">BULLDOZE</button>
-          <button id='button-residential' class="ui-button" data-type="residential"
-            onclick="window.game.onToolSelected(event)">RESIDENTIAL</button>
-          <button id='button-commercial' class="ui-button" data-type="commercial"
-            onclick="window.game.onToolSelected(event)">COMMERCIAL</button>
-          <button id='button-industrial' class="ui-button" data-type="industrial"
-            onclick="window.game.onToolSelected(event)">INDUSTRIAL</button>
-          <button id='button-road' class="ui-button" data-type="road"
-            onclick="window.game.onToolSelected(event)">ROAD</button>
+      <div id="toolbar">
+        <button id='button-select' data-type="select" onclick="window.game.onToolSelected(event)">
+          <img class="toolbar-icon" src="public/icons/select.png">
+        </button>
+        <button id='button-bulldoze' data-type="bulldoze" onclick="window.game.onToolSelected(event)">
+          <img class="toolbar-icon" src="public/icons/bulldozer.png">
+        </button>
+        <button id='button-residential' data-type="residential" onclick="window.game.onToolSelected(event)">
+          <img class="toolbar-icon" src="public/icons/house.png">
+        </button>
+        <button id='button-commercial' data-type="commercial" onclick="window.game.onToolSelected(event)">
+          <img class="toolbar-icon" src="public/icons/office.png">
+        </button>
+        <button id='button-factory' data-type="industrial" onclick="window.game.onToolSelected(event)">
+          <img class="toolbar-icon" src="public/icons/factory.png">
+        </button>
+        <button id='button-road' data-type="road" onclick="window.game.onToolSelected(event)">
+          <img class="toolbar-icon" src="public/icons/road.png">
+        </button>
+        <button id='button-pause' onclick="window.game.togglePause()">
+          <img id='pause-button-icon' class="toolbar-icon" src="public/icons/pause.png">
+        </button>
+      </div>
+      <div id="info-overlay">
+        <div id="info-overlay-header">
+          <button id="info-overlay-minimize-button" onclick="window.game.toggleInfoOverlay()">-</button>
         </div>
-        <div id="info-panel" class="ui-container">
-          <h1>INFO</h1>
-          <div id="selected-object-info"></div>
+        <div id="info-overlay-details">
         </div>
-        <button id='button-pause' class="ui-button" onclick="window.game.togglePause()">PAUSE</button>
       </div>
     </div>
   </div>
     
   <!-- Import the game-->
-  <script type="module" src="./src/game.js" />
+  <script type="module" src="./src/game.js"></script>
+  <script type = "text/javascript">
+
+  </script>
 </body>
 
 </html>
