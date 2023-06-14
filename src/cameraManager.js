@@ -75,7 +75,6 @@ export function createCameraManager(gameWindow) {
     onMouseScroll(event) {
       cameraRadius += event.deltaY * ZOOM_SENSITIVITY;
       cameraRadius = Math.min(MAX_CAMERA_RADIUS, Math.max(MIN_CAMERA_RADIUS, cameraRadius));
-
       updateCameraPosition();
     }
   }

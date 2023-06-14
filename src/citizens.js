@@ -1,4 +1,9 @@
 export function createCitizen(house) {
+
+  /**
+   * Generates a random name for a citzen
+   * @returns {string}
+   */
   function generateRandomName() {
     const firstNames = [
       'Emma', 'Olivia', 'Ava', 'Sophia', 'Isabella',
