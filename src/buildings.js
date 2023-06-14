@@ -16,6 +16,7 @@ function createResidentialBuilding() {
     /* PROPERTIES  */
 
     id: crypto.randomUUID(),
+    updated: true,
     type: 'residential',
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
@@ -55,10 +56,10 @@ function createCommercialBuilding() {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
+    updated: true,
     type: 'commercial',
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
-    updated: true,
 
     /* METHODS */
 
@@ -82,10 +83,10 @@ function createIndustrialBuilding() {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
+    updated: true,
     type: 'industrial',
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
-    updated: true,
 
     /* METHODS */
 
@@ -109,8 +110,8 @@ function createRoad() {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
-    type: 'road',
     updated: true,
+    type: 'road',
 
     /* METHODS */
 

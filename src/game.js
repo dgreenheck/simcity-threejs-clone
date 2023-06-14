@@ -100,6 +100,10 @@ export default function Game() {
     document.getElementById('selected-object-info').innerHTML = tile ? JSON.stringify(tile, ' ', 2) : '';
   }
 
+  function updateTitleBar() { 
+    document.getElementById('population').innerHTML = city.getPopulation();
+  }
+
   // Start the renderer
   scene.start();
 
