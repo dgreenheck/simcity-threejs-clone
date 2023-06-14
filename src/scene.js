@@ -1,14 +1,14 @@
 import * as THREE from 'three';
-import CameraManager from './cameraManager.js';
-import AssetManager from './assetManager.js';
+import { createCameraManager } from './cameraManager.js';
+import { createAssetManager } from './assetManager.js';
 
-export default function Scene() {
+export function createScene() {
   // Initial scene setup
   const gameWindow = document.getElementById('render-target');
   const scene = new THREE.Scene();
 
-  const assetManager = AssetManager();
-  const cameraManager = CameraManager(gameWindow);
+  const assetManager = createAssetManager();
+  const cameraManager = createCameraManager(gameWindow);
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);

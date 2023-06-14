@@ -16,15 +16,15 @@ window.onload = () => {
  * Creates a new Game object
  * @returns a Game object
  */
-export default function Game() {
+export function createGame() {
   let selectedControl = document.getElementById('button-select');
   let activeToolId = 'select';
   let isPaused = false;  
   // Last time mouse was moved
   let lastMove = new Date();
 
-  const scene = Scene();
-  const city = City(12);
+  const scene = createScene();
+  const city = createCity(12);
 
   scene.initialize(city);
 

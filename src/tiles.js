@@ -1,4 +1,4 @@
-import Building from './buildings.js';
+import { createBuilding } from './buildings.js';
 
 /**
  * Creates a new tile object
@@ -6,7 +6,7 @@ import Building from './buildings.js';
  * @param {number} y The y-coordinate of hte tile
  * @returns 
  */
-export default function Tile(x, y) {
+export function createTile(x, y) {
   return { 
     id: crypto.randomUUID(),
     x, 
@@ -29,7 +29,7 @@ export default function Tile(x, y) {
      */
     placeBuilding(buildingType) {
       if (!this.building) {
-        this.building = Building(buildingType);
+        this.building = createBuilding(buildingType);
       }
     },
 

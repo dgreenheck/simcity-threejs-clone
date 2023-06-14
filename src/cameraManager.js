@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export default function CameraManager(gameWindow) {
+export function createCameraManager(gameWindow) {
   // -- Constants --
   const DEG2RAD = Math.PI / 180.0;
   const MIDDLE_MOUSE_BUTTON = 4;

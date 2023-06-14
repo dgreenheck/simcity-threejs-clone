@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const loader = new THREE.TextureLoader();
 
-export default function AssetManager() {
+export function createAssetManager() {
   const cube = new THREE.BoxGeometry(1, 1, 1);
 
   /* Texture library */
