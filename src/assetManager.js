@@ -3,6 +3,20 @@ import * as THREE from 'three';
 const loader = new THREE.TextureLoader();
 const cube = new THREE.BoxGeometry(1, 1, 1);
 
+/**
+ * Loads the texture at the specified URL
+ * @param {string} url 
+ * @returns {THREE.Texture} A texture object
+ */
+function loadTexture(url) {
+  const tex = loader.load(url)
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 1);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 /* Texture library */
 // Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-fronts
 const textures = {
@@ -26,20 +40,6 @@ const textures = {
 };
 
 export function createAssetManager() {
-  /**
- * Loads the texture at the specified URL
- * @param {string} url 
- * @returns {THREE.Texture} A texture object
- */
-  function loadTexture(url) {
-    const tex = loader.load(url)
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(1, 1);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
-  }
-
   /**
    * Creates a new mesh for a ground tile
    * @param {number} x The x-coordinate of the tile
