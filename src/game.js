@@ -1,10 +1,15 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
-import buildingFactory from './buildings.js';
+import { createBuilding } from './buildings.js';
 
 // Create a new game when the window is loaded
 window.onload = () => {
   window.game = createGame();
+
+  // Start update interval
+  setInterval(() => {
+    window.game.update();
+  }, 1000)
 }
 
 /**
@@ -14,7 +19,9 @@ window.onload = () => {
 export function createGame() {
   let selectedControl = document.getElementById('button-select');
   let activeToolId = 'select';
-  let isPaused = false;
+  let isPaused = false;  
+  // Last time mouse was moved
+  let lastMove = new Date();
 
   const scene = createScene();
   const city = createCity(12);
@@ -31,21 +38,6 @@ export function createGame() {
   document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
 
   /**
-   * Main update method for the game
-   */
-  function update() {
-    if (isPaused) return;
-    // Update the city data model first, then update the scene
-    city.update();
-    scene.update(city);
-  }
-
-  function togglePause() {
-    isPaused = !isPaused;
-    document.getElementById('button-pause').innerHTML = isPaused ? 'RESUME' : 'PAUSE';
-  }
-
-  /**
    * Event handler for `mousedown` event
    * @param {MouseEvent} event 
    */
@@ -56,9 +48,6 @@ export function createGame() {
       useActiveTool(selectedObject);
     }
   };
-
-  // Last time mouse was moved
-  let lastMove = new Date();
 
   /**
    * Event handler for 'mousemove' event
@@ -82,22 +71,6 @@ export function createGame() {
     scene.cameraManager.onMouseMove(event);
   }
 
-  /**
-   * 
-   * @param {*} event 
-   */
-  function onToolSelected(event) {
-    // Deselect previously selected button and selected this one
-    if (selectedControl) {
-      selectedControl.classList.remove('selected');
-    }
-    selectedControl = event.target;
-    selectedControl.classList.add('selected');
-
-    activeToolId = selectedControl.getAttribute('data-type');
-    console.log(activeToolId);
-  }
-
   function useActiveTool(object) {
     if (!object) {
       updateInfoPanel(null);
@@ -112,42 +85,81 @@ export function createGame() {
       scene.setActiveObject(object);
       updateInfoPanel(tile);
     } else if (activeToolId === 'bulldoze') {
-      bulldoze(tile);
+      tile.removeBuilding();
+      scene.update(city);
       // Otherwise, place the building if this tile doesn't have one
     } else if (!tile.building) {
-      placeBuilding(tile);
+      const buildingType = activeToolId;
+      tile.placeBuilding(buildingType);
+      scene.update(city);
     }
   }
 
   function updateInfoPanel(tile) {
-    document.getElementById('selected-object-info').innerHTML = tile ? JSON.stringify(tile, ' ', 2) : '';
+    document.getElementById('info-overlay-details').innerHTML = tile ? tile.toHTML() : '';
   }
-
-  function bulldoze(tile) {
-    console.log(activeToolId);
-    tile.building = undefined;
-    scene.update(city);
-    console.log(tile);
+  
+  function updateTitleBar() {
+    document.getElementById('population-counter').innerHTML = city.getPopulation();
   }
-
-  function placeBuilding(tile) {
-    console.log(activeToolId);
-    tile.building = buildingFactory[activeToolId]();
-    scene.update(city);
-    console.log(tile);
-  }
-
-  // Start update interval
-  setInterval(() => {
-    game.update();
-  }, 1000)
 
   // Start the renderer
   scene.start();
 
   return {
-    update,
-    onToolSelected,
-    togglePause
+    /* METHODS */
+
+    /**
+     * Main update method for the game
+     */
+    update() {
+      if (isPaused) return;
+      // Update the city data model first, then update the scene
+      city.update();
+      scene.update(city);
+
+      updateTitleBar();
+    },
+
+    /**
+     * 
+     * @param {*} event 
+     */
+    onToolSelected(event) {
+      // Deselect previously selected button and selected this one
+      if (selectedControl) {
+        selectedControl.classList.remove('selected');
+      }
+      selectedControl = event.target;
+      selectedControl.classList.add('selected');
+
+      activeToolId = selectedControl.getAttribute('data-type');
+      console.log(activeToolId);
+    },
+    
+    /**
+     * Toggles the pause state of the game
+     */
+    togglePause() {
+      isPaused = !isPaused;
+      
+      if (isPaused) {
+        document.getElementById('pause-button-icon').src = 'public/icons/play.png';
+      } else {
+        document.getElementById('pause-button-icon').src = 'public/icons/pause.png';
+      }
+    },
+
+    /**
+     * Toggles the collapsed state of the info overlay panel
+     */
+    toggleInfoOverlay() {
+      const infoOverlay = document.getElementById('info-overlay');
+      if (infoOverlay.classList.contains('collapsed')) {
+        infoOverlay.classList.remove('collapsed');
+      } else {
+        infoOverlay.classList.add('collapsed');
+      }
+    }
   };
 }
