@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import { createCameraManager } from './cameraManager.js';
-import { createAssetInstance } from './assets.js';
+import { createAssetManager } from './assets.js';
 
 export function createScene() {
   // Initial scene setup
   const gameWindow = document.getElementById('render-target');
   const scene = new THREE.Scene();
 
+  const assetManager = createAssetManager();
   const cameraManager = createCameraManager(gameWindow);
 
   const renderer = new THREE.WebGLRenderer();
@@ -85,7 +86,7 @@ export function createScene() {
       for (let x = 0; x < city.size; x++) {
         const column = [];
         for (let y = 0; y < city.size; y++) {
-          const mesh = createAssetInstance(city.tiles[x][y].terrainId, x, y);
+          const mesh = assetManager.createMesh(city.tiles[x][y].terrainId, x, y);
           scene.add(mesh);
           column.push(mesh);
         }
@@ -114,7 +115,7 @@ export function createScene() {
           // If the data model has changed, update the mesh
           if (tile.building && tile.building.updated) {
             scene.remove(existingBuildingMesh);
-            buildings[x][y] = createAssetInstance(tile.building.type, x, y, tile.building);
+            buildings[x][y] = assetManager.createMesh(tile.building.type, x, y, tile.building);
             scene.add(buildings[x][y]);
             tile.building.updated = false;
           }

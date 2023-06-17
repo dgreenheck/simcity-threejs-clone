@@ -40,7 +40,7 @@ function createResidentialBuilding() {
         console.log(resident);
       }
 
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.02) {
         if (this.height < 5) {
           this.height += 1;
           this.updated = true;
@@ -67,7 +67,7 @@ function createCommercialBuilding() {
      * @param {object} city 
      */
     update(city) {
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.02) {
         if (this.height < 5) {
           this.height += 1;
           this.updated = true;
@@ -94,7 +94,7 @@ function createIndustrialBuilding() {
      * @param {object} city 
      */
     update(city) {
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.02) {
         if (this.height < 5) {
           this.height += 1;
           this.updated = true;

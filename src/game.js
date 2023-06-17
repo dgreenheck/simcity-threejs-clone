@@ -113,8 +113,6 @@ export function createGame() {
       // Update the city data model first, then update the scene
       city.update();
       scene.update(city);
-
-      updateTitleBar();
     },
 
     /**
