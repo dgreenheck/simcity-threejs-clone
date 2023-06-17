@@ -94,13 +94,9 @@ export function createGame() {
       scene.update(city);
     }
   }
-
-  function updateInfoPanel(tile) {
-    document.getElementById('info-overlay-details').innerHTML = tile ? tile.toHTML() : '';
-  }
   
-  function updateTitleBar() {
-    document.getElementById('population-counter').innerHTML = city.getPopulation();
+  function updateInfoPanel(tile) {
+    document.getElementById('selected-object-info').innerHTML = tile ? JSON.stringify(tile, ' ', 2) : '';
   }
 
   // Start the renderer
@@ -147,18 +143,6 @@ export function createGame() {
         document.getElementById('pause-button-icon').src = 'public/icons/play.png';
       } else {
         document.getElementById('pause-button-icon').src = 'public/icons/pause.png';
-      }
-    },
-
-    /**
-     * Toggles the collapsed state of the info overlay panel
-     */
-    toggleInfoOverlay() {
-      const infoOverlay = document.getElementById('info-overlay');
-      if (infoOverlay.classList.contains('collapsed')) {
-        infoOverlay.classList.remove('collapsed');
-      } else {
-        infoOverlay.classList.add('collapsed');
       }
     }
   };

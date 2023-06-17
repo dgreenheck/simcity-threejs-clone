@@ -37,14 +37,6 @@ export function createCitizen(house) {
      */
     update(city) {
       // Not implemented
-    },
-
-    /**
-     * Returns an HTML representation of this object
-     * @returns {string}
-     */
-    toHTML() {
-      return `<span>${this.name} | Age: ${this.age}</span>`
     }
   }
 }

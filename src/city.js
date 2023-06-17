@@ -26,9 +26,6 @@ export function createCity(size) {
     citizens,
 
     /* METHODS */
-    getPopulation() {
-      return this.citizens.length;
-    },
 
     /**
      * Update the state of each tile in the city
