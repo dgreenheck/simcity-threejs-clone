@@ -94,7 +94,7 @@ export function createGame() {
       scene.update(city);
     }
   }
-  
+
   function updateInfoPanel(tile) {
     document.getElementById('selected-object-info').innerHTML = tile ? JSON.stringify(tile, ' ', 2) : '';
   }
@@ -137,13 +137,7 @@ export function createGame() {
      * Toggles the pause state of the game
      */
     togglePause() {
-      isPaused = !isPaused;
-      
-      if (isPaused) {
-        document.getElementById('pause-button-icon').src = 'public/icons/play.png';
-      } else {
-        document.getElementById('pause-button-icon').src = 'public/icons/pause.png';
-      }
+      document.getElementById('button-pause').innerHTML = isPaused ? 'RESUME' : 'PAUSE';
     }
   };
 }
