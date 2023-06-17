@@ -9,6 +9,7 @@ function loadTexture(url) {
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(1, 1);
+  tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
 
