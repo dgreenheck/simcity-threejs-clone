@@ -73,7 +73,7 @@ export function createGame() {
 
   function useActiveTool(object) {
     if (!object) {
-      updateInfoPanel(null);
+      updateInfoOverlay(null);
       return;
     }
 
@@ -83,7 +83,7 @@ export function createGame() {
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
       scene.setActiveObject(object);
-      updateInfoPanel(tile);
+      updateInfoOverlay(tile);
     } else if (activeToolId === 'bulldoze') {
       tile.removeBuilding();
       scene.update(city);
@@ -95,8 +95,12 @@ export function createGame() {
     }
   }
 
-  function updateInfoPanel(tile) {
-    document.getElementById('selected-object-info').innerHTML = tile ? JSON.stringify(tile, ' ', 2) : '';
+  function updateInfoOverlay(tile) {
+    document.getElementById('info-overlay-details').innerHTML = tile ? tile.toHTML() : '';
+  }
+
+  function updateTitleBar() {
+    document.getElementById('population-counter').innerHTML = city.getPopulation();
   }
 
   // Start the renderer
@@ -137,7 +141,13 @@ export function createGame() {
      * Toggles the pause state of the game
      */
     togglePause() {
-      document.getElementById('button-pause').innerHTML = isPaused ? 'RESUME' : 'PAUSE';
+      isPaused = !isPaused;
+      console.log(`Is Paused: ${isPaused}`);
+      if (isPaused) {
+        document.getElementById('pause-button-icon').src = 'public/icons/play.png';
+      } else {
+        document.getElementById('pause-button-icon').src = 'public/icons/pause.png';
+      }
     }
   };
 }
