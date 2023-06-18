@@ -29,6 +29,22 @@ export function createTile(x, y) {
      */
     placeBuilding(buildingType) {
       this.building = createBuilding(buildingType);
+    },
+
+    /**
+     * 
+     * @returns {string} HTML representation of this object
+     */
+    toHTML() {
+      let html = '';
+      html += `Coordinates: (X: ${this.x}, Y: ${this.y})<br>`;
+      html += `Terrain: ${this.terrainId}<br>`;
+
+      if (this.building) {
+        html += this.building.toHTML();
+      }
+
+      return html;
     }
   };
 }

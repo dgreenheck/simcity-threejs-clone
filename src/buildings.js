@@ -46,6 +46,32 @@ function createResidentialBuilding() {
           this.updated = true;
         }
       }
+    },
+
+    /**
+     * Returns an HTML representation of this object
+     * @returns {string}
+     */
+    toHTML() {
+      let html = '';
+      html += '<br><strong>Building</strong><br>';
+      html += `Type: ${this.type}<br>`;
+      html += `Style: ${this.style}<br>`;
+      html += `Height: ${this.height}<br>`;
+
+      html += `<br><strong>Residents</strong>`;
+
+      html += '<ul style="margin-top: 0; padding-left: 20px;">';
+      if (this.residents.length > 0) {
+        for (const resident of this.residents) {
+          html += `<li>${resident.toHTML()}</li>`;
+        }
+      } else {
+        html += '<li>None</li>'
+      }
+      html += '</ul>';
+
+      return html;
     }
   }
 }
@@ -73,6 +99,19 @@ function createCommercialBuilding() {
           this.updated = true;
         }
       }
+    },
+
+    /**
+     * Returns an HTML representation of this object
+     * @returns {string}
+     */
+    toHTML() {
+      let html = '';
+      html += '<br><strong>Building</strong><br>';
+      html += `Type: ${this.type}<br>`;
+      html += `Style: ${this.style}<br>`;
+      html += `Height: ${this.height}<br>`;
+      return html;
     }
   }
 }
@@ -100,6 +139,19 @@ function createIndustrialBuilding() {
           this.updated = true;
         }
       }
+    },
+
+    /**
+     * Returns an HTML representation of this object
+     * @returns {string}
+     */
+    toHTML() {
+      let html = '';
+      html += '<br><strong>Building</strong><br>';
+      html += `Type: ${this.type}<br>`;
+      html += `Style: ${this.style}<br>`;
+      html += `Height: ${this.height}<br>`;
+      return html;
     }
   }
 }
@@ -120,6 +172,17 @@ function createRoad() {
      */
     update(city) {
       this.updated = false;
+    },
+
+    /**
+     * Returns an HTML representation of this object
+     * @returns {string}
+     */
+    toHTML() {
+      let html = '';
+      html += '<br><strong>Building</strong><br>';
+      html += `Type: ${this.type}<br>`;
+      return html;
     }
   }
 }
