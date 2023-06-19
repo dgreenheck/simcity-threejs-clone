@@ -20,6 +20,8 @@ export function createGame() {
   let selectedControl = document.getElementById('button-select');
   let activeToolId = 'select';
   let isPaused = false;  
+  let focusedTile = null;
+
   // Last time mouse was moved
   let lastMove = new Date();
 
@@ -83,7 +85,8 @@ export function createGame() {
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
       scene.setActiveObject(object);
-      updateInfoOverlay(tile);
+      focusedTile = tile;
+      updateInfoOverlay();
     } else if (activeToolId === 'bulldoze') {
       tile.removeBuilding();
       scene.update(city);
@@ -95,8 +98,8 @@ export function createGame() {
     }
   }
 
-  function updateInfoOverlay(tile) {
-    document.getElementById('info-overlay-details').innerHTML = tile ? tile.toHTML() : '';
+  function updateInfoOverlay() {
+    document.getElementById('info-overlay-details').innerHTML = focusedTile?.toHTML() ?? '';
   }
 
   function updateTitleBar() {
@@ -119,6 +122,7 @@ export function createGame() {
       scene.update(city);
 
       updateTitleBar();
+      updateInfoOverlay();
     },
 
     /**

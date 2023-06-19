@@ -9,6 +9,7 @@ import { createBuilding } from './buildings.js';
 export function createTile(x, y) {
   return {
     /* PROPERTIES */
+    id: crypto.randomUUID(),
     x,
     y,
     terrainId: 'ground',

@@ -33,13 +33,15 @@ function createResidentialBuilding() {
      * @param {object} city 
      */
     update(city) {
+      this.residents.forEach(resident => resident.update(city));
+      
+      // Move in new residents
       if (this.residents.length < this.maxResidents) {
         const resident = createCitizen(this);
         this.residents.push(resident);
-        city.citizens.push(resident);
-        console.log(resident);
       }
 
+      // Update building development state
       if (Math.random() < 0.02) {
         if (this.height < 5) {
           this.height += 1;

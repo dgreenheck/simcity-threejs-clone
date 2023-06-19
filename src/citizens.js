@@ -22,12 +22,32 @@ export function createCitizen(house) {
     return randomFirstName + ' ' + randomLastName;
   }
 
+  function findJob(city) {
+
+  }
+
+  function findStore(city) {
+
+  }
+
   return {
     /* PROPERTIES  */
-
+    id: crypto.randomUUID(),
     name: generateRandomName(),
     age: 1 + Math.floor(100*Math.random()),
+    state: 'new',
+
+    // Number of simulation steps the citizen has not had a job
+    timeWithoutJob: 0,
+    // Number of simulation steps the citizen has not had a store
+    timeWithoutStore: 0,
+
+    // A reference to the building the citizen lives at
     house,
+    // A reference to the building the citizen works at
+    job: null,
+    // A reference to the storeo the citizen shops at
+    store: null,
 
     /* METHODS  */
 
@@ -36,7 +56,20 @@ export function createCitizen(house) {
      * @param {object} city 
      */
     update(city) {
-      // Not implemented
+      switch (this.state) {
+        case 'new':
+          break;
+        default:
+          console.error(`Citizen ${this.id} is in an unknown state (${state})`);
+      }
+
+      if (!this.job) {
+        this.timeWithoutJob++;
+      }
+
+      if (!this.store) {
+        this.timeWithoutStore++;
+      }
     },
 
     /**
@@ -44,7 +77,7 @@ export function createCitizen(house) {
      * @returns {string}
      */
     toHTML() {
-      return `<span>${this.name} | Age: ${this.age}</span>`
+      return `<span>${this.name} | Age: ${this.age} | NJ: ${this.timeWithoutJob} | NS: ${this.timeWithoutStore}</span>`
     }
   }
 }
