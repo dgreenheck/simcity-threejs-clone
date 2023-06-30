@@ -22,55 +22,20 @@ export function createCitizen(house) {
     return randomFirstName + ' ' + randomLastName;
   }
 
-  function findWorkplace(citizen, city) {
-    // Get the tile coordinates of the house the citizen lives at
-    const coords = citizen.house.coords;
-
-    console.log('findWorkplace');
-
-    const tile = city.findTile(coords, (tile) => {
-      // Tile has no building, ignore
-      if (!tile.building) return false;
-
-      const buildingType = tile.building?.type;
-
-      // Search for an industrial or commercial building with at least one available job
-      if (buildingType === 'industrial' || buildingType === 'commercial') {
-        if (tile.building.numberOfJobsAvailable() > 0) {
-          return true;
-        }
-      }
-
-      return false;
-    })
-
-    if (tile) {
-      // Employ the citizen at the building
-      tile.building.workers.push(citizen);
-      return tile.building;
-    } else {
-      return null;
-    }
-  }
-
   return {
     /* PROPERTIES  */
     id: crypto.randomUUID(),
     name: generateRandomName(),
     age: 1 + Math.floor(100*Math.random()),
-    state: 'new',
+    state: 'unemployed',
 
-    // Number of simulation steps the citizen has not had a job
-    timeWithoutJob: 0,
-    // Number of simulation steps the citizen has not had a store
-    timeWithoutStore: 0,
+    // Number of simulation steps in the current state
+    stateCounter: 0,
 
     // A reference to the building the citizen lives at
     house,
     // A reference to the building the citizen works at
     job: null,
-    // A reference to the storeo the citizen shops at
-    store: null,
 
     /* METHODS  */
 
@@ -80,28 +45,70 @@ export function createCitizen(house) {
      */
     update(city) {
       switch (this.state) {
-        case 'new':
-          this.job = findWorkplace(this, city);
+        case 'unemployed':
+          // Action - Look for a job
+          console.log(`${this.name} is looking for a job...`);
+          this.job = this.findJob(city);
 
+          // Transitions
           if (this.job) {
+            console.log(`${this.name} found a job at ${this.job.name}!`);
             this.state = 'employed';
           }
-
           break;
         case 'employed':
-          // Do nothing
+          // Actions - None
+
+          // Transitions
+          if (!this.job) {
+            this.state = 'unemployed';
+          }
           break;
         default:
           console.error(`Citizen ${this.id} is in an unknown state (${this.state})`);
       }
+    },
 
-      if (!this.job) {
-        this.timeWithoutJob++;
+    /**
+     * Search for a job nearby
+     * @param {*} city 
+     * @returns 
+     */
+    findJob(city) {
+      // Get the tile coordinates of the house the citizen lives at
+      const coords = this.house.coords;
+  
+      const tile = city.findTile(coords, (tile) => {
+        // Tile has no building, ignore
+        if (!tile.building) return false;
+  
+        const buildingType = tile.building?.type;
+  
+        // Search for an industrial or commercial building with at least one available job
+        if (buildingType === 'industrial' || buildingType === 'commercial') {
+          if (tile.building.numberOfJobsAvailable() > 0) {
+            return true;
+          }
+        }
+  
+        return false;
+      })
+  
+      if (tile) {
+        // Employ the citizen at the building
+        tile.building.workers.push(this);
+        return tile.building;
+      } else {
+        return null;
       }
+    },
 
-      if (!this.store) {
-        this.timeWithoutStore++;
-      }
+    /**
+     * Sets the job for the citizen
+     * @param {*} job 
+     */
+    setJob(job) {
+      this.job = job;
     },
 
     /**

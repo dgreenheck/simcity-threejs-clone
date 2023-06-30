@@ -79,16 +79,12 @@ export function createCity(size) {
           visited.add(tile.id);
         }
 
-        console.log(tile);
-
         // Check if tile is outside the search bounds
         const distance = startTile.distanceTo(tile);
         if (distance > maxDistance) continue;
 
         // Add this tiles neighbor's to the search list
         tilesToSearch.push(...this.getTileNeighbors(tile.coords));
-
-        console.log(tilesToSearch);
 
         // If this tile passes the criteria 
         if (searchCriteria(tile)) {

@@ -1,4 +1,4 @@
-import { createBuilding } from './buildings.js';
+import { createBuilding } from './buildings/buildings.js';
 
 /**
  * Creates a new tile object
@@ -27,6 +27,7 @@ export function createTile({ x, y }) {
      * Removes the building from this tile
      */
     removeBuilding() {
+      this.building.dispose();
       this.building = null;
     },
 
