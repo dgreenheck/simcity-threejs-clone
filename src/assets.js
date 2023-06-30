@@ -110,8 +110,8 @@ export function createAssetManager() {
     /**
      * Creates a new 3D asset
      * @param {string} type The type of the asset to create
-     * @param {number} x The x-coordinate of the tile
-     * @param {number} y The y-coordinate of the tile
+     * @param {number} x The x-coordinate of the asset
+     * @param {number} y The y-coordinate of the asset
      * @param {object} data Additional metadata needed for creating the asset
      * @returns 
      */
