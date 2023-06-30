@@ -22,12 +22,35 @@ export function createCitizen(house) {
     return randomFirstName + ' ' + randomLastName;
   }
 
-  function findJob(city) {
+  function findWorkplace(citizen, city) {
+    // Get the tile coordinates of the house the citizen lives at
+    const coords = citizen.house.coords;
 
-  }
+    console.log('findWorkplace');
 
-  function findStore(city) {
+    const tile = city.findTile(coords, (tile) => {
+      // Tile has no building, ignore
+      if (!tile.building) return false;
 
+      const buildingType = tile.building?.type;
+
+      // Search for an industrial or commercial building with at least one available job
+      if (buildingType === 'industrial' || buildingType === 'commercial') {
+        if (tile.building.numberOfJobsAvailable() > 0) {
+          return true;
+        }
+      }
+
+      return false;
+    })
+
+    if (tile) {
+      // Employ the citizen at the building
+      tile.building.workers.push(citizen);
+      return tile.building;
+    } else {
+      return null;
+    }
   }
 
   return {
@@ -58,9 +81,18 @@ export function createCitizen(house) {
     update(city) {
       switch (this.state) {
         case 'new':
+          this.job = findWorkplace(this, city);
+
+          if (this.job) {
+            this.state = 'employed';
+          }
+
+          break;
+        case 'employed':
+          // Do nothing
           break;
         default:
-          console.error(`Citizen ${this.id} is in an unknown state (${state})`);
+          console.error(`Citizen ${this.id} is in an unknown state (${this.state})`);
       }
 
       if (!this.job) {
@@ -77,7 +109,7 @@ export function createCitizen(house) {
      * @returns {string}
      */
     toHTML() {
-      return `<span>${this.name} | Age: ${this.age} | NJ: ${this.timeWithoutJob} | NS: ${this.timeWithoutStore}</span>`
+      return `<span>${this.name} | Age: ${this.age} | State: ${this.state}</span>`
     }
   }
 }

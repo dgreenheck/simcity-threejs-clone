@@ -7,12 +7,11 @@ import { createTile } from './tile.js';
  */
 export function createCity(size) {
   const tiles = [];
-  const citizens = [];
 
   for (let x = 0; x < size; x++) {
     const column = [];
     for (let y = 0; y < size; y++) {
-      const tile = createTile(x, y);
+      const tile = createTile({ x, y });
       column.push(tile);
     }
     tiles.push(column);
@@ -22,15 +21,20 @@ export function createCity(size) {
     /* PROPERTIES */
 
     size,
-    tiles,
 
-    /* METHODS */
+    /** Returns the title at the coordinates
+     * @param {{ x: number, y: number }} coords
+     */
+    getTile(coords) {
+      return tiles[coords.x][coords.y];
+    },
 
     getPopulation() {
       let population = 0;
       for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {
-          population += tiles[x][y].building?.residents?.length ?? 0;
+          const tile = this.getTile({ x, y });
+          population += tile.building?.residents?.length ?? 0;
         }
       }
       return population;
@@ -42,7 +46,8 @@ export function createCity(size) {
     update() {
       for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {
-          tiles[x][y].building?.update(this);
+          const tile = this.getTile({ x, y });
+          tile.building?.update(this);
         }
       }
     },
@@ -57,9 +62,8 @@ export function createCity(size) {
      * @returns {object} The first tile matching `criteria`, otherwiser `null`
      */
     findTile(startPosition, searchCriteria, maxDistance) {
-      const startTile = tiles[startPosition.x][startPosition.y];
-      [].find
-      const visited = new Set([startTile.id]);
+      const startTile = this.getTile(startPosition);
+      const visited = new Set();
       const tilesToSearch = [];
 
       // Initialze our search with the starting tile
@@ -67,18 +71,30 @@ export function createCity(size) {
 
       while (tilesToSearch.length > 0) {
         const tile = tilesToSearch.shift();
-        visited.add(tile);
-
-        // Check if tile is outside the search bounds
-        if (startTile.distanceTo(tile) > maxDistance) continue;
-
-        // Add this tiles neighbor's to the search list
-        tilesToSearch.push(...this.findNeighbors(tile));
 
         // Has this tile been visited? If so, ignore it and move on
-        if (visited.has(tile.id)) continue;
+        if (visited.has(tile.id)) {
+          continue;
+        } else {
+          visited.add(tile.id);
+        }
+
+        console.log(tile);
+
+        // Check if tile is outside the search bounds
+        const distance = startTile.distanceTo(tile);
+        if (distance > maxDistance) continue;
+
+        // Add this tiles neighbor's to the search list
+        tilesToSearch.push(...this.getTileNeighbors(tile.coords));
+
+        console.log(tilesToSearch);
+
         // If this tile passes the criteria 
-        if (searchCriteria(tile)) return tile;
+        if (searchCriteria(tile)) {
+          console.log(tile);
+          return tile;
+        }
       }
 
       return null;
@@ -86,22 +102,25 @@ export function createCity(size) {
 
     /**
      * Finds and returns the neighbors of this tile
-     * @param {*} tile 
-     * @param {number} maxDistance The maximum distance to search for neighbors
+     * @param {*} coords Coordinates of the starting tile
      */
-    findNeighbors(tile, maxDistance = 1) {
+    getTileNeighbors(coords) {
       const neighbors = [];
 
-      const minX = Math.max(0, tile.x - maxDistance);
-      const maxX = Math.max(size - 1, tile.x + maxDistance);
-      const minY = Math.max(0, tile.y - maxDistance);
-      const maxY = Math.max(size - 1, tile.y + maxDistance);
-
-      for (let x = minX; x <= maxX; x++) {
-        for (let y = minY; y <= maxY; y++) {
-          neighbors.push(data[x][y]);
-        }
+      if (coords.x > 0) {
+        neighbors.push(this.getTile({ x: coords.x - 1, y: coords.y }));
       }
+      if (coords.x < this.size - 1) {
+        neighbors.push(this.getTile({ x: coords.x + 1, y: coords.y }));
+      }
+      if (coords.y > 0) {
+        neighbors.push(this.getTile({ x: coords.x, y: coords.y - 1}));
+      }
+      if (coords.y < this.size - 1) {
+        neighbors.push(this.getTile({ x: coords.x, y: coords.y + 1}));
+      }
+
+      return neighbors;
     }
   }
 }

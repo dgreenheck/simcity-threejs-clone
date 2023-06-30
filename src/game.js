@@ -1,6 +1,5 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
-import { createBuilding } from './buildings.js';
 
 // Create a new game when the window is loaded
 window.onload = () => {
@@ -79,8 +78,8 @@ export function createGame() {
       return;
     }
 
-    const { x, y } = object.userData;
-    const tile = city.tiles[x][y];
+    const coords = object.userData;
+    const tile = city.getTile(coords);
 
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {

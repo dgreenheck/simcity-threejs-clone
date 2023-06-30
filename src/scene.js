@@ -86,7 +86,9 @@ export function createScene() {
       for (let x = 0; x < city.size; x++) {
         const column = [];
         for (let y = 0; y < city.size; y++) {
-          const mesh = assetManager.createMesh(city.tiles[x][y].terrainId, x, y);
+          const coords = { x, y };
+          const tile = city.getTile(coords);
+          const mesh = assetManager.createMesh(tile.terrainId, coords);
           scene.add(mesh);
           column.push(mesh);
         }
@@ -103,7 +105,8 @@ export function createScene() {
     update(city) {
       for (let x = 0; x < city.size; x++) {
         for (let y = 0; y < city.size; y++) {
-          const tile = city.tiles[x][y];
+          const coords = { x, y };
+          const tile = city.getTile(coords);
           const existingBuildingMesh = buildings[x][y];
   
           // If the player removes a building, remove it from the scene
@@ -115,7 +118,7 @@ export function createScene() {
           // If the data model has changed, update the mesh
           if (tile.building && tile.building.updated) {
             scene.remove(existingBuildingMesh);
-            buildings[x][y] = assetManager.createMesh(tile.building.type, x, y, tile.building);
+            buildings[x][y] = assetManager.createMesh(tile.building.type, coords, tile.building);
             scene.add(buildings[x][y]);
             tile.building.updated = false;
           }

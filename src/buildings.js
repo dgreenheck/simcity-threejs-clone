@@ -1,22 +1,23 @@
 import { createCitizen } from './citizens.js';
 
-export function createBuilding(buildingType) {
+export function createBuilding(coords, buildingType) {
   switch (buildingType) {
-    case 'residential': return createResidentialBuilding();
-    case 'commercial': return createCommercialBuilding();
-    case 'industrial': return createIndustrialBuilding();
-    case 'road': return createRoad();
+    case 'residential': return createResidentialBuilding(coords);
+    case 'commercial': return createCommercialBuilding(coords);
+    case 'industrial': return createIndustrialBuilding(coords);
+    case 'road': return createRoad(coords);
     default:
       console.error(`${buildingType} is not a recognized building type.`);
   }
 }
 
-function createResidentialBuilding() {
+function createResidentialBuilding(coords) {
   return {
     /* PROPERTIES  */
 
     id: crypto.randomUUID(),
     type: 'residential',
+    coords,
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
     updated: true,
@@ -24,7 +25,7 @@ function createResidentialBuilding() {
     // Array of residents that live in this building
     residents: [],
     // This is the maximum number of people that can live in this building at one time
-    maxResidents: 4,
+    maxResidents: 1,
 
     /* METHODS */
 
@@ -34,7 +35,7 @@ function createResidentialBuilding() {
      */
     update(city) {
       this.residents.forEach(resident => resident.update(city));
-      
+
       // Move in new residents
       if (this.residents.length < this.maxResidents) {
         const resident = createCitizen(this);
@@ -78,17 +79,30 @@ function createResidentialBuilding() {
   }
 }
 
-function createCommercialBuilding() {
+function createCommercialBuilding(coords) {
   return {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
     type: 'commercial',
+    coords,
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
     updated: true,
 
+    // Citizens that work here
+    workers: [],
+    // Maximum number of workers this building can support
+    maxWorkers: 4,
+
     /* METHODS */
+    numberOfJobsAvailable() {
+      return this.maxWorkers - this.workers.length;
+    },
+
+    numberOfJobsFilled() {
+      return this.workers.length;
+    },
 
     /**
      * Updates the state of this building by one simulation step
@@ -113,23 +127,47 @@ function createCommercialBuilding() {
       html += `Type: ${this.type}<br>`;
       html += `Style: ${this.style}<br>`;
       html += `Height: ${this.height}<br>`;
+
+      html += '<ul style="margin-top: 0; padding-left: 20px;">';
+      if (this.workers.length > 0) {
+        for (const worker of this.workers) {
+          html += `<li>${worker.toHTML()}</li>`;
+        }
+      } else {
+        html += '<li>None</li>'
+      }
+      html += '</ul>';
+
       return html;
     }
   }
 }
 
-function createIndustrialBuilding() {
+function createIndustrialBuilding(coords) {
   return {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
     type: 'industrial',
+    coords,
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
     updated: true,
 
-    /* METHODS */
+    // Citizens that work here
+    workers: [],
+    // Maximum number of workers this building can support
+    maxWorkers: 4,
 
+    /* METHODS */
+    numberOfJobsAvailable() {
+      return this.maxWorkers - this.workers.length;
+    },
+
+    numberOfJobsFilled() {
+      return this.workers.length;
+    },
+    
     /**
      * Updates the state of this building by one simulation step
      * @param {object} city 
@@ -153,17 +191,31 @@ function createIndustrialBuilding() {
       html += `Type: ${this.type}<br>`;
       html += `Style: ${this.style}<br>`;
       html += `Height: ${this.height}<br>`;
+
+      html += `<br><strong>Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</strong>`;
+
+      html += '<ul style="margin-top: 0; padding-left: 20px;">';
+      if (this.workers.length > 0) {
+        for (const worker of this.workers) {
+          html += `<li>${worker.toHTML()}</li>`;
+        }
+      } else {
+        html += '<li>None</li>'
+      }
+      html += '</ul>';
+
       return html;
     }
   }
 }
 
-function createRoad() {
+function createRoad(coords) {
   return {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
     type: 'road',
+    coords,
     updated: true,
 
     /* METHODS */
