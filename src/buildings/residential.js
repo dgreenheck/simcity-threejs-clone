@@ -1,4 +1,4 @@
-import { createCitizen } from '../citizen.js';
+import { createCitizen } from '../citizens.js';
 
 export function createResidentialZone(x, y) {
   return {
