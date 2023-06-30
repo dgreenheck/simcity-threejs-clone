@@ -78,15 +78,15 @@ export function createGame() {
       return;
     }
 
-    const coords = object.userData;
-    const tile = city.getTile(coords);
+    const { x, y } = object.userData;
+    const tile = city.getTile(x, y);
 
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
       scene.setActiveObject(object);
       focusedTile = tile;
       updateInfoOverlay();
-    } else if (activeToolId === 'bulldoze') {
+    } else if (activeToolId === 'bulldoze' && tile.building) {
       tile.removeBuilding();
       scene.update(city);
       // Otherwise, place the building if this tile doesn't have one

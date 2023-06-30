@@ -1,11 +1,12 @@
-export function createCommercialZone(coords) {
+export function createCommercialZone(x, y) {
   return {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
     name: generateBusinessName(),
     type: 'commercial',
-    coords,
+    x,
+    y,
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
     updated: true,
@@ -55,13 +56,13 @@ export function createCommercialZone(coords) {
       html += `Type: ${this.type}<br>`;
       html += `Style: ${this.style}<br>`;
       html += `Height: ${this.height}<br>`;
-      
+
       html += `<br><strong>Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</strong>`;
 
       html += '<ul style="margin-top: 0; padding-left: 20px;">';
       if (this.workers.length > 0) {
         for (const worker of this.workers) {
-          html += `<li>${worker.toHTML()}</li>`;
+          html += worker.toHTML();
         }
       } else {
         html += '<li>None</li>'

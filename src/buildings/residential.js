@@ -1,12 +1,13 @@
 import { createCitizen } from '../citizen.js';
 
-export function createResidentialZone(coords) {
+export function createResidentialZone(x, y) {
   return {
     /* PROPERTIES  */
 
     id: crypto.randomUUID(),
     type: 'residential',
-    coords,
+    x,
+    y,
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
     updated: true,
@@ -63,7 +64,7 @@ export function createResidentialZone(coords) {
       html += '<ul style="margin-top: 0; padding-left: 20px;">';
       if (this.residents.length > 0) {
         for (const resident of this.residents) {
-          html += `<li>${resident.toHTML()}</li>`;
+          html += resident.toHTML();
         }
       } else {
         html += '<li>None</li>'

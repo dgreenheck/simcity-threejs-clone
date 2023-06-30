@@ -42,21 +42,23 @@ const textures = {
 export function createAssetManager() {
   /**
    * Creates a new mesh for a ground tile
-   * @param {number} coords The coordinates tile
+   * @param {number} x The x-coordinate of the tile
+   * @param {number} y The y-coordinate of the tile
    * @returns {THREE.Mesh} A mesh object
    */
-  function createGroundMesh(coords) {
+  function createGroundMesh(x, y) {
     const material = new THREE.MeshLambertMaterial({ map: textures.grass });
     const mesh = new THREE.Mesh(cube, material);
-    mesh.userData = coords;
-    mesh.position.set(coords.x, -0.5, coords.y);
+    mesh.userData = { x, y };
+    mesh.position.set(x, -0.5, y);
     mesh.receiveShadow = true;
     return mesh;
   }
 
   /**
    * Creates a new mesh for a zone tile
-   * @param {number} coords The coordinates tile
+   * @param {number} x The x-coordinate of the tile
+   * @param {number} y The y-coordinate of the tile
    * @param {{
    *  type: string,
    *  style: string,
@@ -64,7 +66,7 @@ export function createAssetManager() {
    * }} data Additional metadata for the tile
    * @returns {THREE.Mesh} A mesh object
    */
-  function createZoneMesh(coords, data) {
+  function createZoneMesh(x, y, data) {
     const textureName = data.type + data.style;
 
     const topMaterial = textures.getTopMaterial();
@@ -79,10 +81,10 @@ export function createAssetManager() {
     ];
 
     let mesh = new THREE.Mesh(cube, materialArray);
-    mesh.userData = coords;
+    mesh.userData = { x, y };
     mesh.scale.set(0.8, 0.8 * data.height, 0.8);
     mesh.material.forEach(material => material.map?.repeat.set(1, data.height));
-    mesh.position.set(coords.x, 0.4 * data.height, coords.y);
+    mesh.position.set(x, 0.4 * data.height, y);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     return mesh;
@@ -90,15 +92,16 @@ export function createAssetManager() {
 
   /**
    * Creates a new mesh for a road tile
-   * @param {number} coords The coordinates tile
+   * @param {number} x The x-coordinate of the tile
+   * @param {number} y The y-coordinate of the tile
    * @returns {THREE.Mesh} A mesh object
    */
-  function createRoadMesh(coords) {
+  function createRoadMesh(x, y) {
     const material = new THREE.MeshLambertMaterial({ color: 0x222222 });
     const mesh = new THREE.Mesh(cube, material);
-    mesh.userData = coords;
+    mesh.userData = { x, y };
     mesh.scale.set(1, 0.02, 1);
-    mesh.position.set(coords.x, 0.01, coords.y);
+    mesh.position.set(x, 0.01, y);
     mesh.receiveShadow = true;
     return mesh;
   }
@@ -107,20 +110,21 @@ export function createAssetManager() {
     /**
      * Creates a new 3D asset
      * @param {string} type The type of the asset to create
-   * @param {number} coords The coordinates tile
+     * @param {number} x The x-coordinate of the tile
+     * @param {number} y The y-coordinate of the tile
      * @param {object} data Additional metadata needed for creating the asset
      * @returns 
      */
-    createMesh(type, coords, data) {
+    createMesh(type, x, y, data) {
       switch (type) {
         case 'ground':
-          return createGroundMesh(coords);
+          return createGroundMesh(x, y);
         case 'residential':
         case 'commercial':
         case 'industrial':
-          return createZoneMesh(coords, data);
+          return createZoneMesh(x, y, data);
         case 'road':
-          return createRoadMesh(coords);
+          return createRoadMesh(x, y);
         default:
           console.warn(`Mesh type ${type} is not recognized.`);
           return null;

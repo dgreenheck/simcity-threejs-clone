@@ -1,10 +1,11 @@
-export function createRoad(coords) {
+export function createRoad(x, y) {
   return {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
     type: 'road',
-    coords,
+    x,
+    y,
     updated: true,
 
     /* METHODS */

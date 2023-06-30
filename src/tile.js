@@ -2,25 +2,24 @@ import { createBuilding } from './buildings/buildings.js';
 
 /**
  * Creates a new tile object
- * @param {number} coords The coordinates of the tile
- * @returns 
+ * @param {number} x The x-coordinate of the tile
+ * @param {number} y The y-coordinate of the tile
+ * @returns A new Tile instance
  */
-export function createTile({ x, y }) {
+export function createTile(x, y) {
   return {
     /* PROPERTIES */
     id: crypto.randomUUID(),
-    coords: {
-      x,
-      y
-    },
+    x,
+    y,
     terrainId: 'ground',
     building: null,
 
     /* METHODS */
 
     distanceTo(tile) {
-      return Math.abs(this.coords.x - tile.coords.x) + 
-             Math.abs(this.coords.y - tile.coords.y);
+      return Math.abs(this.x - tile.x) + 
+             Math.abs(this.y - tile.y);
     },
 
     /**
@@ -36,7 +35,7 @@ export function createTile({ x, y }) {
      * @param {string} tile 
      */
     placeBuilding(buildingType) {
-      this.building = createBuilding(this.coords, buildingType);
+      this.building = createBuilding(x, y, buildingType);
     },
 
     /**
@@ -45,7 +44,7 @@ export function createTile({ x, y }) {
      */
     toHTML() {
       let html = '';
-      html += `Coordinates: (X: ${this.coords.x}, Y: ${this.coords.y})<br>`;
+      html += `Coordinates: (X: ${this.x}, Y: ${this.y})<br>`;
       html += `Terrain: ${this.terrainId}<br>`;
 
       if (this.building) {

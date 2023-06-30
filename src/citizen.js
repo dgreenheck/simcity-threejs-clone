@@ -71,14 +71,11 @@ export function createCitizen(house) {
 
     /**
      * Search for a job nearby
-     * @param {*} city 
+     * @param {object} city 
      * @returns 
      */
     findJob(city) {
-      // Get the tile coordinates of the house the citizen lives at
-      const coords = this.house.coords;
-  
-      const tile = city.findTile(coords, (tile) => {
+      const tile = city.findTile(this.house, (tile) => {
         // Tile has no building, ignore
         if (!tile.building) return false;
   
@@ -116,7 +113,14 @@ export function createCitizen(house) {
      * @returns {string}
      */
     toHTML() {
-      return `<span>${this.name} | Age: ${this.age} | State: ${this.state}</span>`
+      return `
+        <li>${this.name}
+          <ul style="padding-left:8px; font-size: small">
+            <li>Age: ${this.age}</li>
+            <li>Job: ${this.job?.name ?? 'Unemployed'}</li>
+          </ul>
+        </li>
+      `;
     }
   }
 }

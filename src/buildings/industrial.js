@@ -1,11 +1,12 @@
-export function createIndustrialZone(coords) {
+export function createIndustrialZone(x, y) {
   return {
     /* PROPERTIES */
 
     id: crypto.randomUUID(),
     name: generateBusinessName(),
     type: 'industrial',
-    coords,
+    x,
+    y,
     style: Math.floor(3 * Math.random()) + 1,
     height: 1,
     updated: true,
@@ -63,7 +64,7 @@ export function createIndustrialZone(coords) {
       html += '<ul style="margin-top: 0; padding-left: 20px;">';
       if (this.workers.length > 0) {
         for (const worker of this.workers) {
-          html += `<li>${worker.toHTML()}</li>`;
+          html += worker.toHTML();
         }
       } else {
         html += '<li>None</li>'

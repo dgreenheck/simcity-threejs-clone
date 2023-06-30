@@ -11,7 +11,7 @@ export function createCity(size) {
   for (let x = 0; x < size; x++) {
     const column = [];
     for (let y = 0; y < size; y++) {
-      const tile = createTile({ x, y });
+      const tile = createTile(x, y);
       column.push(tile);
     }
     tiles.push(column);
@@ -23,17 +23,18 @@ export function createCity(size) {
     size,
 
     /** Returns the title at the coordinates
-     * @param {{ x: number, y: number }} coords
+     * @param {number} x The x-coordinate of the tile
+     * @param {number} y The y-coordinate of the tile
      */
-    getTile(coords) {
-      return tiles[coords.x][coords.y];
+    getTile(x, y) {
+      return tiles[x][y];
     },
 
     getPopulation() {
       let population = 0;
       for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {
-          const tile = this.getTile({ x, y });
+          const tile = this.getTile(x, y);
           population += tile.building?.residents?.length ?? 0;
         }
       }
@@ -46,7 +47,7 @@ export function createCity(size) {
     update() {
       for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {
-          const tile = this.getTile({ x, y });
+          const tile = this.getTile(x, y);
           tile.building?.update(this);
         }
       }
@@ -54,15 +55,15 @@ export function createCity(size) {
 
     /**
      * Finds the first tile where the criteria are true
-     * @param {{x: number, y: number}} startPosition 
+     * @param {{x: number, y: number}} start The starting coordinates of the search
      * @param {(object) => (boolean)} searchCriteria This function is called on each
      * tile in the search field until `searchCriteria` returns true, or there are
      * no more tiles left to search.
      * @param {number} maxDistance The maximum distance to search from the starting tile
      * @returns {object} The first tile matching `criteria`, otherwiser `null`
      */
-    findTile(startPosition, searchCriteria, maxDistance) {
-      const startTile = this.getTile(startPosition);
+    findTile(start, searchCriteria, maxDistance) {
+      const startTile = this.getTile(start.x, start.y);
       const visited = new Set();
       const tilesToSearch = [];
 
@@ -84,7 +85,7 @@ export function createCity(size) {
         if (distance > maxDistance) continue;
 
         // Add this tiles neighbor's to the search list
-        tilesToSearch.push(...this.getTileNeighbors(tile.coords));
+        tilesToSearch.push(...this.getTileNeighbors(tile.x, tile.y));
 
         // If this tile passes the criteria 
         if (searchCriteria(tile)) {
@@ -98,22 +99,23 @@ export function createCity(size) {
 
     /**
      * Finds and returns the neighbors of this tile
-     * @param {*} coords Coordinates of the starting tile
+     * @param {number} x The x-coordinate of the tile
+     * @param {number} y The y-coordinate of the tile
      */
-    getTileNeighbors(coords) {
+    getTileNeighbors(x, y) {
       const neighbors = [];
 
-      if (coords.x > 0) {
-        neighbors.push(this.getTile({ x: coords.x - 1, y: coords.y }));
+      if (x > 0) {
+        neighbors.push(this.getTile(x - 1, y));
       }
-      if (coords.x < this.size - 1) {
-        neighbors.push(this.getTile({ x: coords.x + 1, y: coords.y }));
+      if (x < this.size - 1) {
+        neighbors.push(this.getTile(x + 1, y));
       }
-      if (coords.y > 0) {
-        neighbors.push(this.getTile({ x: coords.x, y: coords.y - 1}));
+      if (y > 0) {
+        neighbors.push(this.getTile(x, y - 1));
       }
-      if (coords.y < this.size - 1) {
-        neighbors.push(this.getTile({ x: coords.x, y: coords.y + 1}));
+      if (y < this.size - 1) {
+        neighbors.push(this.getTile(x, y + 1));
       }
 
       return neighbors;
