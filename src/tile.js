@@ -1,14 +1,15 @@
-import { createBuilding } from './buildings.js';
+import { createBuilding } from './buildings/buildings.js';
 
 /**
  * Creates a new tile object
  * @param {number} x The x-coordinate of the tile
- * @param {number} y The y-coordinate of hte tile
- * @returns 
+ * @param {number} y The y-coordinate of the tile
+ * @returns A new Tile instance
  */
 export function createTile(x, y) {
   return {
     /* PROPERTIES */
+    id: crypto.randomUUID(),
     x,
     y,
     terrainId: 'ground',
@@ -16,10 +17,16 @@ export function createTile(x, y) {
 
     /* METHODS */
 
+    distanceTo(tile) {
+      return Math.abs(this.x - tile.x) + 
+             Math.abs(this.y - tile.y);
+    },
+
     /**
      * Removes the building from this tile
      */
     removeBuilding() {
+      this.building.dispose();
       this.building = null;
     },
 
@@ -28,7 +35,7 @@ export function createTile(x, y) {
      * @param {string} tile 
      */
     placeBuilding(buildingType) {
-      this.building = createBuilding(buildingType);
+      this.building = createBuilding(x, y, buildingType);
     },
 
     /**

@@ -24,10 +24,18 @@ export function createCitizen(house) {
 
   return {
     /* PROPERTIES  */
-
+    id: crypto.randomUUID(),
     name: generateRandomName(),
     age: 1 + Math.floor(100*Math.random()),
+    state: 'unemployed',
+
+    // Number of simulation steps in the current state
+    stateCounter: 0,
+
+    // A reference to the building the citizen lives at
     house,
+    // A reference to the building the citizen works at
+    job: null,
 
     /* METHODS  */
 
@@ -36,7 +44,68 @@ export function createCitizen(house) {
      * @param {object} city 
      */
     update(city) {
-      // Not implemented
+      switch (this.state) {
+        case 'unemployed':
+          // Action - Look for a job
+          console.log(`${this.name} is looking for a job...`);
+          this.job = this.findJob(city);
+
+          // Transitions
+          if (this.job) {
+            console.log(`${this.name} found a job at ${this.job.name}!`);
+            this.state = 'employed';
+          }
+          break;
+        case 'employed':
+          // Actions - None
+
+          // Transitions
+          if (!this.job) {
+            this.state = 'unemployed';
+          }
+          break;
+        default:
+          console.error(`Citizen ${this.id} is in an unknown state (${this.state})`);
+      }
+    },
+
+    /**
+     * Search for a job nearby
+     * @param {object} city 
+     * @returns 
+     */
+    findJob(city) {
+      const tile = city.findTile(this.house, (tile) => {
+        // Tile has no building, ignore
+        if (!tile.building) return false;
+  
+        const buildingType = tile.building?.type;
+  
+        // Search for an industrial or commercial building with at least one available job
+        if (buildingType === 'industrial' || buildingType === 'commercial') {
+          if (tile.building.numberOfJobsAvailable() > 0) {
+            return true;
+          }
+        }
+  
+        return false;
+      })
+  
+      if (tile) {
+        // Employ the citizen at the building
+        tile.building.workers.push(this);
+        return tile.building;
+      } else {
+        return null;
+      }
+    },
+
+    /**
+     * Sets the job for the citizen
+     * @param {*} job 
+     */
+    setJob(job) {
+      this.job = job;
     },
 
     /**
@@ -44,7 +113,14 @@ export function createCitizen(house) {
      * @returns {string}
      */
     toHTML() {
-      return `<span>${this.name} | Age: ${this.age}</span>`
+      return `
+        <li>${this.name}
+          <ul style="padding-left:8px; font-size: small">
+            <li>Age: ${this.age}</li>
+            <li>Job: ${this.job?.name ?? 'Unemployed'}</li>
+          </ul>
+        </li>
+      `;
     }
   }
 }

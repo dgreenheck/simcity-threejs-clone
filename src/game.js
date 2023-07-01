@@ -1,6 +1,5 @@
 import { createScene } from './scene.js';
 import { createCity } from './city.js';
-import { createBuilding } from './buildings.js';
 
 // Create a new game when the window is loaded
 window.onload = () => {
@@ -20,6 +19,8 @@ export function createGame() {
   let selectedControl = document.getElementById('button-select');
   let activeToolId = 'select';
   let isPaused = false;  
+  let focusedTile = null;
+
   // Last time mouse was moved
   let lastMove = new Date();
 
@@ -78,13 +79,14 @@ export function createGame() {
     }
 
     const { x, y } = object.userData;
-    const tile = city.tiles[x][y];
+    const tile = city.getTile(x, y);
 
     // If bulldoze is active, delete the building
     if (activeToolId === 'select') {
       scene.setActiveObject(object);
-      updateInfoOverlay(tile);
-    } else if (activeToolId === 'bulldoze') {
+      focusedTile = tile;
+      updateInfoOverlay();
+    } else if (activeToolId === 'bulldoze' && tile.building) {
       tile.removeBuilding();
       scene.update(city);
       // Otherwise, place the building if this tile doesn't have one
@@ -95,8 +97,8 @@ export function createGame() {
     }
   }
 
-  function updateInfoOverlay(tile) {
-    document.getElementById('info-overlay-details').innerHTML = tile ? tile.toHTML() : '';
+  function updateInfoOverlay() {
+    document.getElementById('info-overlay-details').innerHTML = focusedTile?.toHTML() ?? '';
   }
 
   function updateTitleBar() {
@@ -119,6 +121,7 @@ export function createGame() {
       scene.update(city);
 
       updateTitleBar();
+      updateInfoOverlay();
     },
 
     /**

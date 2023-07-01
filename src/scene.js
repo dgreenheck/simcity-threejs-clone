@@ -86,7 +86,8 @@ export function createScene() {
       for (let x = 0; x < city.size; x++) {
         const column = [];
         for (let y = 0; y < city.size; y++) {
-          const mesh = assetManager.createMesh(city.tiles[x][y].terrainId, x, y);
+          const tile = city.getTile(x, y);
+          const mesh = assetManager.createMesh(tile.terrainId, x, y);
           scene.add(mesh);
           column.push(mesh);
         }
@@ -103,7 +104,7 @@ export function createScene() {
     update(city) {
       for (let x = 0; x < city.size; x++) {
         for (let y = 0; y < city.size; y++) {
-          const tile = city.tiles[x][y];
+          const tile = city.getTile(x, y);
           const existingBuildingMesh = buildings[x][y];
   
           // If the player removes a building, remove it from the scene
