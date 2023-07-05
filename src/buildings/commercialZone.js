@@ -19,8 +19,8 @@ export class CommercialZone extends Zone {
    * @returns {number}
    */
   numberOfJobsAvailable() {
-    // If building is not developed, there are no available jobs
-    if (!this.isDeveloped) return 0;
+    // If building is abandoned or undeveloped, there are no available jobs
+    if (this.abandoned || !this.developed) return 0;
     // Otherwise return the number of vacant positions
     return this.maxWorkers - this.workers.length;
   }
@@ -34,12 +34,34 @@ export class CommercialZone extends Zone {
   }
 
   /**
-   * Handles any clean up needed before a building is removed
+   * Steps the state of the zone forward in time by one simulation step
+   * @param {City} city 
    */
-  dispose() { 
+  step(city) {
+    super.step(city);
+
+    // If building is abandoned, all workers are laid off and no
+    // more workers are allowed to work here
+    if (this.abandoned) {
+      this.#layOffWorkers();
+    }
+  }
+
+  /**
+   * Lay off all existing workers
+   */
+  #layOffWorkers() {
     for (const worker of this.workers) {
       worker.setWorkplace(null);
     }
+    this.workers = [];
+  }
+
+  /**
+   * Handles any clean up needed before a building is removed
+   */
+  dispose() { 
+    this.#layOffWorkers();
     super.dispose();
   }
 

@@ -94,7 +94,7 @@ export class AssetManager {
     const zone = tile.building;
 
     // If zone is not yet developed, show it as under construction
-    if (!zone.isDeveloped) {
+    if (!zone.developed) {
       const mesh = this.#getModel('underConstruction');
       mesh.position.set(zone.x, 0.01, zone.y);
       return mesh;
@@ -103,6 +103,11 @@ export class AssetManager {
     const textureName = zone.type + zone.style;
     const topMaterial = this.#getTopMaterial();
     const sideMaterial = this.#getSideMaterial(textureName);
+
+    if (zone.abandoned) {
+      sideMaterial.color.setHex(0x555555);
+    }
+
     let materialArray = [
       sideMaterial, // +X
       sideMaterial, // -X

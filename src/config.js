@@ -5,6 +5,11 @@ export default {
     maxJobSearchDistance: 4
   },
   zone: {
-    maxRoadSearchDistance: 3
+    abandonmentThreshold: 10,
+    abandonmentChance: 0.25,
+    developmentChance: 0.25,
+    maxRoadSearchDistance: 3,
+    maxResidents: 4,
+    residentMoveInChance: 0.5
   }
 }

@@ -14,9 +14,14 @@ export class Zone extends Building {
     this.style = Math.floor(3 * Math.random()) + 1;
 
     /**
+     * True if this zone is abandoned
+     */
+    this.abandoned = false;
+
+    /**
      * True if this zone is developed
      */
-    this.isDeveloped = false;
+    this.developed = false;
 
     /**
      * True if this zone has access to a road
@@ -52,17 +57,26 @@ export class Zone extends Building {
   step(city) {
     super.step(city);
 
-    // Check to see if this zone's development criteria are met
+    // Check to see if this zone's development criteria are met. If they
+    // are, the zone has a non-zero chance of developing a building
     if (this.#checkDevelopmentCriteria()) {
       this.abandonmentCounter = 0;
-
-      // 50/50 chance of developing when conditions are met
-      if (Math.random() > 0.5) {
-        this.isDeveloped = true;
+      if (Math.random() < config.zone.developmentChance) {
+        this.abandoned = false;
+        this.developed = true;
         this.isMeshOutOfDate = true;
       }
+
+    // If the zone has failed to meet its basic requirements
+    // for enough time, there is a chance of the zone becoming abandoned
     } else {
       this.abandonmentCounter++;
+      if (this.abandonmentCounter >= config.zone.abandonmentThreshold) {
+        if (Math.random() < config.zone.abandonmentChance) {
+          this.abandoned = true;
+          this.isMeshOutOfDate = true;
+        }
+      }
     }
   }
 
@@ -97,8 +111,9 @@ export class Zone extends Building {
   toHTML() {
     let html = super.toHTML();
     html += `Style: ${this.style}<br>`;
+    html += `Abandoned: ${this.abandoned} (${this.abandonmentCounter}/${config.zone.abandonmentThreshold})<br>`
     html += `Road Access: ${this.hasRoadAccess}<br>`;
-    html += `Developed: ${this.isDeveloped}<br>`;
+    html += `Developed: ${this.developed}<br>`;
     html += `Level: ${this.level}<br>`;
     return html;
   }

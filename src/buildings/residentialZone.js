@@ -1,5 +1,6 @@
 import { Citizen } from '../citizens.js';
 import { City } from '../city.js';
+import config from '../config.js';
 import { Zone } from './zone.js';
 
 export class ResidentialZone extends Zone {
@@ -12,24 +13,23 @@ export class ResidentialZone extends Zone {
      * @type {Citizen[]}
      */
     this.residents = [];
-
-    /**
-     * Maximum number of people that can live in this building
-     * @type {number}
-     */
-    this.maxResidents = 4;
   }
 
   /**
-   * Updates the state of this building by one simulation step
+   * Steps the state of the zone forward in time by one simulation step
    * @param {City} city 
    */
   step(city) {
     super.step(city);
 
-    if (this.isDeveloped) {
-      // Move in new residents
-      if (this.residents.length < this.maxResidents) {
+    // If building is abandoned, all residents are evicted and
+    // no more residents are allowed to move in.
+    if (this.abandoned) {
+      this.#evictResidents();
+    } else if (this.developed) {
+      // Move in new residents if there is room
+      if (this.residents.length < config.zone.maxResidents &&
+          Math.random() < config.zone.residentMoveInChance) {
         const resident = new Citizen(this);
         this.residents.push(resident);
       }
@@ -37,12 +37,20 @@ export class ResidentialZone extends Zone {
   }
 
   /**
-   * Handles any clean up needed before a building is removed
+   * Evicts all residents from the building
    */
-  dispose() {
+  #evictResidents() {
     for (const resident of this.residents) {
       resident.dispose();
     }
+    this.residents = [];
+  }
+
+  /**
+   * Handles any clean up needed before a building is removed
+   */
+  dispose() {
+    this.#evictResidents();
     super.dispose();
   }
 
@@ -66,4 +74,16 @@ export class ResidentialZone extends Zone {
 
     return html;
   }
+}
+
+// Arrays of different name components
+const prefixes = ['Emerald', 'Ivory', 'Crimson', 'Opulent', 'Celestial', 'Enchanted', 'Serene', 'Whispering', 'Stellar', 'Tranquil'];
+const suffixes = ['Tower', 'Residence', 'Manor', 'Court', 'Plaza', 'House', 'Mansion', 'Place', 'Villa', 'Gardens'];
+
+// Function to generate a random building name
+function generateBuildingName() {
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+  
+  return prefix + ' ' + suffix;
 }
