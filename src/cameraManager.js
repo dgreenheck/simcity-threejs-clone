@@ -23,7 +23,7 @@ export function createCameraManager(gameWindow) {
   // -- Variables --
   const camera = new THREE.PerspectiveCamera(45, gameWindow.offsetWidth / gameWindow.offsetHeight, 0.1, 1000);
   let cameraOrigin = new THREE.Vector3(6, 0, 6);
-  let cameraRadius = 30;
+  let cameraRadius = 10;
   let cameraAzimuth = 135;
   let cameraElevation = 45;
 

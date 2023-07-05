@@ -11,7 +11,8 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@v0.153.0/build/three.module.js"
+        "three": "https://unpkg.com/three@v0.153.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@v0.153.0/examples/jsm/"
       }
     }
   </script>
@@ -71,7 +72,12 @@
   </div>
 
   <script type="module">
-    import { createGame } from './src/game.js';
+    import { Game } from './src/game.js';
+    
+    // Create a new game when the window is loaded
+    window.onload = () => {
+      window.game = new Game();
+    }
   </script>
 </body>
 

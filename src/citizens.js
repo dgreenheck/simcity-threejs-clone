@@ -1,126 +1,186 @@
-export function createCitizen(house) {
-  function generateRandomName() {
-    const firstNames = [
-      'Emma', 'Olivia', 'Ava', 'Sophia', 'Isabella',
-      'Liam', 'Noah', 'William', 'James', 'Benjamin',
-      'Elizabeth', 'Margaret', 'Alice', 'Dorothy', 'Eleanor',
-      'John', 'Robert', 'William', 'Charles', 'Henry',
-      'Alex', 'Taylor', 'Jordan', 'Casey', 'Robin'
-    ];
-  
-    const lastNames = [
-      'Smith', 'Johnson', 'Williams', 'Jones', 'Brown',
-      'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor',
-      'Anderson', 'Thomas', 'Jackson', 'White', 'Harris',
-      'Clark', 'Lewis', 'Walker', 'Hall', 'Young',
-      'Lee', 'King', 'Wright', 'Adams', 'Green'
-    ];
-  
-    const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    
-    return randomFirstName + ' ' + randomLastName;
+import { CommercialZone } from './buildings/commercialZone.js';
+import { IndustrialZone } from './buildings/industrialZone.js';
+import { ResidentialZone } from './buildings/residentialZone.js';
+import config from './config.js';
+
+export class Citizen {
+  constructor(residence) {
+    /**
+     * Unique identifier for the citizen
+     * @type {string}
+     */
+    this.id = crypto.randomUUID();
+
+    /**
+     * Name of this citizen
+     * @type {string}
+     */
+    this.name = generateRandomName();
+
+    /**
+     * Age of the citizen in years
+     * @type {number}
+     */
+    this.age = 1 + Math.floor(100*Math.random());
+
+    /**
+     * The current state of the citizen
+     * @type {'idle' | 'school' | 'employed' | 'unemployed' | 'retired'}
+     */
+    this.state = 'idle';
+
+    /**
+     * Number of simulation steps in the current state
+     */
+    this.stateCounter = 0;
+
+    /**
+     * Reference to the building the citizen lives at
+     * @type {ResidentialZone}
+     */
+    this.residence = residence;
+
+    /**
+     * Reference to the building the citizen works at
+     * @type {CommercialZone | IndustrialZone}
+     */
+    this.workplace = null;
+
+    this.#initializeState();
   }
 
-  return {
-    /* PROPERTIES  */
-    id: crypto.randomUUID(),
-    name: generateRandomName(),
-    age: 1 + Math.floor(100*Math.random()),
-    state: 'unemployed',
-
-    // Number of simulation steps in the current state
-    stateCounter: 0,
-
-    // A reference to the building the citizen lives at
-    house,
-    // A reference to the building the citizen works at
-    job: null,
-
-    /* METHODS  */
-
-    /**
-     * Updates the state of this citizen by one simulation
-     * @param {object} city 
-     */
-    update(city) {
-      switch (this.state) {
-        case 'unemployed':
-          // Action - Look for a job
-          console.log(`${this.name} is looking for a job...`);
-          this.job = this.findJob(city);
-
-          // Transitions
-          if (this.job) {
-            console.log(`${this.name} found a job at ${this.job.name}!`);
-            this.state = 'employed';
-          }
-          break;
-        case 'employed':
-          // Actions - None
-
-          // Transitions
-          if (!this.job) {
-            this.state = 'unemployed';
-          }
-          break;
-        default:
-          console.error(`Citizen ${this.id} is in an unknown state (${this.state})`);
-      }
-    },
-
-    /**
-     * Search for a job nearby
-     * @param {object} city 
-     * @returns 
-     */
-    findJob(city) {
-      const tile = city.findTile(this.house, (tile) => {
-        // Tile has no building, ignore
-        if (!tile.building) return false;
-  
-        const buildingType = tile.building?.type;
-  
-        // Search for an industrial or commercial building with at least one available job
-        if (buildingType === 'industrial' || buildingType === 'commercial') {
-          if (tile.building.numberOfJobsAvailable() > 0) {
-            return true;
-          }
-        }
-  
-        return false;
-      })
-  
-      if (tile) {
-        // Employ the citizen at the building
-        tile.building.workers.push(this);
-        return tile.building;
-      } else {
-        return null;
-      }
-    },
-
-    /**
-     * Sets the job for the citizen
-     * @param {*} job 
-     */
-    setJob(job) {
-      this.job = job;
-    },
-
-    /**
-     * Returns an HTML representation of this object
-     * @returns {string}
-     */
-    toHTML() {
-      return `
-        <li>${this.name}
-          <ul style="padding-left:8px; font-size: small">
-            <li>Age: ${this.age}</li>
-            <li>Job: ${this.job?.name ?? 'Unemployed'}</li>
-          </ul>
-        </li>
-      `;
+  /**
+   * Sets the initial state of the citizen
+   */
+  #initializeState() {
+    if (this.age < config.citizen.minWorkingAge) {
+      this.state = 'school';
+    } else if (this.age >= config.citizen.retirementAge) {
+      this.state = 'retired';
+    } else {
+      this.state = 'unemployed';
     }
   }
+
+  /**
+   * Steps the state of the citizen forward in time by one simulation step
+   * @param {object} city 
+   */
+  step(city) {
+    switch (this.state) {
+      case 'idle':
+      case 'school':
+      case 'retired':
+        // Action - None
+
+        // Transitions - None
+
+        break;
+      case 'unemployed':
+        // Action - Look for a job
+        this.workplace = this.#findJob(city);
+
+        // Transitions
+        if (this.workplace) {
+          this.state = 'employed';
+        }
+
+        break;
+      case 'employed':
+        // Actions - None
+
+        // Transitions
+        if (!this.workplace) {
+          this.state = 'unemployed';
+        }
+
+        break;
+      default:
+        console.error(`Citizen ${this.id} is in an unknown state (${this.state})`);
+    }
+  }
+
+  /**
+   * Handles any clean up needed before a building is removed
+   */
+  dispose() {
+    // Remove resident from its  workplace
+    const workerIndex = this.workplace?.workers.indexOf(this);
+
+    if (workerIndex !== undefined && workerIndex > -1) {
+      this.workplace.workers.splice(workerIndex);
+    }
+  }
+
+  /**
+   * Search for a job nearby
+   * @param {object} city 
+   * @returns 
+   */
+  #findJob(city) {
+    const tile = city.findTile(this.residence, (tile) => {
+      // Search for an industrial or commercial building with at least one available job
+      if (tile.building?.type === 'industrial' || 
+          tile.building?.type === 'commercial') {
+        if (tile.building.numberOfJobsAvailable() > 0) {
+          return true;
+        }
+      }
+
+      return false;
+    }, config.citizen.maxJobSearchDistance);
+
+    if (tile) {
+      // Employ the citizen at the building
+      tile.building.workers.push(this);
+      return tile.building;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the workplace for the citizen
+   * @param {CommercialZone | IndustrialZone} workplace 
+   */
+  setWorkplace(workplace) {
+    this.workplace = workplace;
+  }
+
+  /**
+   * Returns an HTML representation of this object
+   * @returns {string}
+   */
+  toHTML() {
+    return `
+      <li style="font-size:small">${this.name} (Age: ${this.age} | State: ${this.state})
+        <ul style="padding-left:8px">
+          <li>Job: ${this.workplace?.name ?? 'N/A'}</li>
+        </ul>
+      </li>
+    `;
+  }
+}
+
+function generateRandomName() {
+  const firstNames = [
+    'Emma', 'Olivia', 'Ava', 'Sophia', 'Isabella',
+    'Liam', 'Noah', 'William', 'James', 'Benjamin',
+    'Elizabeth', 'Margaret', 'Alice', 'Dorothy', 'Eleanor',
+    'John', 'Robert', 'William', 'Charles', 'Henry',
+    'Alex', 'Taylor', 'Jordan', 'Casey', 'Robin'
+  ];
+
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Jones', 'Brown',
+    'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor',
+    'Anderson', 'Thomas', 'Jackson', 'White', 'Harris',
+    'Clark', 'Lewis', 'Walker', 'Hall', 'Young',
+    'Lee', 'King', 'Wright', 'Adams', 'Green'
+  ];
+
+  const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  
+  return randomFirstName + ' ' + randomLastName;
 }
