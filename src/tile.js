@@ -1,57 +1,90 @@
-import { createBuilding } from './buildings/buildings.js';
+import { Building } from './buildings/building.js';
+import { createBuilding } from './buildings/buildingFactory.js';
 
-/**
- * Creates a new tile object
- * @param {number} x The x-coordinate of the tile
- * @param {number} y The y-coordinate of the tile
- * @returns A new Tile instance
- */
-export function createTile(x, y) {
-  return {
-    /* PROPERTIES */
-    id: crypto.randomUUID(),
-    x,
-    y,
-    terrainId: 'ground',
-    building: null,
-
-    /* METHODS */
-
-    distanceTo(tile) {
-      return Math.abs(this.x - tile.x) + 
-             Math.abs(this.y - tile.y);
-    },
+export class Tile {
+  /**
+   * Creates a new `Tile` object
+   * @param {number} x The x-coordinate of the tile 
+   * @param {number} y The y-coordinate of the tile
+   */
+  constructor(x, y) {
+    /**
+     * Unique identifier for this tile
+     * @type {string}
+     */
+    this.id = crypto.randomUUID();
+    
+    /**
+     * The x-coordinate of the tile
+     * @type {number}
+     */
+    this.x = x;
 
     /**
-     * Removes the building from this tile
+     * The y-coordinate of the tile
+     * @type {number}
      */
-    removeBuilding() {
-      this.building.dispose();
-      this.building = null;
-    },
+    this.y = y;
 
     /**
-     * Places a new building onto the tile
-     * @param {string} tile 
+     * The type of terrain
+     * @type {string}
      */
-    placeBuilding(buildingType) {
-      this.building = createBuilding(x, y, buildingType);
-    },
+    this.terrain = 'ground';
 
     /**
-     * 
-     * @returns {string} HTML representation of this object
+     * The building on this tile
+     * @type {Building?}
      */
-    toHTML() {
-      let html = '';
-      html += `Coordinates: (X: ${this.x}, Y: ${this.y})<br>`;
-      html += `Terrain: ${this.terrainId}<br>`;
+    this.building = null;
+  }
 
-      if (this.building) {
-        html += this.building.toHTML();
-      }
+  /**
+   * Gets the Manhattan distance between two tiles
+   * @param {Tile} tile 
+   * @returns 
+   */
+  distanceTo(tile) {
+    return Math.abs(this.x - tile.x) + Math.abs(this.y - tile.y);
+  }
 
-      return html;
+  /**
+   * Performs a full refresh of the tile state
+   * @param {City} city
+   */
+  refresh(city) {
+    this.building?.refresh(city);
+  }
+
+  /**
+   * Removes the building from this tile
+   */
+  removeBuilding() {
+    this.building?.dispose();
+    this.building = null;
+  }
+
+  /**
+   * Places a new building onto the tile
+   * @param {string} type The building type to create
+   */
+  placeBuilding(type) {
+    this.building = createBuilding(this.x, this.y, type);
+  }
+
+  /**
+   * 
+   * @returns {string} HTML representation of this object
+   */
+  toHTML() {
+    let html = '';
+    html += `Coordinates: (X: ${this.x}, Y: ${this.y})<br>`;
+    html += `Terrain: ${this.terrain}<br>`;
+
+    if (this.building) {
+      html += this.building.toHTML();
     }
-  };
-}
+
+    return html;
+  }
+};

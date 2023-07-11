@@ -1,0 +1,211 @@
+import * as THREE from 'three';
+import { createCameraManager } from './cameraManager.js';
+import { AssetManager } from './assetManager.js';
+import { City } from './city.js';
+
+/** 
+ * Manager for the Three.js scene. Handles rendering of a `City` object
+ */
+export class SceneManager {
+  /**
+   * Initializes a new Scene object
+   * @param {City} city 
+   */
+  constructor(city) {
+    this.renderer = new THREE.WebGLRenderer();
+    this.scene = new THREE.Scene();
+    this.gameWindow = document.getElementById('render-target');
+    this.assetManager = new AssetManager();
+    this.cameraManager = createCameraManager(this.gameWindow);
+
+     /**
+     * 2D array of building meshes at each tile location
+     * @type {THREE.Mesh[][]}
+     */
+    this.buildings = [];
+
+    // Configure the renderer
+    this.renderer.setSize(this.gameWindow.offsetWidth, this.gameWindow.offsetHeight);
+    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // Add the renderer to the DOM
+    this.gameWindow.appendChild(this.renderer.domElement);
+    window.addEventListener('resize', this.onResize.bind(this), false);
+
+    // Variables for object selection
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+
+    // Last object the user has clicked on
+    this.activeObject = null;
+    // Object the mouse is currently hovering over
+    this.hoverObject = null;
+
+    this.#initialize(city);
+  }
+
+  /**
+   * Initalizes the scene, clearing all existing assets
+   */
+  #initialize(city) {
+    this.scene.clear();
+    this.buildings = [];
+
+    // Initialize the buildings array
+    for (let x = 0; x < city.size; x++) {
+      const column = [];
+      for (let y = 0; y < city.size; y++) {
+        const tile = city.getTile(x, y);
+        const mesh = this.assetManager.createGroundMesh(tile);
+        this.scene.add(mesh);
+        column.push(mesh);
+      }
+      this.buildings.push([...Array(city.size)]);
+    }
+
+    this.#setupLights();
+  }
+
+  /**
+   * Setup the lights for the scene
+   */
+  #setupLights() {
+    const sun = new THREE.DirectionalLight(0xffffff, 1)
+    sun.position.set(20, 20, 20);
+    sun.castShadow = true;
+    sun.shadow.camera.left = -10;
+    sun.shadow.camera.right = 10;
+    sun.shadow.camera.top = 0;
+    sun.shadow.camera.bottom = -10;
+    sun.shadow.mapSize.width = 1024;
+    sun.shadow.mapSize.height = 1024;
+    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.far = 50;
+    this.scene.add(sun);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  }
+
+  /**
+   * Applies the latest changes in the data model to the scene
+   * @param {City} city The city data model
+   */
+  applyChanges(city) {
+    for (let x = 0; x < city.size; x++) {
+      for (let y = 0; y < city.size; y++) {
+        const tile = city.getTile(x, y);
+        const existingBuildingMesh = this.buildings[x][y];
+
+        // If the player removes a building, remove it from the this.scene
+        if (!tile.building && existingBuildingMesh) {
+          this.scene.remove(existingBuildingMesh);
+          this.buildings[x][y] = null;
+        }
+
+        // If the data model has changed, update the mesh
+        if (tile.building && tile.building.isMeshOutOfDate) {
+          this.scene.remove(existingBuildingMesh);
+          this.buildings[x][y] = this.assetManager.createBuildingMesh(tile);
+          this.scene.add(this.buildings[x][y]);
+          tile.building.isMeshOutOfDate = false;
+        }
+      }
+    }
+  }
+
+  /**
+   * Starts the renderer
+   */
+  start() {
+    this.renderer.setAnimationLoop(this.#draw.bind(this));
+  }
+
+  /**
+   * Stops the renderer
+   */
+  stop() {
+    this.renderer.setAnimationLoop(null);
+  }
+
+  /**
+   * Render the contents of the this.scene
+   */
+  #draw() {
+    this.renderer.render(this.scene, this.cameraManager.camera);
+  }
+
+  /**
+   * Sets the object that is currently highlighted
+   * @param {THREE.Mesh} mesh 
+   */
+  setHighlightedMesh(mesh) {
+    // Unhighlight the previously hovered object (if it isn't currently selected)
+    if (this.hoverObject && this.hoverObject !== this.activeObject) {
+      this.#setMeshEmission(this.hoverObject, 0x000000);
+    }
+
+    this.hoverObject = mesh;
+
+    if (this.hoverObject) {
+      // Highlight the new hovered object (if it isn't currently selected))
+      this.#setMeshEmission(this.hoverObject, 0x555555);
+    }
+  }
+
+  /**
+   * Sets the emission color of the mesh 
+   * @param {THREE.Mesh} mesh 
+   * @param {number} color 
+   */
+  #setMeshEmission(mesh, color) {
+    if (!mesh) return;
+    if (Array.isArray(mesh.material)) {
+      mesh.material.forEach(material => material.emissive?.setHex(color));
+    } else {
+      mesh.material.emissive?.setHex(color);
+    }
+  }
+
+  /**
+   * Gets the mesh currently under the this.mouse cursor. If there is nothing under
+   * the this.mouse cursor, returns null
+   * @param {MouseEvent} event Mouse event
+   * @returns {THREE.Mesh?}
+   */
+  getSelectedObject(event) {
+    // Compute normalized this.mouse coordinates
+    this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
+
+    let intersections = this.raycaster.intersectObjects(this.scene.children, false);
+    if (intersections.length > 0) {
+      return intersections[0].object;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the currently selected object and highlights it
+   * @param {object} object 
+   */
+  setActiveObject(object) {
+    // Clear highlight on previously active object
+    this.#setMeshEmission(this.activeObject, 0x000000);
+    this.activeObject = object;
+    // Highlight new active object
+    this.#setMeshEmission(this.activeObject, 0xaaaa55);
+  }
+
+  /**
+   * Resizes the renderer to fit the current game window
+   */
+  onResize() {
+    this.cameraManager.camera.aspect = this.gameWindow.offsetWidth / this.gameWindow.offsetHeight;
+    this.cameraManager.camera.updateProjectionMatrix();
+    this.renderer.setSize(this.gameWindow.offsetWidth, this.gameWindow.offsetHeight);
+  }
+}

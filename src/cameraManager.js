@@ -7,8 +7,8 @@ export function createCameraManager(gameWindow) {
   const RIGHT_MOUSE_BUTTON = 2;
 
   // Camera constraints
-  const MIN_CAMERA_RADIUS = 10;
-  const MAX_CAMERA_RADIUS = 100;
+  const MIN_CAMERA_RADIUS = 5;
+  const MAX_CAMERA_RADIUS = 35;
   const MIN_CAMERA_ELEVATION = 10;
   const MAX_CAMERA_ELEVATION = 90;
 
@@ -23,7 +23,7 @@ export function createCameraManager(gameWindow) {
   // -- Variables --
   const camera = new THREE.PerspectiveCamera(45, gameWindow.offsetWidth / gameWindow.offsetHeight, 0.1, 1000);
   let cameraOrigin = new THREE.Vector3(6, 0, 6);
-  let cameraRadius = 30;
+  let cameraRadius = 5
   let cameraAzimuth = 135;
   let cameraElevation = 45;
 
