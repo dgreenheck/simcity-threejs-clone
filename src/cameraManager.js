@@ -7,7 +7,7 @@ export function createCameraManager(gameWindow) {
   const RIGHT_MOUSE_BUTTON = 2;
 
   // Camera constraints
-  const MIN_CAMERA_RADIUS = 5;
+  const MIN_CAMERA_RADIUS = 1;
   const MAX_CAMERA_RADIUS = 35;
   const MIN_CAMERA_ELEVATION = 10;
   const MAX_CAMERA_ELEVATION = 90;

@@ -5,5 +5,6 @@ export class Road extends Building {
   constructor(x, y) {
     super(x, y);
     this.type = 'road';
+    this.hideTerrain = true;
   }
 }

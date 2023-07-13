@@ -26,6 +26,11 @@ export class Building {
      * @type {boolean}
      */
     this.isMeshOutOfDate = true;
+
+    /**
+     * True if the terrain should not be rendered with this building type
+     */
+    this.hideTerrain = false;
   }
 
   /**

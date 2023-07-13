@@ -1,53 +1,88 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Tile } from './tile.js';
-import { Zone } from './buildings/zone.js';
 
 export class AssetManager {
-  #textureLoader = new THREE.TextureLoader();
-  #gltfLoader = new GLTFLoader();
-  #cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  textureLoader = new THREE.TextureLoader();
+  modelLoader = new GLTFLoader();
 
-  #models = {};
-
-  /* Texture library */
-  // Credit: https://opengameart.org/content/free-urban-textures-buildings-apartments-shop-fronts
-  #textures = {
-    'grass': this.#loadTexture('public/textures/grass.png'),
-    'residential1': this.#loadTexture('public/textures/residential1.png'),
-    'residential2': this.#loadTexture('public/textures/residential2.png'),
-    'residential3': this.#loadTexture('public/textures/residential3.png'),
-    'commercial1': this.#loadTexture('public/textures/commercial1.png'),
-    'commercial2': this.#loadTexture('public/textures/commercial2.png'),
-    'commercial3': this.#loadTexture('public/textures/commercial3.png'),
-    'industrial1': this.#loadTexture('public/textures/industrial1.png'),
-    'industrial2': this.#loadTexture('public/textures/industrial2.png'),
-    'industrial3': this.#loadTexture('public/textures/industrial3.png'),
+  textures = {
+    'albedo': this.loadTexture('public/textures/atlas-albedo-LPEC.png'),
+    'emission-day': this.loadTexture('public/textures/atlas-emission-LPEC.png'),
+    'emission-night': this.loadTexture('public/textures/atlas-emission-night-LPEC.png'),
+    'gradient': this.loadTexture('public/textures/atlas-gradient-LPEC.png'),
+    'specular': this.loadTexture('public/textures/atlas-specular-LPEC.png'),
   };
 
-  constructor() {
-    this.#loadModels();
+  models = {};
+
+  constructor(onLoad) {
+    this.loadModel('residential', 'building-house-block.glb', 100 / 30);
+    this.loadModel('grass', 'tile-plain_grass.glb', 1 / 30, true, false);
+    this.loadModel('road', 'tile-road-intersection.glb', 100 / 30);
+
+    this.onLoad = onLoad;
+  }
+
+  getModel(modelName) {
+    const mesh = this.models[modelName].clone();
+    // Clone materials so each object has a unique material
+    // This is so we can set the modify the texture of each
+    // mesh independently (e.g. highlight on mouse over,
+    // abandoned buildings, etc.))
+    mesh.material = mesh.material.clone();
+    console.log(mesh);
+    return mesh;
+  }
+
+  /**
+   * Loads the texture at the specified URL
+   * @param {string} url 
+   * @returns {THREE.Texture} A texture object
+   */
+  loadTexture(url) {
+    const texture = this.textureLoader.load(url)
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.flipY = false;
+    return texture;
   }
 
   /**
    * Load models into the scene
+   * @param {string} url The URL of the model to load
    */
-  #loadModels() {
-    this.#gltfLoader.load(
-      'public/models/under_construction.gltf',
-      (gltf) => {
-        const mesh = gltf.scene;
-        mesh.scale.set(0.01, 0.01, 0.01);
+  loadModel(name, filename, scale = 1, receiveShadow = true, castShadow = true) {
+    this.modelLoader.load(`public/models/${filename}`, 
+      (glb) => {
+        /**
+         * @type {THREE.Group}
+         */
+        let model = glb.scene.children[0].children[0];
 
-        mesh.traverse((child) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
+        model.material = new THREE.MeshLambertMaterial({
+          name: "customMaterial",
+          map: this.textures.albedo,
+          specularMap: this.textures.specular
         });
-      
-        this.#models['underConstruction'] = mesh;
-      });
+
+        model.position.set(0, 0, 0);
+        model.scale.set(scale, scale, scale);
+        model.receiveShadow = receiveShadow;
+        model.castShadow = castShadow;
+        this.models[name] = model;
+
+        console.log(model);
+
+        if (Object.keys(this.models).length === 3) {
+          this.onLoad();
+        }
+      },
+    (xhr) => {
+      console.log(`${name} ${(xhr.loaded / xhr.total) * 100 }% loaded`);
+    },
+    (error) => {
+      console.error(error);
+    });
   }
 
   /**
@@ -56,11 +91,9 @@ export class AssetManager {
    * @returns {THREE.Mesh}
    */
   createGroundMesh(tile) {
-    const material = new THREE.MeshLambertMaterial({ map: this.#textures.grass });
-    const mesh = new THREE.Mesh(this.#cubeGeometry, material);
+    const mesh = this.getModel('grass');
     mesh.userData = tile;
-    mesh.position.set(tile.x, -0.5, tile.y);
-    mesh.receiveShadow = true;
+    mesh.position.set(tile.x, 0, tile.y);
     return mesh;
   }
 
@@ -76,9 +109,9 @@ export class AssetManager {
       case 'residential':
       case 'commercial':
       case 'industrial':
-        return this.#createZoneMesh(tile);
+        return this.createZoneMesh(tile);
       case 'road':
-        return this.#createRoadMesh(tile);
+        return this.createRoadMesh(tile);
       default:
         console.warn(`Mesh type ${tile.building?.type} is not recognized.`);
         return null;
@@ -90,40 +123,11 @@ export class AssetManager {
    * @param {Tile} tile The tile that the zone sits on
    * @returns {THREE.Mesh} A mesh object
    */
-  #createZoneMesh(tile) {
+  createZoneMesh(tile) {
     const zone = tile.building;
-
-    // If zone is not yet developed, show it as under construction
-    if (!zone.developed) {
-      const mesh = this.#getModel('underConstruction');
-      mesh.position.set(zone.x, 0.01, zone.y);
-      return mesh;
-    }
-
-    const textureName = zone.type + zone.style;
-    const topMaterial = this.#getTopMaterial();
-    const sideMaterial = this.#getSideMaterial(textureName);
-
-    if (zone.abandoned) {
-      sideMaterial.color.setHex(0x555555);
-    }
-
-    let materialArray = [
-      sideMaterial, // +X
-      sideMaterial, // -X
-      topMaterial, // +Y
-      topMaterial, // -Y
-      sideMaterial, // +Z
-      sideMaterial, // -Z
-    ];
-
-    let mesh = new THREE.Mesh(this.#cubeGeometry, materialArray);
+    let mesh = this.getModel('residential');
     mesh.userData = tile;
-    mesh.scale.set(0.8, 0.8 * zone.level, 0.8);
-    mesh.material.forEach(material => material.map?.repeat.set(1, zone.level));
-    mesh.position.set(zone.x, 0.4 * zone.level, zone.y);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    mesh.position.set(zone.x, 0, zone.y);
     return mesh;
   }
 
@@ -132,40 +136,11 @@ export class AssetManager {
    * @param {Tile} tile The tile the road sits on
    * @returns {THREE.Mesh} A mesh object
    */
-  #createRoadMesh(tile) {
+  createRoadMesh(tile) {
     const road = tile.building;
-    const material = new THREE.MeshLambertMaterial({ color: 0x222222 });
-    const mesh = new THREE.Mesh(this.#cubeGeometry, material);
+    const mesh = this.getModel('road');
     mesh.userData = tile;
-    mesh.scale.set(1, 0.02, 1);
-    mesh.position.set(road.x, 0.01, road.y);
-    mesh.receiveShadow = true;
+    mesh.position.set(road.x, 0, road.y);
     return mesh;
-  }
-
-  /**
-   * Loads the texture at the specified URL
-   * @param {string} url 
-   * @returns {THREE.Texture} A texture object
-   */
-  #loadTexture(url) {
-    const tex = this.#textureLoader.load(url)
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(1, 1);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
-  }
-
-  #getModel(modelName) {
-    return this.#models[modelName].clone();
-  }
-
-  #getTopMaterial() {
-    return new THREE.MeshLambertMaterial({ color: 0x555555 });
-  }
-  
-  #getSideMaterial(textureName) {
-    return new THREE.MeshLambertMaterial({ map: this.#textures[textureName].clone() })
   }
 }
