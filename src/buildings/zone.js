@@ -11,7 +11,7 @@ export class Zone extends Building {
     /**
      * The mesh style to use when rendering
      */
-    this.style = Math.floor(3 * Math.random()) + 1;
+    this.style = String.fromCharCode(Math.floor(3 * Math.random()) + 65);
 
     /**
      * True if this zone is abandoned

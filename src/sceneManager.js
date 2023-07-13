@@ -12,17 +12,14 @@ export class SceneManager {
    * @param {City} city 
    */
   constructor(city, onLoad) {
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({ 
+      antialias: true
+    });
     this.scene = new THREE.Scene();
     this.gameWindow = document.getElementById('render-target');
     this.assetManager = new AssetManager(() => {
       console.log('assets loaded');
       this.#initialize(city);
-
-      const cube = new THREE.BoxGeometry();
-      const material = new THREE.MeshBasicMaterial();
-      this.scene.add(new THREE.Mesh(cube, material))
-
       onLoad();
     });
     this.cameraManager = createCameraManager(this.gameWindow);
@@ -97,10 +94,8 @@ export class SceneManager {
     sun.shadow.camera.bottom = -10;
     sun.shadow.mapSize.width = 1024;
     sun.shadow.mapSize.height = 1024;
-    sun.shadow.blurSamples = 4;
-    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 50;
-    sun.shadow.bias = -0.0003;
     this.scene.add(sun);
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.2));
   }

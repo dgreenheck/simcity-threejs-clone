@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Tile } from './tile.js';
+import models from './models.js';
 
 export class AssetManager {
   textureLoader = new THREE.TextureLoader();
@@ -14,75 +15,18 @@ export class AssetManager {
     'specular': this.loadTexture('public/textures/atlas-specular-LPEC.png'),
   };
 
-  models = {};
+  meshes = {};
 
   constructor(onLoad) {
-    this.loadModel('residential', 'building-house-block.glb', 100 / 30);
-    this.loadModel('grass', 'tile-plain_grass.glb', 1 / 30, true, false);
-    this.loadModel('road', 'tile-road-intersection.glb', 100 / 30);
+    this.modelCount = Object.keys(models).length;
+    this.loadedModelCount = 0;
+
+    for (const [name, meta] of Object.entries(models)) {
+      console.log(meta);
+      this.loadModel(name, meta);
+    }
 
     this.onLoad = onLoad;
-  }
-
-  getModel(modelName) {
-    const mesh = this.models[modelName].clone();
-    // Clone materials so each object has a unique material
-    // This is so we can set the modify the texture of each
-    // mesh independently (e.g. highlight on mouse over,
-    // abandoned buildings, etc.))
-    mesh.material = mesh.material.clone();
-    console.log(mesh);
-    return mesh;
-  }
-
-  /**
-   * Loads the texture at the specified URL
-   * @param {string} url 
-   * @returns {THREE.Texture} A texture object
-   */
-  loadTexture(url) {
-    const texture = this.textureLoader.load(url)
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.flipY = false;
-    return texture;
-  }
-
-  /**
-   * Load models into the scene
-   * @param {string} url The URL of the model to load
-   */
-  loadModel(name, filename, scale = 1, receiveShadow = true, castShadow = true) {
-    this.modelLoader.load(`public/models/${filename}`, 
-      (glb) => {
-        /**
-         * @type {THREE.Group}
-         */
-        let model = glb.scene.children[0].children[0];
-
-        model.material = new THREE.MeshLambertMaterial({
-          name: "customMaterial",
-          map: this.textures.albedo,
-          specularMap: this.textures.specular
-        });
-
-        model.position.set(0, 0, 0);
-        model.scale.set(scale, scale, scale);
-        model.receiveShadow = receiveShadow;
-        model.castShadow = castShadow;
-        this.models[name] = model;
-
-        console.log(model);
-
-        if (Object.keys(this.models).length === 3) {
-          this.onLoad();
-        }
-      },
-    (xhr) => {
-      console.log(`${name} ${(xhr.loaded / xhr.total) * 100 }% loaded`);
-    },
-    (error) => {
-      console.error(error);
-    });
   }
 
   /**
@@ -91,7 +35,7 @@ export class AssetManager {
    * @returns {THREE.Mesh}
    */
   createGroundMesh(tile) {
-    const mesh = this.getModel('grass');
+    const mesh = this.getMesh('grass');
     mesh.userData = tile;
     mesh.position.set(tile.x, 0, tile.y);
     return mesh;
@@ -125,7 +69,9 @@ export class AssetManager {
    */
   createZoneMesh(tile) {
     const zone = tile.building;
-    let mesh = this.getModel('residential');
+    const modelName = `${zone.type}-${zone.style}${zone.level}`;
+    console.log(modelName);
+    let mesh = this.getMesh(modelName);
     mesh.userData = tile;
     mesh.position.set(zone.x, 0, zone.y);
     return mesh;
@@ -138,9 +84,71 @@ export class AssetManager {
    */
   createRoadMesh(tile) {
     const road = tile.building;
-    const mesh = this.getModel('road');
+    const mesh = this.getMesh('road');
     mesh.userData = tile;
     mesh.position.set(road.x, 0, road.y);
     return mesh;
+  }
+  
+  /**
+   * Gets a mesh with the specified name. Clones the mesh/material data
+   * @param {string} name The name of the mesh to retrieve
+   * @returns 
+   */
+  getMesh(name) {
+    const mesh = this.meshes[name].clone();
+    // Clone materials so each object has a unique material
+    // This is so we can set the modify the texture of each
+    // mesh independently (e.g. highlight on mouse over,
+    // abandoned buildings, etc.))
+    mesh.material = mesh.material.clone();
+    return mesh;
+  }
+
+  /**
+   * Loads the texture at the specified URL
+   * @param {string} url 
+   * @returns {THREE.Texture} A texture object
+   */
+  loadTexture(url) {
+    const texture = this.textureLoader.load(url)
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.flipY = false;
+    return texture;
+  }
+
+  /**
+   * Load the 3D models
+   * @param {string} url The URL of the model to load
+   */
+  loadModel(name, {filename, scale = 1, receiveShadow = true, castShadow = true}) {
+    this.modelLoader.load(`public/models/${filename}`,
+      (glb) => {
+        let mesh = glb.scene.children[0].children[0];
+
+        mesh.material = new THREE.MeshLambertMaterial({
+          map: this.textures.albedo,
+          specularMap: this.textures.specular
+        });
+
+        mesh.position.set(0, 0, 0);
+        mesh.scale.set(scale / 30, scale / 30, scale / 30);
+        mesh.receiveShadow = receiveShadow;
+        mesh.castShadow = castShadow;
+
+        this.meshes[name] = mesh;
+
+        // Once all models are loaded
+        this.loadedModelCount++;
+        if (this.loadedModelCount == this.modelCount) {
+          this.onLoad()
+        }
+      },
+      (xhr) => {
+        console.log(`${name} ${(xhr.loaded / xhr.total) * 100}% loaded`);
+      },
+      (error) => {
+        console.error(error);
+      });
   }
 }
