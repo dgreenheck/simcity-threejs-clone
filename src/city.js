@@ -20,13 +20,21 @@ export class City {
     }  
   }
  
-  /** Returns the title at the coordinates
+  /** Returns the title at the coordinates. If the coordinates
+   * are out of bounds, then `null` is returned.
    * @param {number} x The x-coordinate of the tile
    * @param {number} y The y-coordinate of the tile
-   * @returns {Tile}
+   * @returns {Tile | null}
    */
   getTile(x, y) {
-    return this.tiles[x][y];
+    if (x < 0 || 
+        y < 0 || 
+        x >= this.size || 
+        y >= this.size) {
+      return null;
+    } else {
+      return this.tiles[x][y];
+    }
   }
 
   getPopulation() {

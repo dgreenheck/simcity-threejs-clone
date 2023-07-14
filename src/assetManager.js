@@ -3,16 +3,15 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Tile } from './tile.js';
 import models from './models.js';
 
+const DEG2RAD = Math.PI / 180.0;
+
 export class AssetManager {
   textureLoader = new THREE.TextureLoader();
   modelLoader = new GLTFLoader();
 
   textures = {
-    'albedo': this.loadTexture('public/textures/atlas-albedo-LPEC.png'),
-    'emission-day': this.loadTexture('public/textures/atlas-emission-LPEC.png'),
-    'emission-night': this.loadTexture('public/textures/atlas-emission-night-LPEC.png'),
-    'gradient': this.loadTexture('public/textures/atlas-gradient-LPEC.png'),
-    'specular': this.loadTexture('public/textures/atlas-specular-LPEC.png'),
+    'base': this.loadTexture('public/textures/base0.png'),
+    'specular': this.loadTexture('public/textures/specular.png'),
   };
 
   meshes = {};
@@ -35,7 +34,7 @@ export class AssetManager {
    * @returns {THREE.Mesh}
    */
   createGroundMesh(tile) {
-    const mesh = this.getMesh('grass');
+    const mesh = this.getMesh('grass', false);
     mesh.userData = tile;
     mesh.position.set(tile.x, 0, tile.y);
     return mesh;
@@ -84,8 +83,9 @@ export class AssetManager {
    */
   createRoadMesh(tile) {
     const road = tile.building;
-    const mesh = this.getMesh('road');
+    const mesh = this.getMesh(`${road.type}-${road.style}`);
     mesh.userData = tile;
+    mesh.rotation.set(0, road.rotation * DEG2RAD, 0);
     mesh.position.set(road.x, 0, road.y);
     return mesh;
   }
@@ -93,7 +93,7 @@ export class AssetManager {
   /**
    * Gets a mesh with the specified name. Clones the mesh/material data
    * @param {string} name The name of the mesh to retrieve
-   * @returns 
+   * @returns {THREE.Mesh}
    */
   getMesh(name) {
     const mesh = this.meshes[name].clone();
@@ -127,7 +127,7 @@ export class AssetManager {
         let mesh = glb.scene.children[0].children[0];
 
         mesh.material = new THREE.MeshLambertMaterial({
-          map: this.textures.albedo,
+          map: this.textures.base0,
           specularMap: this.textures.specular
         });
 

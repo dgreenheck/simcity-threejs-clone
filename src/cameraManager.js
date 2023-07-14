@@ -9,8 +9,8 @@ export function createCameraManager(gameWindow) {
   // Camera constraints
   const MIN_CAMERA_RADIUS = 1;
   const MAX_CAMERA_RADIUS = 35;
-  const MIN_CAMERA_ELEVATION = 10;
-  const MAX_CAMERA_ELEVATION = 90;
+  const MIN_CAMERA_ELEVATION = 0;
+  const MAX_CAMERA_ELEVATION = 80;
 
   // Camera sensitivity
   const AZIMUTH_SENSITIVITY = 0.2;

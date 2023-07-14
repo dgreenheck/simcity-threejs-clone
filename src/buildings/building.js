@@ -31,6 +31,11 @@ export class Building {
      * True if the terrain should not be rendered with this building type
      */
     this.hideTerrain = false;
+
+    /**
+     * Custom rotation angle for this tile
+     */
+    this.rotation = 0;
   }
 
   /**

@@ -32,7 +32,7 @@ export class Zone extends Building {
      * The building level (1, 2 or 3)
      * @type {number}
      */
-    this.level = 1;
+    this.level = Math.floor(3 * Math.random() + 1);
 
     /**
      * Number of steps this zone has not met its development criteria,
