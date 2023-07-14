@@ -10,7 +10,7 @@ export class AssetManager {
   modelLoader = new GLTFLoader();
 
   textures = {
-    'base': this.loadTexture('public/textures/base0.png'),
+    'base': this.loadTexture('public/textures/base.png'),
     'specular': this.loadTexture('public/textures/specular.png'),
   };
 
@@ -69,9 +69,9 @@ export class AssetManager {
   createZoneMesh(tile) {
     const zone = tile.building;
     const modelName = `${zone.type}-${zone.style}${zone.level}`;
-    console.log(modelName);
     let mesh = this.getMesh(modelName);
     mesh.userData = tile;
+    mesh.rotation.set(0, zone.rotation * DEG2RAD, 0);
     mesh.position.set(zone.x, 0, zone.y);
     return mesh;
   }
@@ -127,7 +127,7 @@ export class AssetManager {
         let mesh = glb.scene.children[0].children[0];
 
         mesh.material = new THREE.MeshLambertMaterial({
-          map: this.textures.base0,
+          map: this.textures.base,
           specularMap: this.textures.specular
         });
 

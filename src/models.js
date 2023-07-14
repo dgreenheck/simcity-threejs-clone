@@ -11,37 +11,37 @@ export default {
   },
   "residential-C1": {
     "filename": "building-house-family-large.glb",
-    "scale": 200,
+    "scale": 150,
     "front": 0
   },
   "residential-A2": {
     "filename": "building-block-4floor-short.glb",
-    "scale": 200,
+    "scale": 175,
     "front": 0
   },
   "residential-B2": {
     "filename": "building-block-4floor-corner.glb",
-    "scale": 200,
+    "scale": 175,
     "front": 0
   },
   "residential-C2": {
     "filename": "building-block-5floor.glb",
-    "scale": 200,
+    "scale": 175,
     "front": 0
   },
   "residential-A3": {
     "filename": "building-office-balcony.glb",
-    "scale": 150,
+    "scale": 125,
     "front": 0
   },
   "residential-B3": {
     "filename": "building-office-pyramid.glb",
-    "scale": 150,
+    "scale": 125,
     "front": 0
   },
   "residential-C3": {
     "filename": "building-office-tall.glb",
-    "scale": 150,
+    "scale": 125,
     "front": 0
   },
   "commercial-A1": {
@@ -51,12 +51,42 @@ export default {
   },
   "commercial-B1": {
     "filename": "building-burger-joint.glb",
-    "scale": 200,
+    "scale": 150,
     "front": 0
   },
   "commercial-C1": {
     "filename": "building-restaurant.glb",
     "scale": 200,
+    "front": 0
+  },
+  "commercial-A2": {
+    "filename": "building-cinema.glb",
+    "scale": 150,
+    "front": 0
+  },
+  "commercial-B2": {
+    "filename": "building-casino.glb",
+    "scale": 150,
+    "front": 0
+  },
+  "commercial-C2": {
+    "filename": "data-center.glb",
+    "scale": 100,
+    "front": 0
+  },
+  "commercial-A3": {
+    "filename": "building-office.glb",
+    "scale": 100,
+    "front": 0
+  },
+  "commercial-B3": {
+    "filename": "building-office-big.glb",
+    "scale": 100,
+    "front": 0
+  },
+  "commercial-C3": {
+    "filename": "building-skyscraper.glb",
+    "scale": 100,
     "front": 0
   },
   "industrial-A1": {

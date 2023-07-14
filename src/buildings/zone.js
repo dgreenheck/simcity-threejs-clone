@@ -7,7 +7,8 @@ import { Building } from './building.js';
 export class Zone extends Building {
   constructor(x, y) {
     super(x, y);
-
+    this.rotation = 90 * Math.floor(4 * Math.random());
+    
     /**
      * The mesh style to use when rendering
      */
