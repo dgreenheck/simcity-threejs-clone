@@ -153,10 +153,19 @@ export class Citizen {
    */
   toHTML() {
     return `
-      <li style="font-size:small">${this.name} (Age: ${this.age} | State: ${this.state})
-        <ul style="padding-left:8px">
-          <li>Job: ${this.workplace?.name ?? 'N/A'}</li>
-        </ul>
+      <li class="info-citizen">
+        <span class="info-citizen-name">${this.name}</span>
+        <br>
+        <span class="info-citizen-details">
+          <span>
+            <img class="info-citizen-icon" src="/public/icons/calendar.png">
+            ${this.age} 
+          </span>
+          <span>
+            <img class="info-citizen-icon" src="/public/icons/job.png">
+            ${this.state}
+          </span>
+        </span>
       </li>
     `;
   }

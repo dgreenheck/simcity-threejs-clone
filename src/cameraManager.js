@@ -6,7 +6,7 @@ const MIDDLE_MOUSE_BUTTON = 4;
 const RIGHT_MOUSE_BUTTON = 2;
 
 // Camera constraints
-const CAMERA_SIZE = 10;
+const CAMERA_SIZE = 5;
 const MIN_CAMERA_RADIUS = 0.1;
 const MAX_CAMERA_RADIUS = 1;
 const MIN_CAMERA_ELEVATION = 0;
@@ -31,7 +31,7 @@ export class CameraManager {
       CAMERA_SIZE / -2, 1, 1000);
       
     this.cameraOrigin = new THREE.Vector3(6, 0, 6);
-    this.cameraRadius = 0.2;
+    this.cameraRadius = 0.5;
     this.cameraAzimuth = 135;
     this.cameraElevation = 45;
   }

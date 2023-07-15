@@ -111,11 +111,23 @@ export class Zone extends Building {
    */
   toHTML() {
     let html = super.toHTML();
-    html += `Style: ${this.style}<br>`;
-    html += `Abandoned: ${this.abandoned} (${this.abandonmentCounter}/${config.zone.abandonmentThreshold})<br>`
-    html += `Road Access: ${this.hasRoadAccess}<br>`;
-    html += `Developed: ${this.developed}<br>`;
-    html += `Level: ${this.level}<br>`;
+    html += `
+    <span class="info-label">Style:</span>
+    <span class="info-value">${this.style}</span>
+    <br>
+    <span class="info-label">Abandoned:</span>
+    <span class="info-value">${this.abandoned} (${this.abandonmentCounter}/${config.zone.abandonmentThreshold})</span>
+    <br>
+    <span class="info-label">Road Access:</span>
+    <span class="info-value">${this.hasRoadAccess}</span>
+    <br>
+    <span class="info-label">Developed:</span>
+    <span class="info-value">${this.developed}</span>
+    <br>
+    <span class="info-label">Level:</span>
+    <span class="info-value">${this.level}</span>
+    <br>
+    `;
     return html;
   }
 }

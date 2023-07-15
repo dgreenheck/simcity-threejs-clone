@@ -1,9 +1,14 @@
+@font-face {
+  font-family: Digitalt;
+  src: url('/public/fonts/Digitalt.otf');
+}
+
 html, body {
   height: 100%;
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Digitalt, sans-serif;
 
-  background: linear-gradient(0deg, slategray, lightgray);
+  background: linear-gradient(0deg, #3a5177, #81b1e0);
 }
 
 h1 {
@@ -23,16 +28,19 @@ h1 {
   height: 100%;
 }
 
+.container {
+  background-color: #efefef;
+  padding: 16px;
+  margin: 16px;
+  border-radius: 24px;
+
+  box-shadow: 0 6px 0 0px rgb(72, 80, 104);
+}
+
 #ui-toolbar {
-  display: block;
   position: absolute;
   height: auto;
-  top: 0;
-  left: 0;
-  bottom: 0;
-
-  background-color: #00000033;
-  padding: 8px;
+  top: 128px;
 
   display: flex;
   flex-direction: column;
@@ -40,32 +48,64 @@ h1 {
 }
 
 .ui-button {
-  height: 50px;
-  width: 50px;
-  font-size: 20px;
-  margin: 4px 0;
-
-  background-color: rgba(0, 0, 0, 25%);
-  color: white;
-
-  border: none;
-  border-radius: 3px;
-
-  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 40%);
+  height: 64px;
+  width: 64px;
+  margin: 8px 0;
 
   transition: background-color 0.25s ease-in-out;
+  
+  border: none;
+  border-radius: 16px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+#button-select {
+  background-color: hsl(36, 0%, 60%);
+  box-shadow: 0 6px 0 0px hsl(36, 0%, 40%);
+  transition: box-shadow 0.25s ease-in-out;
+}
+
+#button-bulldoze {
+  background-color: hsl(40, 97%, 44%);
+  box-shadow: 0 6px 0 0px hsl(36, 97%, 29%);
+}
+
+#button-residential {
+  background-color: hsl(120, 58%, 36%);
+  box-shadow: 0 6px 0 0px hsl(120, 77%, 21%);
+}
+
+#button-commercial {
+  background-color: hsl(202, 100%, 42%);
+  box-shadow: 0 6px 0 0px hsl(202, 100%, 25%);
+}
+
+#button-industrial {
+  background-color: hsl(55, 94%, 36%);
+  box-shadow: 0 6px 0 0px hsl(55, 87%, 29%);
+}
+
+#button-road {
+  background-color: hsl(55, 0%, 28%);
+  box-shadow: 0 6px 0 0px hsl(0, 0%, 15%);
+}
+
+#button-pause {
+  background-color: hsl(0, 51%, 53%);
+  box-shadow: 0 6px 0 0px hsl(0, 57%, 34%);
+}
+
 .ui-button.selected {
-  background-color: rgba(200, 200, 255, 10%);
+  filter: brightness(1.1);
+  box-shadow: none;
 }
 
 .ui-button:not(.selected):hover {
-  background-color: rgba(0, 0, 0, 10%)
+  filter: brightness(1.1);
+  box-shadow: none;
 }
 
 .ui-container {
@@ -77,6 +117,7 @@ h1 {
   width: 36px;
   height: 36px;
   pointer-events: none;
+  filter: brightness(0) invert(1);
 }
 
 /* TITLE BAR */
@@ -85,45 +126,111 @@ h1 {
   position: fixed;
 
   top: 0;
-  left: 66px;
-  right: 0px;
-  height: 50px;
+  left: 0;
+  right: 0;
+  height: 64px;
 
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #0c63ce;
+  border-radius: 24px;
+  color: white;
+  padding: 16px;
+  margin: 16px;
 
-  font-size: x-large;
+  box-shadow: 0 6px 0 0px #023a71;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 }
 
 .title-bar-items {
-  flex-grow: 1;
+  flex: 1 1 33%;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 2.5em;
+}
+
+.title-bar-center-items {
+  background-color: #cd830b;
+  color: white;
+  padding: 8px;
+  border-radius: 32px;
+  box-shadow: 0 6px 0 0px #694307;
+}
+
+#population-icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  top: -6px;
 }
 
 #population-counter {
   margin-left: 8px;
 }
 
-/* INFO OVERLAY */
+/* INFO PANEL */
 
-#info-overlay {
+#info-panel {
   position: fixed;
-  top: 50px;
+  top: 120px;
   right: 0px;
   margin: 16px;
   padding: 12px; 
   width: 300px;
-
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 20%);
 }
 
-#info-overlay-header {
-  font-weight: bold;
+.info-heading {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 16px 0px;
+  background-color: #2e70bb;
+  box-shadow: 0 6px 0 0px #1a416d;
+  color: white;
+  border-radius: 16px;
+  padding: 4px;
+}
+
+.info-label {
+  margin-left: 12px;
+  font-size: 1.4em;
+  color: rgb(119, 134, 152)
+}
+
+.info-value {
+  font-size: 1.5em;
+  color: #131313
+}
+
+.info-citizen-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.info-citizen {
+  background-color: #dc8800;
+  color: white;
+  padding: 6px 32px;
+  margin: 12px 0;
+  border-radius: 24px;
+  box-shadow: 0 6px 0 0px #694307;
+}
+
+.info-citizen-name {
+  font-size: 1.4em;
+}
+
+.info-citizen-icon {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  top: 2px;
+}
+
+.info-citizen-details {
+  font-size: 1.2em;
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
 }

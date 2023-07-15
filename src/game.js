@@ -51,7 +51,7 @@ export class Game {
     this.sceneManager.applyChanges(this.city);
 
     this.#updateTitleBar();
-    this.#updateInfoOverlay();
+    this.#updateInfoPanel();
   }
 
   /**
@@ -120,14 +120,14 @@ export class Game {
   #useActiveTool(object) {
     // If no object is selected, clear the info panel
     if (!object) {
-      this.#updateInfoOverlay(null);
+      this.#updateInfoPanel(null);
       return;
     } else {
       const tile = object.userData;
       if (this.activeToolId === 'select') {
         this.sceneManager.setActiveObject(object);
         this.focusedObject = tile;
-        this.#updateInfoOverlay();
+        this.#updateInfoPanel();
       } else if (this.activeToolId === 'bulldoze') {
         if (tile.building) {
           tile.removeBuilding();
@@ -143,8 +143,8 @@ export class Game {
     }
   }
 
-  #updateInfoOverlay() {
-    document.getElementById('info-overlay-details').innerHTML = this.focusedObject?.toHTML() ?? '';
+  #updateInfoPanel() {
+    document.getElementById('info-details').innerHTML = this.focusedObject?.toHTML() ?? '';
   }
 
   #updateTitleBar() {

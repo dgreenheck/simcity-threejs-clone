@@ -83,9 +83,14 @@ export class Tile {
    * @returns {string} HTML representation of this object
    */
   toHTML() {
-    let html = '';
-    html += `Coordinates: (X: ${this.x}, Y: ${this.y})<br>`;
-    html += `Terrain: ${this.terrain}<br>`;
+    let html = `
+      <span class="info-label">Coordinates: </span>
+      <span class="info-value">X: ${this.x}, Y: ${this.y}</span>
+      <br>
+      <span class="info-label">Terrain: </span>
+      <span class="info-value">${this.terrain}</span>
+      <br>
+    `;
 
     if (this.building) {
       html += this.building.toHTML();
