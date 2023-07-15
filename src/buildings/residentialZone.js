@@ -79,15 +79,12 @@ export class ResidentialZone extends Zone {
    */
   toHTML() {
     let html = super.toHTML();
-    html += `<br><strong>Residents (${this.residents.length}/${this.getMaxResidents()})</strong>`;
+    html += `
+      <div class="info-heading">Residents (${this.residents.length}/${this.getMaxResidents()})</div>`;
 
-    html += '<ul style="margin-top: 0; padding-left: 20px;">';
-    if (this.residents.length > 0) {
-      for (const resident of this.residents) {
-        html += resident.toHTML();
-      }
-    } else {
-      html += '<li>None</li>'
+    html += '<ul class="info-citizen-list">';
+    for (const resident of this.residents) {
+      html += resident.toHTML();
     }
     html += '</ul>';
 

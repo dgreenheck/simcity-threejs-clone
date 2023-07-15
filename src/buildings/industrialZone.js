@@ -73,15 +73,13 @@ export class IndustrialZone extends Zone {
    */
   toHTML() {
     let html = super.toHTML();
-    html += `<br><strong>Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</strong>`;
 
-    html += '<ul style="margin-top: 0; padding-left: 20px;">';
-    if (this.workers.length > 0) {
-      for (const worker of this.workers) {
-        html += worker.toHTML();
-      }
-    } else {
-      html += '<li>None</li>'
+    html += `
+    <div class="info-heading">Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</div>`;
+
+    html += '<ul class="info-citizen-list">';
+    for (const worker of this.workers) {
+      html += worker.toHTML();
     }
     html += '</ul>';
 
