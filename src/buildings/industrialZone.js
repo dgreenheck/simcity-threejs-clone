@@ -7,7 +7,9 @@ export class IndustrialZone extends Zone {
 
     this.name = generateBusinessName();
     this.type = 'industrial';
-    
+
+    this.level = 1; // currently only has one level due to lack of models
+
     // Citizens that work here
     this.workers = [];
     // Maximum number of workers this building can support

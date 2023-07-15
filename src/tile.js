@@ -54,6 +54,12 @@ export class Tile {
    */
   refresh(city) {
     this.building?.refresh(city);
+
+    // Refresh the adjacent buildings as well
+    city.getTile(this.x - 1, this.y)?.building?.refresh(city);
+    city.getTile(this.x + 1, this.y)?.building?.refresh(city);
+    city.getTile(this.x, this.y - 1)?.building?.refresh(city);
+    city.getTile(this.x, this.y + 1)?.building?.refresh(city);
   }
 
   /**

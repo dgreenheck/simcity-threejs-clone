@@ -1,82 +1,92 @@
 import * as THREE from 'three';
 
-export function createCameraManager(gameWindow) {
-  // -- Constants --
-  const DEG2RAD = Math.PI / 180.0;
-  const MIDDLE_MOUSE_BUTTON = 4;
-  const RIGHT_MOUSE_BUTTON = 2;
+// -- Constants --
+const DEG2RAD = Math.PI / 180.0;
+const MIDDLE_MOUSE_BUTTON = 4;
+const RIGHT_MOUSE_BUTTON = 2;
 
-  // Camera constraints
-  const MIN_CAMERA_RADIUS = 5;
-  const MAX_CAMERA_RADIUS = 35;
-  const MIN_CAMERA_ELEVATION = 10;
-  const MAX_CAMERA_ELEVATION = 90;
+// Camera constraints
+const CAMERA_SIZE = 10;
+const MIN_CAMERA_RADIUS = 0.1;
+const MAX_CAMERA_RADIUS = 1;
+const MIN_CAMERA_ELEVATION = 0;
+const MAX_CAMERA_ELEVATION = 80;
 
-  // Camera sensitivity
-  const AZIMUTH_SENSITIVITY = 0.2;
-  const ELEVATION_SENSITIVITY = 0.2;
-  const ZOOM_SENSITIVITY = 0.01;
-  const PAN_SENSITIVITY = -0.01;
+// Camera sensitivity
+const AZIMUTH_SENSITIVITY = 0.2;
+const ELEVATION_SENSITIVITY = 0.2;
+const ZOOM_SENSITIVITY = 0.002;
+const PAN_SENSITIVITY = -0.01;
 
-  const Y_AXIS = new THREE.Vector3(0, 1, 0);
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
-  // -- Variables --
-  const camera = new THREE.PerspectiveCamera(45, gameWindow.offsetWidth / gameWindow.offsetHeight, 0.1, 1000);
-  let cameraOrigin = new THREE.Vector3(6, 0, 6);
-  let cameraRadius = 5
-  let cameraAzimuth = 135;
-  let cameraElevation = 45;
+export class CameraManager {
+  constructor(gameWindow) {
+    const aspect = gameWindow.clientWidth / gameWindow.clientHeight;
 
-   /**
-     * Applies any changes to camera position/orientation
-     */
-   function updateCameraPosition() {
-    camera.position.x = cameraRadius * Math.sin(cameraAzimuth * DEG2RAD) * Math.cos(cameraElevation * DEG2RAD);
-    camera.position.y = cameraRadius * Math.sin(cameraElevation * DEG2RAD);
-    camera.position.z = cameraRadius * Math.cos(cameraAzimuth * DEG2RAD) * Math.cos(cameraElevation * DEG2RAD);
-    camera.position.add(cameraOrigin);
-    camera.lookAt(cameraOrigin);
-    camera.updateMatrix();
+    this.camera = new THREE.OrthographicCamera(
+      (CAMERA_SIZE * aspect) / -2,
+      (CAMERA_SIZE * aspect) / 2,
+      CAMERA_SIZE / 2,
+      CAMERA_SIZE / -2, 1, 1000);
+      
+    this.cameraOrigin = new THREE.Vector3(6, 0, 6);
+    this.cameraRadius = 0.2;
+    this.cameraAzimuth = 135;
+    this.cameraElevation = 45;
   }
 
-  return {
-    /* PROPERTIES */
-    camera,
+  /**
+    * Applies any changes to camera position/orientation
+    */
+  updateCameraPosition() {
+    this.camera.zoom = this.cameraRadius;
+    this.camera.position.x = 100 * Math.sin(this.cameraAzimuth * DEG2RAD) * Math.cos(this.cameraElevation * DEG2RAD);
+    this.camera.position.y = 100 * Math.sin(this.cameraElevation * DEG2RAD);
+    this.camera.position.z = 100 * Math.cos(this.cameraAzimuth * DEG2RAD) * Math.cos(this.cameraElevation * DEG2RAD);
+    this.camera.position.add(this.cameraOrigin);
+    this.camera.lookAt(this.cameraOrigin);
+    this.camera.updateProjectionMatrix();
+  }
 
-    /* METHODS */
-
-    /**
-     * Event handler for `mousemove` event
-     * @param {MouseEvent} event Mouse event arguments
-     */
-    onMouseMove(event) {
-      // Handles the rotation of the camera
-      if (event.buttons & RIGHT_MOUSE_BUTTON) {
-        cameraAzimuth += -(event.movementX * AZIMUTH_SENSITIVITY);
-        cameraElevation += (event.movementY * ELEVATION_SENSITIVITY);
-        cameraElevation = Math.min(MAX_CAMERA_ELEVATION, Math.max(MIN_CAMERA_ELEVATION, cameraElevation));
-      }
-
-      // Handles the panning of the camera
-      if (event.buttons & MIDDLE_MOUSE_BUTTON) {
-        const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(Y_AXIS, cameraAzimuth * DEG2RAD);
-        const left = new THREE.Vector3(1, 0, 0).applyAxisAngle(Y_AXIS, cameraAzimuth * DEG2RAD);
-        cameraOrigin.add(forward.multiplyScalar(PAN_SENSITIVITY * event.movementY));
-        cameraOrigin.add(left.multiplyScalar(PAN_SENSITIVITY * event.movementX));
-      }
-
-      updateCameraPosition();
-    },
-
-    /**
-     * Event handler for `wheel` event
-     * @param {MouseEvent} event Mouse event arguments
-     */
-    onMouseScroll(event) {
-      cameraRadius += event.deltaY * ZOOM_SENSITIVITY;
-      cameraRadius = Math.min(MAX_CAMERA_RADIUS, Math.max(MIN_CAMERA_RADIUS, cameraRadius));
-
-      updateCameraPosition();
+  /**
+   * Event handler for `mousemove` event
+   * @param {MouseEvent} event Mouse event arguments
+   */
+  onMouseMove(event) {
+    // Handles the rotation of the camera
+    if (event.buttons & RIGHT_MOUSE_BUTTON && !event.ctrlKey) {
+      this.cameraAzimuth += -(event.movementX * AZIMUTH_SENSITIVITY);
+      this.cameraElevation += (event.movementY * ELEVATION_SENSITIVITY);
+      this.cameraElevation = Math.min(MAX_CAMERA_ELEVATION, Math.max(MIN_CAMERA_ELEVATION, this.cameraElevation));
     }
+
+    // Handles the panning of the camera
+    if (event.buttons & RIGHT_MOUSE_BUTTON && event.ctrlKey) {
+      const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(Y_AXIS, this.cameraAzimuth * DEG2RAD);
+      const left = new THREE.Vector3(1, 0, 0).applyAxisAngle(Y_AXIS, this.cameraAzimuth * DEG2RAD);
+      this.cameraOrigin.add(forward.multiplyScalar(PAN_SENSITIVITY * event.movementY));
+      this.cameraOrigin.add(left.multiplyScalar(PAN_SENSITIVITY * event.movementX));
+    }
+
+    this.updateCameraPosition();
+  }
+
+  /**
+   * Event handler for `wheel` event
+   * @param {MouseEvent} event Mouse event arguments
+   */
+  onMouseScroll(event) {
+    this.cameraRadius *= 1 - (event.deltaY * ZOOM_SENSITIVITY);
+    this.cameraRadius = Math.min(MAX_CAMERA_RADIUS, Math.max(MIN_CAMERA_RADIUS, this.cameraRadius));
+
+    this.updateCameraPosition();
+  }
+
+  resize(gameWindow) {
+    const aspect = gameWindow.clientWidth / gameWindow.clientHeight;
+    this.camera.left = (CAMERA_SIZE * aspect) / -2;
+    this.camera.right = (CAMERA_SIZE * aspect) / 2;
+    this.camera.updateProjectionMatrix();
   }
 }

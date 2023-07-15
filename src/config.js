@@ -9,7 +9,8 @@ export default {
     abandonmentChance: 0.25,  // Probability of building abandonment
     developmentChance: 0.25,  // Probability of building development
     maxRoadSearchDistance: 3, // Max distance between buildng and road
-    maxResidents: 4,          // Max # of residents in a house
+    maxResidents: 2,          // Max # of residents in a house
+    maxWorkers: 2,            // Max # of workers at a building
     residentMoveInChance: 0.5 // Chance for a resident to move in
   }
 }

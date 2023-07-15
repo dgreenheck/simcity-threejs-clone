@@ -26,19 +26,19 @@ export class Game {
     /**
      * The 3D game scene
      */
-    this.sceneManager = new SceneManager(this.city);
-    this.sceneManager.start();
-
+    this.sceneManager = new SceneManager(this.city, () => {
+      console.log('scene loaded');
+      this.sceneManager.start();
+      setInterval(this.step.bind(this), 1000);
+    });   
+    
     // Hookup event listeners
-    document.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this), false);
-    document.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
-    document.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
+    this.sceneManager.gameWindow.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this.sceneManager.cameraManager), false);
+    this.sceneManager.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
+    this.sceneManager.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
 
     // Prevent context menu from popping up
-    document.addEventListener('contextmenu', (event) => event.preventDefault(), false);
-
-    // Start update interval
-    setInterval(this.step.bind(this), 1000);
+    this.sceneManager.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
   }
 
   /**
@@ -131,13 +131,13 @@ export class Game {
       } else if (this.activeToolId === 'bulldoze') {
         if (tile.building) {
           tile.removeBuilding();
-          this.city.refresh();
+          tile.refresh(this.city);
           this.sceneManager.applyChanges(this.city);
         }
       } else if (!tile.building) {
         const buildingType = this.activeToolId;
         tile.placeBuilding(buildingType);
-        this.city.refresh();
+        tile.refresh(this.city);
         this.sceneManager.applyChanges(this.city);
       }
     }

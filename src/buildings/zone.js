@@ -7,11 +7,12 @@ import { Building } from './building.js';
 export class Zone extends Building {
   constructor(x, y) {
     super(x, y);
-
+    this.rotation = 90 * Math.floor(4 * Math.random());
+    
     /**
      * The mesh style to use when rendering
      */
-    this.style = Math.floor(3 * Math.random()) + 1;
+    this.style = String.fromCharCode(Math.floor(3 * Math.random()) + 65);
 
     /**
      * True if this zone is abandoned

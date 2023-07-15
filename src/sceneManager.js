@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createCameraManager } from './cameraManager.js';
+import { CameraManager } from './cameraManager.js';
 import { AssetManager } from './assetManager.js';
 import { City } from './city.js';
 
@@ -11,21 +11,33 @@ export class SceneManager {
    * Initializes a new Scene object
    * @param {City} city 
    */
-  constructor(city) {
-    this.renderer = new THREE.WebGLRenderer();
+  constructor(city, onLoad) {
+    this.renderer = new THREE.WebGLRenderer({ 
+      antialias: true
+    });
     this.scene = new THREE.Scene();
     this.gameWindow = document.getElementById('render-target');
-    this.assetManager = new AssetManager();
-    this.cameraManager = createCameraManager(this.gameWindow);
+    this.assetManager = new AssetManager(() => {
+      console.log('assets loaded');
+      this.#initialize(city);
+      onLoad();
+    });
+    this.cameraManager = new CameraManager(this.gameWindow);
 
-     /**
+    /**
      * 2D array of building meshes at each tile location
      * @type {THREE.Mesh[][]}
      */
     this.buildings = [];
 
+    /**
+     * 2D array of terrain mesh data
+     * @type {THREE.Mesh[][]}
+     */
+    this.terrain = [];
+
     // Configure the renderer
-    this.renderer.setSize(this.gameWindow.offsetWidth, this.gameWindow.offsetHeight);
+    this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -42,8 +54,6 @@ export class SceneManager {
     this.activeObject = null;
     // Object the mouse is currently hovering over
     this.hoverObject = null;
-
-    this.#initialize(city);
   }
 
   /**
@@ -51,7 +61,9 @@ export class SceneManager {
    */
   #initialize(city) {
     this.scene.clear();
+
     this.buildings = [];
+    this.terrain = [];
 
     // Initialize the buildings array
     for (let x = 0; x < city.size; x++) {
@@ -63,6 +75,7 @@ export class SceneManager {
         column.push(mesh);
       }
       this.buildings.push([...Array(city.size)]);
+      this.terrain.push(column);
     }
 
     this.#setupLights();
@@ -73,7 +86,7 @@ export class SceneManager {
    */
   #setupLights() {
     const sun = new THREE.DirectionalLight(0xffffff, 1)
-    sun.position.set(20, 20, 20);
+    sun.position.set(10, 20, 20);
     sun.castShadow = true;
     sun.shadow.camera.left = -10;
     sun.shadow.camera.right = 10;
@@ -81,10 +94,10 @@ export class SceneManager {
     sun.shadow.camera.bottom = -10;
     sun.shadow.mapSize.width = 1024;
     sun.shadow.mapSize.height = 1024;
-    sun.shadow.camera.near = 0.5;
+    sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 50;
     this.scene.add(sun);
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.2));
   }
 
   /**
@@ -96,6 +109,9 @@ export class SceneManager {
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
         const existingBuildingMesh = this.buildings[x][y];
+
+        // Show/hide the terrain
+        this.terrain[x][y].visible = !(tile.building?.hideTerrain) ?? true;
 
         // If the player removes a building, remove it from the this.scene
         if (!tile.building && existingBuildingMesh) {
@@ -160,11 +176,7 @@ export class SceneManager {
    */
   #setMeshEmission(mesh, color) {
     if (!mesh) return;
-    if (Array.isArray(mesh.material)) {
-      mesh.material.forEach(material => material.emissive?.setHex(color));
-    } else {
-      mesh.material.emissive?.setHex(color);
-    }
+    mesh.material.emissive?.setHex(color);
   }
 
   /**
@@ -180,7 +192,7 @@ export class SceneManager {
 
     this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
 
-    let intersections = this.raycaster.intersectObjects(this.scene.children, false);
+    let intersections = this.raycaster.intersectObjects(this.scene.children, true);
     if (intersections.length > 0) {
       return intersections[0].object;
     } else {
@@ -204,8 +216,7 @@ export class SceneManager {
    * Resizes the renderer to fit the current game window
    */
   onResize() {
-    this.cameraManager.camera.aspect = this.gameWindow.offsetWidth / this.gameWindow.offsetHeight;
-    this.cameraManager.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.gameWindow.offsetWidth, this.gameWindow.offsetHeight);
+    this.cameraManager.resize(this.gameWindow);
+    this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
   }
 }
