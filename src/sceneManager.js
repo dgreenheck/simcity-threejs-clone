@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createCameraManager } from './cameraManager.js';
+import { CameraManager } from './cameraManager.js';
 import { AssetManager } from './assetManager.js';
 import { City } from './city.js';
 
@@ -22,7 +22,7 @@ export class SceneManager {
       this.#initialize(city);
       onLoad();
     });
-    this.cameraManager = createCameraManager(this.gameWindow);
+    this.cameraManager = new CameraManager(this.gameWindow);
 
     /**
      * 2D array of building meshes at each tile location
@@ -37,7 +37,7 @@ export class SceneManager {
     this.terrain = [];
 
     // Configure the renderer
-    this.renderer.setSize(this.gameWindow.offsetWidth, this.gameWindow.offsetHeight);
+    this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -216,8 +216,7 @@ export class SceneManager {
    * Resizes the renderer to fit the current game window
    */
   onResize() {
-    this.cameraManager.camera.aspect = this.gameWindow.offsetWidth / this.gameWindow.offsetHeight;
-    this.cameraManager.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.gameWindow.offsetWidth, this.gameWindow.offsetHeight);
+    this.cameraManager.resize(this.gameWindow);
+    this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
   }
 }

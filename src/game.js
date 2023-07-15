@@ -33,7 +33,7 @@ export class Game {
     });   
     
     // Hookup event listeners
-    this.sceneManager.gameWindow.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this), false);
+    this.sceneManager.gameWindow.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this.sceneManager.cameraManager), false);
     this.sceneManager.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
     this.sceneManager.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
 

@@ -6,6 +6,7 @@ import { Zone } from './zone.js';
 export class ResidentialZone extends Zone {
   constructor(x, y) {
     super(x, y);
+    this.name = generateBuildingName();
     this.type = 'residential';
     
     /**
@@ -13,6 +14,8 @@ export class ResidentialZone extends Zone {
      * @type {Citizen[]}
      */
     this.residents = [];
+
+    this.maxLevel = 3;
   }
 
   /**
@@ -26,14 +29,30 @@ export class ResidentialZone extends Zone {
     // no more residents are allowed to move in.
     if (this.abandoned) {
       this.#evictResidents();
-    } else if (this.developed) {
+      return;
+    }
+    
+    if (this.developed) {
       // Move in new residents if there is room
-      if (this.residents.length < config.zone.maxResidents &&
+      if (this.residents.length < this.getMaxResidents() &&
           Math.random() < config.zone.residentMoveInChance) {
         const resident = new Citizen(this);
         this.residents.push(resident);
+      // If building is full, then small chance to upgrade
+      } else {
+        if (Math.random() < 0.03 && this.level < this.maxLevel) {
+          this.level++;
+        }
       }
     }
+  }
+
+  /**
+   * Maximuim number of residents that can live in this building
+   * @returns {number}
+   */
+  getMaxResidents() {
+    return Math.pow(config.zone.maxResidents, this.level);
   }
 
   /**
@@ -60,7 +79,7 @@ export class ResidentialZone extends Zone {
    */
   toHTML() {
     let html = super.toHTML();
-    html += `<br><strong>Residents</strong>`;
+    html += `<br><strong>Residents (${this.residents.length}/${this.getMaxResidents()})</strong>`;
 
     html += '<ul style="margin-top: 0; padding-left: 20px;">';
     if (this.residents.length > 0) {

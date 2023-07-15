@@ -1,5 +1,6 @@
 import { City } from '../city.js';
 import { Zone } from './zone.js';
+import config from '../config.js';
 
 export class CommercialZone extends Zone {
   constructor(x, y) {
@@ -10,8 +11,16 @@ export class CommercialZone extends Zone {
     
     // Citizens that work here
     this.workers = [];
-    // Maximum number of workers this building can support
-    this.maxWorkers = 4;
+    // The maximum level this building can be upgraded to
+    this.maxLevel = 3;
+  }
+
+  /**
+   * Maximuim number of workers that can work at this building
+   * @returns {number}
+   */
+  getMaxWorkers() {
+    return Math.pow(config.zone.maxWorkers, this.level);
   }
 
   /**
@@ -22,7 +31,7 @@ export class CommercialZone extends Zone {
     // If building is abandoned or undeveloped, there are no available jobs
     if (this.abandoned || !this.developed) return 0;
     // Otherwise return the number of vacant positions
-    return this.maxWorkers - this.workers.length;
+    return this.getMaxWorkers() - this.workers.length;
   }
 
   /**
@@ -44,6 +53,14 @@ export class CommercialZone extends Zone {
     // more workers are allowed to work here
     if (this.abandoned) {
       this.#layOffWorkers();
+      return;
+    }
+
+    // If building is developed, have a random chance of developing
+    if (this.developed) {
+      if (Math.random() < 0.03 && this.level < this.maxLevel) {
+        this.level++;
+      }
     }
   }
 
@@ -71,7 +88,7 @@ export class CommercialZone extends Zone {
    */
   toHTML() {
     let html = super.toHTML();
-    html += `<br><strong>Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</strong>`;
+    html += `<br><strong>Workers (${this.numberOfJobsFilled()}/${this.getMaxWorkers()})</strong>`;
 
     html += '<ul style="margin-top: 0; padding-left: 20px;">';
     if (this.workers.length > 0) {
