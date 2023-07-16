@@ -61,6 +61,7 @@ export class SceneManager {
    */
   #initialize(city) {
     this.scene.clear();
+    this.scene.fog = new THREE.Fog( 0xcccccc, 90, 150 );
 
     this.buildings = [];
     this.terrain = [];

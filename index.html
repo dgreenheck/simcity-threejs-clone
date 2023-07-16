@@ -65,7 +65,7 @@
         </button>
       </div>
       <div id="info-panel" class="container">
-        <div class="info-heading" style="margin-top: 0;">
+        <div class="info-heading" style="margin-top: 0;" onclick="collapseInfoPanel()">
           <span>INFO</span>
         </div>
         <div id="info-details"> </div>
@@ -80,6 +80,24 @@
     window.onload = () => {
       window.game = new Game();
     }
+
+    // Collapse the info panel if the header is clicked
+    window.collapseInfoPanel = () => {
+      const infoPanel = document.getElementById('info-panel');
+      if (infoPanel.classList.contains('collapsed')) {
+        infoPanel.classList.remove('collapsed');
+      } else {
+        infoPanel.classList.add('collapsed');
+      }
+    }
+  
+    // Toggle the UI if the escape key is pressed
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        var uiElement = document.getElementById('ui');
+        uiElement.style.display = uiElement.style.display === 'none' ? 'block' : 'none';
+      }
+    });
   </script>
 </body>
 

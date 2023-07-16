@@ -1,17 +1,17 @@
 export default {
   "residential-A1": {
     "filename": "building-house-block-big.glb",
-    "scale": 200,
+    "scale": 100,
     "front": 0
   },
   "residential-B1": {
     "filename": "building-house-family-small.glb",
-    "scale": 200,
+    "scale": 100,
     "front": 0
   },
   "residential-C1": {
     "filename": "building-house-family-large.glb",
-    "scale": 150,
+    "scale": 100,
     "front": 0
   },
   "residential-A2": {
