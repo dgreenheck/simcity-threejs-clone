@@ -124,12 +124,11 @@ export class AssetManager {
   loadModel(name, {filename, scale = 1, receiveShadow = true, castShadow = true}) {
     this.modelLoader.load(`public/models/${filename}`,
       (glb) => {
-        let mesh = glb.scene.children[0].children[0];
+        let mesh = glb.scene.children[0];
 
-        mesh.material = new THREE.MeshLambertMaterial({
-          map: this.textures.base,
-          specularMap: this.textures.specular
-        });
+        mesh.material.specularMap = this.textures.specular;
+        mesh.material.emissiveMap = null;
+        mesh.material.emissive.set(0, 0, 0);
 
         mesh.position.set(0, 0, 0);
         mesh.scale.set(scale / 30, scale / 30, scale / 30);
