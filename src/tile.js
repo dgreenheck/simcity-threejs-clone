@@ -54,10 +54,10 @@ export class Tile {
    */
   toHTML() {
     let html = `
-      <span class="info-label">Coordinates: </span>
+      <span class="info-label">Coordinates </span>
       <span class="info-value">X: ${this.x}, Y: ${this.y}</span>
       <br>
-      <span class="info-label">Terrain: </span>
+      <span class="info-label">Terrain </span>
       <span class="info-value">${this.terrain}</span>
       <br>
     `;

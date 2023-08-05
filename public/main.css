@@ -34,7 +34,7 @@ h1 {
   margin: 16px;
   border-radius: 16px;
 
-  box-shadow: 0 2px 0 0px rgb(72, 80, 104);
+  box-shadow: 0 2px 0 0px #023a71;
 }
 
 #ui-toolbar {
@@ -153,12 +153,14 @@ h1 {
 .info-label {
   margin-left: 12px;
   font-size: 1.1em;
-  color: rgb(194, 194, 194)
+  color: rgb(193, 193, 193)
 }
 
 .info-value {
+  margin-left: 4px;
   font-size: 1.2em;
-  color: #ffffff
+  color: #ffffff;
+  text-align: right;
 }
 
 .info-citizen-list {
