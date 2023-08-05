@@ -49,14 +49,25 @@ export class City {
   }
   
   /**
-   * Triggers a full refresh of the city state
+   * Places a building on the tile at the specified coordinates if the
+   * tile does not already have a building on it
+   * @param {number} x 
+   * @param {number} y 
+   * @param {string} buildingType 
    */
-  refresh() {
-    for (let x = 0; x < this.size; x++) {
-      for (let y = 0; y < this.size; y++) {
-        const tile = this.getTile(x, y);
-        tile.refresh(this);
-      }
+  placeBuilding(x, y, buildingType) {
+    const tile = this.getTile(x, y);
+
+    // If the tile doesnt' already have a building, place one there
+    if (!tile.building) {
+      tile.placeBuilding(buildingType);
+      tile.building.refresh(this);
+      
+      // Refresh the adjacent buildings as well
+      this.getTile(x - 1, y)?.building?.refresh(this);
+      this.getTile(x + 1, y)?.building?.refresh(this);
+      this.getTile(x, y - 1)?.building?.refresh(this);
+      this.getTile(x, y + 1)?.building?.refresh(this);
     }
   }
 

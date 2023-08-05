@@ -129,15 +129,11 @@ export class Game {
         this.focusedObject = tile;
         this.#updateInfoPanel();
       } else if (this.activeToolId === 'bulldoze') {
-        if (tile.building) {
-          tile.removeBuilding();
-          tile.refresh(this.city);
-          this.sceneManager.applyChanges(this.city);
-        }
+        this.city.removeBuilding();
+        this.sceneManager.applyChanges(this.city);
       } else if (!tile.building) {
         const buildingType = this.activeToolId;
-        tile.placeBuilding(buildingType);
-        tile.refresh(this.city);
+        this.city.placeBuilding(tile.x, tile. y, buildingType);
         this.sceneManager.applyChanges(this.city);
       }
     }

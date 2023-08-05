@@ -68,11 +68,22 @@ export class AssetManager {
    */
   createZoneMesh(tile) {
     const zone = tile.building;
-    const modelName = `${zone.type}-${zone.style}${zone.level}`;
+
+    let modelName = `${zone.type}-${zone.style}${zone.level}`;
+    if (zone.developed) {
+      // TODO  modelName = 'under-construction';
+    }
+     
     let mesh = this.getMesh(modelName);
     mesh.userData = tile;
     mesh.rotation.set(0, zone.rotation * DEG2RAD, 0);
     mesh.position.set(zone.x, 0, zone.y);
+
+    // Tint building a dark color if it is abandoned
+    if (zone.abandoned) {
+      mesh.material.color = new THREE.Color(0x707070);
+    }
+    
     return mesh;
   }
 

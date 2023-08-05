@@ -49,25 +49,19 @@ export class Tile {
   }
 
   /**
-   * Performs a full refresh of the tile state
-   * @param {City} city
-   */
-  refresh(city) {
-    this.building?.refresh(city);
-
-    // Refresh the adjacent buildings as well
-    city.getTile(this.x - 1, this.y)?.building?.refresh(city);
-    city.getTile(this.x + 1, this.y)?.building?.refresh(city);
-    city.getTile(this.x, this.y - 1)?.building?.refresh(city);
-    city.getTile(this.x, this.y + 1)?.building?.refresh(city);
-  }
-
-  /**
    * Removes the building from this tile
    */
   removeBuilding() {
     this.building?.dispose();
     this.building = null;
+  }
+
+  /**
+   * Performs a full refresh of the tile state
+   * @param {City} city
+   */
+  refresh(city) {
+    this.building?.refresh(city);
   }
 
   /**
