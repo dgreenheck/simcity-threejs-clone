@@ -129,7 +129,7 @@ export class Game {
         this.focusedObject = tile;
         this.#updateInfoPanel();
       } else if (this.activeToolId === 'bulldoze') {
-        this.city.removeBuilding();
+        this.city.bulldoze(tile.x, tile.y);
         this.sceneManager.applyChanges(this.city);
       } else if (!tile.building) {
         const buildingType = this.activeToolId;

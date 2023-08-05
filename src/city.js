@@ -49,7 +49,7 @@ export class City {
   }
   
   /**
-   * Places a building on the tile at the specified coordinates if the
+   * Places a building at the specified coordinates if the
    * tile does not already have a building on it
    * @param {number} x 
    * @param {number} y 
@@ -61,13 +61,33 @@ export class City {
     // If the tile doesnt' already have a building, place one there
     if (!tile.building) {
       tile.placeBuilding(buildingType);
-      tile.building.refresh(this);
-      
+      tile.refresh(this);
+
       // Refresh the adjacent buildings as well
-      this.getTile(x - 1, y)?.building?.refresh(this);
-      this.getTile(x + 1, y)?.building?.refresh(this);
-      this.getTile(x, y - 1)?.building?.refresh(this);
-      this.getTile(x, y + 1)?.building?.refresh(this);
+      this.getTile(x - 1, y)?.refresh(this);
+      this.getTile(x + 1, y)?.refresh(this);
+      this.getTile(x, y - 1)?.refresh(this);
+      this.getTile(x, y + 1)?.refresh(this);
+    }
+  }
+
+  /**
+   * Bulldozes the building at the specified coordinates
+   * @param {number} x 
+   * @param {number} y
+   */
+  bulldoze(x, y) {
+    const tile = this.getTile(x, y);
+
+    if (tile.building) {
+      tile.removeBuilding();
+      tile.building.refresh(this);
+
+      // Refresh the adjacent buildings as well
+      this.getTile(x - 1, y)?.refresh(this);
+      this.getTile(x + 1, y)?.refresh(this);
+      this.getTile(x, y - 1)?.refresh(this);
+      this.getTile(x, y + 1)?.refresh(this);
     }
   }
 

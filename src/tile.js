@@ -49,6 +49,14 @@ export class Tile {
   }
 
   /**
+   * Places a new building onto the tile
+   * @param {string} type The building type to create
+   */
+  placeBuilding(type) {
+    this.building = createBuilding(this.x, this.y, type);
+  }
+
+  /**
    * Removes the building from this tile
    */
   removeBuilding() {
@@ -62,14 +70,6 @@ export class Tile {
    */
   refresh(city) {
     this.building?.refresh(city);
-  }
-
-  /**
-   * Places a new building onto the tile
-   * @param {string} type The building type to create
-   */
-  placeBuilding(type) {
-    this.building = createBuilding(this.x, this.y, type);
   }
 
   /**

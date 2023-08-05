@@ -44,14 +44,6 @@ export class Zone extends Building {
   }
 
   /**
-   * Performs a full refresh of the building state
-   * @param {City} city 
-   */
-  refresh(city) {
-    this.#checkRoadAccess(city);
-  }
-
-  /**
    * Updates the state of this building by one simulation step
    * @param {City} city 
    */
@@ -60,7 +52,7 @@ export class Zone extends Building {
 
     // Check to see if this zone's development criteria are met. If they
     // are, the zone has a non-zero chance of developing a building
-    if (this.#checkDevelopmentCriteria()) {
+    if (this.checkDevelopmentCriteria(city)) {
       this.abandonmentCounter = 0;
       if (Math.random() < config.zone.developmentChance) {
         this.abandoned = false;
@@ -84,7 +76,8 @@ export class Zone extends Building {
   /**
    * Returns true if this zone is able to be developed
    */
-  #checkDevelopmentCriteria() {
+  checkDevelopmentCriteria(city) {
+    this.checkRoadAccess(city);
     return this.hasRoadAccess;
   }
 
@@ -93,7 +86,7 @@ export class Zone extends Building {
    * is only triggered when `refresh()` is called.
    * @param {City} city 
    */
-  #checkRoadAccess(city) {
+  checkRoadAccess(city) {
     const road = city.findTile(this, (tile) => {
       return tile.building?.type === 'road'
     }, config.zone.maxRoadSearchDistance);

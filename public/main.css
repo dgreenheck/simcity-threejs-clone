@@ -30,17 +30,17 @@ h1 {
 
 .container {
   background-color: #efefef;
-  padding: 16px;
+  padding: 8px;
   margin: 16px;
-  border-radius: 24px;
+  border-radius: 16px;
 
-  box-shadow: 0 6px 0 0px rgb(72, 80, 104);
+  box-shadow: 0 2px 0 0px rgb(72, 80, 104);
 }
 
 #ui-toolbar {
   position: absolute;
   height: auto;
-  top: 128px;
+  top: 64px;
 
   display: flex;
   flex-direction: column;
@@ -48,14 +48,14 @@ h1 {
 }
 
 .ui-button {
-  height: 64px;
-  width: 64px;
-  margin: 8px 0;
+  height: 48px;
+  width: 48px;
+  margin: 4px 0;
 
   transition: background-color 0.25s ease-in-out;
   
   border: none;
-  border-radius: 16px;
+  border-radius: 8px;
 
   display: flex;
   justify-content: center;
@@ -64,38 +64,38 @@ h1 {
 
 #button-select {
   background-color: hsl(36, 0%, 60%);
-  box-shadow: 0 6px 0 0px hsl(36, 0%, 40%);
+  box-shadow: 0 2px 0 0px hsl(36, 0%, 40%);
   transition: box-shadow 0.25s ease-in-out;
 }
 
 #button-bulldoze {
   background-color: hsl(40, 97%, 44%);
-  box-shadow: 0 6px 0 0px hsl(36, 97%, 29%);
+  box-shadow: 0 2px 0 0px hsl(36, 97%, 29%);
 }
 
 #button-residential {
   background-color: hsl(120, 58%, 36%);
-  box-shadow: 0 6px 0 0px hsl(120, 77%, 21%);
+  box-shadow: 0 2px 0 0px hsl(120, 77%, 21%);
 }
 
 #button-commercial {
   background-color: hsl(202, 100%, 42%);
-  box-shadow: 0 6px 0 0px hsl(202, 100%, 25%);
+  box-shadow: 0 2px 0 0px hsl(202, 100%, 25%);
 }
 
 #button-industrial {
   background-color: hsl(55, 94%, 36%);
-  box-shadow: 0 6px 0 0px hsl(55, 87%, 29%);
+  box-shadow: 0 2px 0 0px hsl(55, 87%, 29%);
 }
 
 #button-road {
   background-color: hsl(55, 0%, 28%);
-  box-shadow: 0 6px 0 0px hsl(0, 0%, 15%);
+  box-shadow: 0 2px 0 0px hsl(0, 0%, 15%);
 }
 
 #button-pause {
   background-color: hsl(0, 51%, 53%);
-  box-shadow: 0 6px 0 0px hsl(0, 57%, 34%);
+  box-shadow: 0 2px 0 0px hsl(0, 57%, 34%);
 }
 
 .ui-button.selected {
@@ -114,8 +114,8 @@ h1 {
 }
 
 .toolbar-icon {
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
   pointer-events: none;
   filter: brightness(0) invert(1);
 }
@@ -128,15 +128,15 @@ h1 {
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 32px;
 
   background-color: #0c63ce;
-  border-radius: 24px;
+  border-radius: 16px;
   color: white;
-  padding: 16px;
+  padding: 8px;
   margin: 16px;
 
-  box-shadow: 0 6px 0 0px #023a71;
+  box-shadow: 0 2px 0 0px #023a71;
 
   display: flex;
   justify-content: space-evenly;
@@ -148,22 +148,14 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2.5em;
-}
-
-.title-bar-center-items {
-  background-color: #cd830b;
-  color: white;
-  padding: 8px;
-  border-radius: 32px;
-  box-shadow: 0 6px 0 0px #694307;
+  font-size: 2em;
 }
 
 #population-icon {
   position: relative;
-  width: 48px;
-  height: 48px;
-  top: -6px;
+  width: 32px;
+  height: 32px;
+  top: -3px;
 }
 
 #population-counter {
@@ -174,7 +166,7 @@ h1 {
 
 #info-panel {
   position: fixed;
-  top: 120px;
+  top: 64px;
   right: 0px;
   margin: 16px;
   padding: 12px; 
@@ -184,11 +176,11 @@ h1 {
 .info-heading {
   text-align: center;
   font-size: 1.5em;
-  margin: 16px 0px;
+  margin: 8px 0px;
   background-color: #2e70bb;
-  box-shadow: 0 6px 0 0px #1a416d;
+  box-shadow: 0 2px 0 0px #1a416d;
   color: white;
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 4px;
 }
 
@@ -211,14 +203,14 @@ h1 {
 .info-citizen {
   background-color: #dc8800;
   color: white;
-  padding: 6px 32px;
-  margin: 12px 0;
-  border-radius: 24px;
-  box-shadow: 0 6px 0 0px #694307;
+  padding: 4px 16px;
+  margin: 4px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 0 0px #694307;
 }
 
 .info-citizen-name {
-  font-size: 1.4em;
+  font-size: 1.2em;
 }
 
 .info-citizen-icon {
@@ -229,7 +221,7 @@ h1 {
 }
 
 .info-citizen-details {
-  font-size: 1.2em;
+  font-size: 1em;
   display: flex;
   justify-content: flex-start;
   gap: 16px;
