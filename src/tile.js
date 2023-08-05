@@ -49,30 +49,6 @@ export class Tile {
   }
 
   /**
-   * Places a new building onto the tile
-   * @param {string} type The building type to create
-   */
-  placeBuilding(type) {
-    this.building = createBuilding(this.x, this.y, type);
-  }
-
-  /**
-   * Removes the building from this tile
-   */
-  removeBuilding() {
-    this.building?.dispose();
-    this.building = null;
-  }
-
-  /**
-   * Performs a full refresh of the tile state
-   * @param {City} city
-   */
-  refresh(city) {
-    this.building?.refresh(city);
-  }
-
-  /**
    * 
    * @returns {string} HTML representation of this object
    */

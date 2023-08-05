@@ -1,7 +1,7 @@
-import { SceneManager } from './sceneManager.js';
 import { City } from './city.js';
 import { Building } from './buildings/building.js';
 import { Tile } from './tile.js';
+import { SceneManager } from './sceneManager.js';
 
 export class Game {
   selectedControl = document.getElementById('button-select');

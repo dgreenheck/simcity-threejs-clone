@@ -1,3 +1,4 @@
+import { createBuilding } from './buildings/buildingFactory.js';
 import { Tile } from './tile.js';
 
 export class City {
@@ -60,14 +61,14 @@ export class City {
 
     // If the tile doesnt' already have a building, place one there
     if (!tile.building) {
-      tile.placeBuilding(buildingType);
-      tile.refresh(this);
+      tile.building = createBuilding(x, y, buildingType);
+      tile.building.refresh(this);
 
       // Refresh the adjacent buildings as well
-      this.getTile(x - 1, y)?.refresh(this);
-      this.getTile(x + 1, y)?.refresh(this);
-      this.getTile(x, y - 1)?.refresh(this);
-      this.getTile(x, y + 1)?.refresh(this);
+      this.getTile(x - 1, y)?.building?.refresh(this);
+      this.getTile(x + 1, y)?.building?.refresh(this);
+      this.getTile(x, y - 1)?.building?.refresh(this);
+      this.getTile(x, y + 1)?.building?.refresh(this);
     }
   }
 
@@ -80,14 +81,14 @@ export class City {
     const tile = this.getTile(x, y);
 
     if (tile.building) {
-      tile.removeBuilding();
-      tile.building.refresh(this);
+      tile.building.dispose();
+      tile.building = null;
 
       // Refresh the adjacent buildings as well
-      this.getTile(x - 1, y)?.refresh(this);
-      this.getTile(x + 1, y)?.refresh(this);
-      this.getTile(x, y - 1)?.refresh(this);
-      this.getTile(x, y + 1)?.refresh(this);
+      this.getTile(x - 1, y)?.building?.refresh(this);
+      this.getTile(x + 1, y)?.building?.refresh(this);
+      this.getTile(x, y - 1)?.building?.refresh(this);
+      this.getTile(x, y + 1)?.building?.refresh(this);
     }
   }
 

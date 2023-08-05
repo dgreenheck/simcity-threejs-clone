@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
 import { AssetManager } from './assetManager.js';
 import { City } from './city.js';
+import { TrafficManager } from './traffic/trafficManager.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
@@ -24,6 +25,8 @@ export class SceneManager {
     });
     this.cameraManager = new CameraManager(this.gameWindow);
 
+    this.trafficManager = new TrafficManager(city);
+    
     /**
      * 2D array of building meshes at each tile location
      * @type {THREE.Mesh[][]}

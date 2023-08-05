@@ -1,12 +1,12 @@
 @font-face {
-  font-family: Digitalt;
-  src: url('/public/fonts/Digitalt.otf');
+  font-family: Bebas-Regular;
+  src: url('/public/fonts/Bebas-Regular.otf');
 }
 
 html, body {
   height: 100%;
   margin: 0;
-  font-family: Digitalt, sans-serif;
+  font-family: Bebas-Regular, sans-serif;
 
   background: linear-gradient(0deg, #3a5177, #81b1e0);
 }
@@ -29,7 +29,7 @@ h1 {
 }
 
 .container {
-  background-color: #efefef;
+  background-color: #00000048;
   padding: 8px;
   margin: 16px;
   border-radius: 16px;
@@ -54,6 +54,7 @@ h1 {
 
   transition: background-color 0.25s ease-in-out;
   
+  background-color: #222941a0;
   border: none;
   border-radius: 8px;
 
@@ -62,50 +63,13 @@ h1 {
   align-items: center;
 }
 
-#button-select {
-  background-color: hsl(36, 0%, 60%);
-  box-shadow: 0 2px 0 0px hsl(36, 0%, 40%);
-  transition: box-shadow 0.25s ease-in-out;
-}
-
-#button-bulldoze {
-  background-color: hsl(40, 97%, 44%);
-  box-shadow: 0 2px 0 0px hsl(36, 97%, 29%);
-}
-
-#button-residential {
-  background-color: hsl(120, 58%, 36%);
-  box-shadow: 0 2px 0 0px hsl(120, 77%, 21%);
-}
-
-#button-commercial {
-  background-color: hsl(202, 100%, 42%);
-  box-shadow: 0 2px 0 0px hsl(202, 100%, 25%);
-}
-
-#button-industrial {
-  background-color: hsl(55, 94%, 36%);
-  box-shadow: 0 2px 0 0px hsl(55, 87%, 29%);
-}
-
-#button-road {
-  background-color: hsl(55, 0%, 28%);
-  box-shadow: 0 2px 0 0px hsl(0, 0%, 15%);
-}
-
-#button-pause {
-  background-color: hsl(0, 51%, 53%);
-  box-shadow: 0 2px 0 0px hsl(0, 57%, 34%);
-}
-
 .ui-button.selected {
-  filter: brightness(1.1);
-  box-shadow: none;
+  background-color: #121622d3;
+  outline: 2px solid rgb(189, 189, 189);
 }
 
 .ui-button:not(.selected):hover {
-  filter: brightness(1.1);
-  box-shadow: none;
+  background-color: #121622d3;
 }
 
 .ui-container {
@@ -130,7 +94,7 @@ h1 {
   right: 0;
   height: 32px;
 
-  background-color: #0c63ce;
+  background-color: #00000048;
   border-radius: 16px;
   color: white;
   padding: 8px;
@@ -148,7 +112,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 #population-icon {
@@ -171,28 +135,30 @@ h1 {
   margin: 16px;
   padding: 12px; 
   width: 300px;
+
+  background-color: #00000048;
 }
 
 .info-heading {
   text-align: center;
-  font-size: 1.5em;
+  font-size: 1.3em;
   margin: 8px 0px;
-  background-color: #2e70bb;
-  box-shadow: 0 2px 0 0px #1a416d;
-  color: white;
+  background-color: #191a21b1;
+  box-shadow: 0 2px 0 0px #000000b0;
+  color: rgb(232, 232, 232);
   border-radius: 8px;
   padding: 4px;
 }
 
 .info-label {
   margin-left: 12px;
-  font-size: 1.4em;
-  color: rgb(119, 134, 152)
+  font-size: 1.1em;
+  color: rgb(194, 194, 194)
 }
 
 .info-value {
-  font-size: 1.5em;
-  color: #131313
+  font-size: 1.2em;
+  color: #ffffff
 }
 
 .info-citizen-list {
@@ -201,16 +167,16 @@ h1 {
 }
 
 .info-citizen {
-  background-color: #dc8800;
+  background-color: #222941a0;
   color: white;
   padding: 4px 16px;
   margin: 4px 0;
   border-radius: 8px;
-  box-shadow: 0 2px 0 0px #694307;
+  box-shadow: 0 2px 0 0px #151820;
 }
 
 .info-citizen-name {
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
 .info-citizen-icon {
@@ -218,6 +184,7 @@ h1 {
   width: 18px;
   height: 18px;
   top: 2px;
+  margin-right: 2px;
 }
 
 .info-citizen-details {
