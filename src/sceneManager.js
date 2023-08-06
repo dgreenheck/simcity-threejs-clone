@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
 import { AssetManager } from './assetManager.js';
 import { City } from './city.js';
-import { VehicleGraph } from './vehicles.js';
+import { VehicleGraph } from './vehicles/vehicleGraph.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
@@ -63,11 +63,9 @@ export class SceneManager {
   #initialize(city) {
     this.scene.clear();
 
-    this.vehicleGraph = new VehicleGraph(city);
+    this.vehicleGraph = new VehicleGraph(city.size);
     this.scene.add(this.vehicleGraph.rootNode);
 
-    console.log(this.scene);
-    
     this.buildings = [];
     this.terrain = [];
 
@@ -154,6 +152,7 @@ export class SceneManager {
    * Render the contents of the this.scene
    */
   #draw() {
+    this.vehicleGraph.update();
     this.renderer.render(this.scene, this.cameraManager.camera);
   }
 

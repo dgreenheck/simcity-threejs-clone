@@ -21,7 +21,6 @@ export class AssetManager {
     this.loadedModelCount = 0;
 
     for (const [name, meta] of Object.entries(models)) {
-      console.log(meta);
       this.loadModel(name, meta);
     }
 
@@ -156,7 +155,7 @@ export class AssetManager {
         }
       },
       (xhr) => {
-        console.log(`${name} ${(xhr.loaded / xhr.total) * 100}% loaded`);
+        //console.log(`${name} ${(xhr.loaded / xhr.total) * 100}% loaded`);
       },
       (error) => {
         console.error(error);

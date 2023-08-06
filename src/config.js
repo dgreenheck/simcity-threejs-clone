@@ -4,8 +4,12 @@ export default {
     retirementAge: 65,        // Age when citizens retire
     maxJobSearchDistance: 4   // Max distance a citizen will search for a job
   },   
-  vehicles: {
-
+  vehicle: {
+    cycleInterval: 1000,      // The time (in milliseconds) it takes for a vehicle to complete one origin -> destination cycle
+    fadeTime: 1000,           // The start/end time where the vehicle should fade
+    maxLifetime: 5000,       // Maximum lifetime of a vehicle (in milliseconds) before it is removed
+    maxVehicleCount: 10,      // Maximum number of vehicles on the road at any given time
+    spawnInterval: 1000,      // Spawn interval (in milliseconds)
   },
   zone: {
     abandonmentThreshold: 10, // Number of days before abandonment

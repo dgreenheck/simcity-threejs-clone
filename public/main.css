@@ -54,7 +54,7 @@ h1 {
 
   transition: background-color 0.1s ease-in-out;
   
-  background-color: #222941a0;
+  background-color: #1e2331cd;
   border: none;
   border-radius: 8px;
 
@@ -65,7 +65,7 @@ h1 {
 
 .ui-button.selected {
   background-color: #121622d3;
-  outline: 2px solid rgb(189, 189, 189);
+  outline: 2px solid rgb(227, 227, 227);
 }
 
 .ui-button:not(.selected):hover {
