@@ -30,7 +30,7 @@ export class Tile {
      * The type of terrain
      * @type {string}
      */
-    this.terrain = 'ground';
+    this.terrain = 'grass';
 
     /**
      * The building on this tile

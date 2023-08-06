@@ -52,7 +52,7 @@ h1 {
   width: 48px;
   margin: 4px 0;
 
-  transition: background-color 0.25s ease-in-out;
+  transition: background-color 0.1s ease-in-out;
   
   background-color: #222941a0;
   border: none;
@@ -141,18 +141,18 @@ h1 {
 
 .info-heading {
   text-align: center;
-  font-size: 1.3em;
+  font-size: 1em;
   margin: 8px 0px;
   background-color: #191a21b1;
   box-shadow: 0 2px 0 0px #000000b0;
-  color: rgb(232, 232, 232);
-  border-radius: 8px;
+  color: white;
+  border-radius: 16px;
   padding: 4px;
 }
 
 .info-label {
   margin-left: 12px;
-  font-size: 1.1em;
+  font-size: 1em;
   color: rgb(193, 193, 193)
 }
 

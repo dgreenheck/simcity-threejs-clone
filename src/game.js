@@ -93,6 +93,8 @@ export class Game {
       const selectedObject = this.sceneManager.getSelectedObject(event);
       this.#useActiveTool(selectedObject);
     }
+
+    this.sceneManager.cameraManager.onMouseMove(event);
   }
 
   /**
