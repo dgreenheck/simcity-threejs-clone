@@ -142,13 +142,12 @@ class GraphNode extends THREE.Mesh {
     super();
 
     this.name = "GraphNode";
-
     /**
      * One or more traffic nodes following this one
      * @type {GraphNode[]}
      */
     this.next = [];
-
+    
     this.position.set(0, 0, 0);
 
     this.updateVisualization();

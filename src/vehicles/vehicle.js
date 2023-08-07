@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import config from '../config.js';
 
 const CAR_GEOMETRY = new THREE.BoxGeometry(0.2, 0.1, 0.1);
-const CAR_MATERIAL = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true });
 
 export class Vehicle extends THREE.Mesh {
   /**
@@ -16,7 +15,7 @@ export class Vehicle extends THREE.Mesh {
     this.createdTime = Date.now();
     this.cycleStartTime = this.createdTime;
     this.geometry = CAR_GEOMETRY;
-    this.material = CAR_MATERIAL;
+    this.material = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true });
     this.origin = origin;
     this.destination = destination;
 
@@ -42,18 +41,17 @@ export class Vehicle extends THREE.Mesh {
       return;
     }
 
+    // Ready for next cycle?
     if (this.getElapsedCycleTime() > config.vehicle.cycleInterval) {
       this.pickNewDestination();
     }
 
     // If vehicle doesn't have origin or destination, it is in
     // an invalid state and needs to be removed
-    if (this.origin === null || this.destination === null) {
-      this.dispose();
-      return;
+    if (this.destination) {
+      this.updateTransform();
     }
 
-    this.updateTransform();
     this.updateOpacity();
   }
 
@@ -75,12 +73,12 @@ export class Vehicle extends THREE.Mesh {
   }
 
   updateOpacity() {
-    // Update the opacity based on where the vehicle is in its lifecycle
     const age = this.getAge();
+
+    // Fade in/out during the last 'console.vehicle.fadeTime' milliseconds of the vehicle's life
     if (age < config.vehicle.fadeTime) {
-      //this.material.opacity = Math.min(Math.max(0, age / config.vehicle.fadeTime), 1);
+      this.material.opacity = Math.min(Math.max(0, age / config.vehicle.fadeTime), 1);
     } else if ((config.vehicle.maxLifetime - age) < config.vehicle.fadeTime) {
-      console.log(this.material.opacity);
       this.material.opacity = (config.vehicle.maxLifetime - age) / config.vehicle.fadeTime
     } else {
       this.material.opacity = 1;
@@ -88,16 +86,21 @@ export class Vehicle extends THREE.Mesh {
   }
 
   pickNewDestination() {
-    // The previous destination now becomes the point of origin
-    this.origin = this.destination;
+    // Move the origin to the previous destination (if there was one).
+    // If the vehicle had no previous destination, then it was
+    // stopped at the origin
+    if (this.destination) {
+      this.origin = this.destination;
+    }
+
     // Pick a new destination
-    this.destination = this.origin?.getRandomNext();
+    this.destination = this.origin.getRandomNext();
 
     this.cycleStartTime = Date.now();
   }
 
   dispose() {
-    console.log(`despawning vehicle ${this.id}`)
+    this.material.dispose();
     this.removeFromParent();
   }
 }
