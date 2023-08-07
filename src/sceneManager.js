@@ -64,7 +64,7 @@ export class SceneManager {
     this.scene.clear();
 
     this.vehicleGraph = new VehicleGraph(city.size);
-    this.scene.add(this.vehicleGraph.rootNode);
+    this.scene.add(this.vehicleGraph);
 
     this.buildings = [];
     this.terrain = [];
@@ -112,23 +112,29 @@ export class SceneManager {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
-        const existingBuildingMesh = this.buildings[x][y];
+        const existingBuilding = this.buildings[x][y];
 
         // Show/hide the terrain
         this.terrain[x][y].visible = !(tile.building?.hideTerrain) ?? true;
 
         // If the player removes a building, remove it from the this.scene
-        if (!tile.building && existingBuildingMesh) {
-          this.scene.remove(existingBuildingMesh);
+        if (!tile.building && existingBuilding) {
+          this.scene.remove(existingBuilding);
           this.buildings[x][y] = null;
+
+          this.vehicleGraph.updateTile(x, y, null);
         }
 
         // If the data model has changed, update the mesh
         if (tile.building && tile.building.isMeshOutOfDate) {
-          this.scene.remove(existingBuildingMesh);
+          this.scene.remove(existingBuilding);
           this.buildings[x][y] = this.assetManager.createBuildingMesh(tile);
           this.scene.add(this.buildings[x][y]);
           tile.building.isMeshOutOfDate = false;
+
+          if (tile.building.type === 'road') {
+            this.vehicleGraph.updateTile(x, y, tile.building);
+          }
         }
       }
     }
@@ -152,7 +158,7 @@ export class SceneManager {
    * Render the contents of the this.scene
    */
   #draw() {
-    this.vehicleGraph.update();
+    this.vehicleGraph.updateVehicles();
     this.renderer.render(this.scene, this.cameraManager.camera);
   }
 

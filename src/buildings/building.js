@@ -71,6 +71,9 @@ export class Building {
       <span class="info-label">Type </span>
       <span class="info-value">${this.type}</span>
       <br>
+      <span class="info-label">Rotation </span>
+      <span class="info-value">${this.rotation}</span>
+      <br>
     `;
     return html;
   }

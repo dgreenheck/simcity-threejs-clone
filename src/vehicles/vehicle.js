@@ -6,8 +6,8 @@ const CAR_GEOMETRY = new THREE.BoxGeometry(0.2, 0.1, 0.1);
 export class Vehicle extends THREE.Mesh {
   /**
    * Creates a new instance of a vehicle traveling from `origin` to `destination`
-   * @param {GraphNode} origin The node the vehicle is traveling from
-   * @param {GraphNode} destination The node the vehicle is traveling to
+   * @param {VehicleGraphNode} origin The node the vehicle is traveling from
+   * @param {VehicleGraphNode} destination The node the vehicle is traveling to
    */
   constructor(origin, destination) {
     super();

@@ -142,7 +142,11 @@ export class Game {
   }
 
   #updateInfoPanel() {
-    document.getElementById('info-details').innerHTML = this.focusedObject?.toHTML() ?? '';
+    if (this.focusedObject?.toHTML) {
+      document.getElementById('info-details').innerHTML = this.focusedObject.toHTML();
+    } else {
+      document.getElementById('info-details').innerHTML = '';
+    }
   }
 
   #updateTitleBar() {

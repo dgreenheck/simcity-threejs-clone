@@ -9,6 +9,7 @@ export default {
     fadeTime: 1000,           // The start/end time where the vehicle should fade
     maxLifetime: 10000,       // Maximum lifetime of a vehicle (in milliseconds) before it is removed
     maxVehicleCount: 50,      // Maximum number of vehicles on the road at any given time
+    spawnChance: 0.2,         // Chance of a vehicle spawning
     spawnInterval: 1000,      // Spawn interval (in milliseconds)
   },
   zone: {
