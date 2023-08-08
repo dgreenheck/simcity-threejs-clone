@@ -57,6 +57,8 @@ export class City {
    * @param {string} buildingType 
    */
   placeBuilding(x, y, buildingType) {
+    if (!x || !y) return;
+    
     const tile = this.getTile(x, y);
 
     // If the tile doesnt' already have a building, place one there

@@ -21,6 +21,7 @@ export class AssetManager {
     this.loadedModelCount = 0;
 
     for (const [name, meta] of Object.entries(models)) {
+
       this.loadModel(name, meta);
     }
 

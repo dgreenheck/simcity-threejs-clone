@@ -19,11 +19,27 @@ export class Vehicle extends THREE.Mesh {
     this.origin = origin;
     this.destination = destination;
 
+    // Store world positions of the origin/destination to avoid re-allocating memory
+    // each render frame for these
+    this.originWorldPos = new THREE.Vector3();
+    this.destinationWorldPos = new THREE.Vector3();
+    this.originToDestination = new THREE.Vector3();
+    this.orientation = new THREE.Vector3();
+
+    this.updateWorldPositions();
+    
     console.log(`spawning vehicle ${this.id}`)
   }
 
-  getElapsedCycleTime() {
-    return Date.now() - this.cycleStartTime;
+  getCyclePosition() {
+    // Get distance between origin and destination
+    const distance = this.originToDestination.length();
+    // Calculate time it would take for vehicle to traverse that distance
+    const cycleDuration = distance / config.vehicle.speed;
+    // Find position within cycle by dividing time elapsed by
+    const cycleTime = Date.now() - this.cycleStartTime;
+
+    return cycleTime / cycleDuration;
   }
 
   /**
@@ -42,34 +58,18 @@ export class Vehicle extends THREE.Mesh {
     }
 
     // Ready for next cycle?
-    if (this.getElapsedCycleTime() > config.vehicle.cycleInterval) {
+    if (this.getCyclePosition() >= 1) {
       this.pickNewDestination();
     }
 
-    // If vehicle doesn't have origin or destination, it is in
-    // an invalid state and needs to be removed
     if (this.destination) {
-      this.updateTransform();
+      // Linearly interpolate between the origin and destination based on the
+      // current cycle time to get the updated position
+      this.position.copy(this.originWorldPos);
+      this.position.lerp(this.destinationWorldPos, this.getCyclePosition());
     }
 
     this.updateOpacity();
-  }
-
-  updateTransform() {
-    // Get the world position of the origin and destination nodes
-    const originWorldPos = new THREE.Vector3();
-    const destinationWorldPos = new THREE.Vector3();
-    this.origin.getWorldPosition(originWorldPos);
-    this.destination.getWorldPosition(destinationWorldPos);
-
-    // Linearly interpolate between the origin and destination based on the
-    // current cycle time to get the updated position
-    const position = originWorldPos.lerp(destinationWorldPos, this.getElapsedCycleTime() / config.vehicle.cycleInterval);
-    this.position.set(position.x, position.y, position.z);
-
-    // Align the vehicle with the direction of travel
-    const orientation = destinationWorldPos.sub(originWorldPos).normalize();
-    this.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), orientation);
   }
 
   updateOpacity() {
@@ -96,7 +96,33 @@ export class Vehicle extends THREE.Mesh {
     // Pick a new destination
     this.destination = this.origin.getRandomNext();
 
+    this.updateWorldPositions();
+
     this.cycleStartTime = Date.now();
+  }
+
+  updateWorldPositions() {
+    // Update the world poosition for the origin and destination nodes
+    if (this.origin) {
+      this.origin.getWorldPosition(this.originWorldPos);
+    } else {
+      this.originWorldPos = new THREE.Vector3();
+    }
+
+    if (this.destination) {
+      this.destination.getWorldPosition(this.destinationWorldPos);
+
+      // Calculate vector from origin node to destination node
+      this.originToDestination.copy(this.destinationWorldPos);
+      this.originToDestination.sub(this.originWorldPos);
+
+      // Update the vehicle orientation
+      this.orientation.copy(this.originToDestination);
+      this.orientation.normalize();
+      this.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.orientation);
+    } else {
+      this.destinationWorldPos = new THREE.Vector3();
+    }
   }
 
   dispose() {

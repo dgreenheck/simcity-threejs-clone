@@ -25,20 +25,20 @@ export class Road extends Building {
     // Check all combinations
     // Four-way intersection
     if (top && bottom && left && right) {
-      this.style = 'intersection';
+      this.style = 'four-way';
       this.rotation = 0;
     // T intersection
     } else if (!top && bottom && left && right) { // bottom-left-right
-      this.style = 'tee';
+      this.style = 'three-way';
       this.rotation = 180;
     } else if (top && !bottom && left && right) { // top-left-right
-      this.style = 'tee';
+      this.style = 'three-way';
       this.rotation = 0;
     } else if (top && bottom && !left && right) { // top-bottom-right
-      this.style = 'tee';
+      this.style = 'three-way';
       this.rotation = 90;
     } else if (top && bottom && left && !right) { // top-bottom-left
-      this.style = 'tee';
+      this.style = 'three-way';
       this.rotation = 270;
     // Corner
     } else if (top && !bottom && left && !right) { // top-left
@@ -77,4 +77,18 @@ export class Road extends Building {
 
     this.isMeshOutOfDate = true;
   }
+
+    /**
+   * Returns an HTML representation of this object
+   * @returns {string}
+   */
+    toHTML() {
+      let html = super.toHTML();
+      html += `
+      <span class="info-label">Style </span>
+      <span class="info-value">${this.style}</span>
+      <br>
+      `;
+      return html;
+    }
 }

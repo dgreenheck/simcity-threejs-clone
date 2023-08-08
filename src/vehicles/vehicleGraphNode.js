@@ -22,11 +22,13 @@ export class VehicleGraphNode extends THREE.Mesh {
     this.next = [];
     
     this.position.set(x, 0, y);
-
+    
     this.updateVisualization();
   }
 
   connect(node) {
+    if (!node) return;
+    
     if (!this.next.includes(node)) {
       this.next.push(node);
       this.updateVisualization();
@@ -61,17 +63,17 @@ export class VehicleGraphNode extends THREE.Mesh {
       this.material = CONNECTED_MATERIAL;
 
       const worldPosThis = new THREE.Vector3();
-      const worldPosNext = new THREE.Vector3();
+      const edgeVector = new THREE.Vector3();
       this.getWorldPosition(worldPosThis);
 
       for (const nextNode of this.next) {
-        nextNode.getWorldPosition(worldPosNext);
-        const edge = new THREE.Mesh(EDGE_GEOMETRY, EDGE_MATERIAL);
-        const edgeVector = worldPosNext.sub(worldPosThis);
+        nextNode.getWorldPosition(edgeVector);
+        edgeVector.sub(worldPosThis);
         const distance = edgeVector.length();
         
         const up = new THREE.Vector3(0, 1, 0);
 
+        const edge = new THREE.Mesh(EDGE_GEOMETRY, EDGE_MATERIAL);
         edge.scale.set(1, distance, 1);
         edge.quaternion.setFromUnitVectors(up, edgeVector.clone().normalize());
 

@@ -16,7 +16,7 @@ export class VehicleGraph extends THREE.Group {
 
     /**
      * A 2D array of tiles
-     * @type {VehicleGraphTile[]}
+     * @type {VehicleGraphTile[][]}
      */
     this.tiles = [];
     
@@ -61,7 +61,6 @@ export class VehicleGraph extends THREE.Group {
     }
   }
 
-
   /**
    * Updates the graph tile at the specified coordinates to match the road
    * @param {Road} road 
@@ -74,10 +73,19 @@ export class VehicleGraph extends THREE.Group {
     }
 
     if (road) {
-      this.tiles[x][y] = VehicleGraphTile.create(road, this.spawnVehicles.bind(this));
-      this.add(this.tiles[x][y]);
+      const tile = VehicleGraphTile.create(road, this.spawnVehicles.bind(this));
+      this.tiles[x][y] = tile;
+      tile.getLeftSide()?.out?.connect(this.getTile(x - 1, y)?.getRightSide()?.in);
+      tile.getRightSide()?.out?.connect(this.getTile(x + 1, y)?.getLeftSide()?.in);
+      tile.getTopSide()?.out?.connect(this.getTile(x, y - 1)?.getBottomSide()?.in);
+      tile.getBottomSide()?.out?.connect(this.getTile(x, y + 1)?.getTopSide()?.in);
+      this.add(tile);
     } else {
       this.tiles[x][y] = null;
+      this.getTile(x - 1, y)?.getRightSide()?.out?.disconnectAll();
+      this.getTile(x + 1, y)?.getLeftSide()?.out?.disconnectAll();
+      this.getTile(x, y + 1)?.getTopSide()?.out?.disconnectAll();
+      this.getTile(x, y - 1)?.getBottomSide()?.out?.disconnectAll();
     }
   }
 

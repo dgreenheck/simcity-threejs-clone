@@ -17,14 +17,33 @@ export class VehicleGraphTile extends THREE.Object3D {
    */
   constructor(road, spawnHandler) {
     super();
+
+    this.road = road;
     this.position.set(road.x, 0, road.y);
     this.rotation.set(0, THREE.MathUtils.degToRad(road.rotation), 0);
     this.name = `VehicleGraphTile (${this.position})`
 
+    /**
+     * @type {{ in: VehicleGraphNode, out: VehicleGraphNode }}
+     */
     this.left = { in: null, out: null };
+
+    /**
+     * @type {{ in: VehicleGraphNode, out: VehicleGraphNode }}
+     */
     this.right = { in: null, out: null };
+
+    /**
+     * @type {{ in: VehicleGraphNode, out: VehicleGraphNode }}
+     */
     this.top = { in: null, out: null };
+
+    /**
+     * @type {{ in: VehicleGraphNode, out: VehicleGraphNode }}
+     */
     this.bottom = { in: null, out: null };
+
+    this.vehicle = null;
 
     setInterval(() => {
       if (Math.random() < config.vehicle.spawnChance) {
@@ -42,7 +61,43 @@ export class VehicleGraphTile extends THREE.Object3D {
     const i = Math.floor(nodes.length * Math.random());
     return nodes[i];
   }
-  
+
+  getLeftSide() {
+    switch (this.road.rotation) {
+      case 90: return this.top;
+      case 180: return this.right;
+      case 270: return this.bottom;
+      default: return this.left;
+    }
+  }
+
+  getRightSide() {
+    switch (this.road.rotation) {
+      case 90: return this.bottom;
+      case 180: return this.left;
+      case 270: return this.top;
+      default: return this.right;
+    }
+  }
+
+  getTopSide() {
+    switch (this.road.rotation) {
+      case 90: return this.right;
+      case 180: return this.bottom;
+      case 270: return this.left;
+      default: return this.top;
+    }
+  }
+
+  getBottomSide() {
+    switch (this.road.rotation) {
+      case 90: return this.left;
+      case 180: return this.top;
+      case 270: return this.right;
+      default: return this.bottom;
+    }
+  }
+
   /**
    * Creates a new VehicleGraphTile from the road model
    * @param {Road} road 
@@ -56,10 +111,10 @@ export class VehicleGraphTile extends THREE.Object3D {
         return new StraightRoadTile(road, spawnHandler);
       case 'corner':
         return new CornerRoadTile(road, spawnHandler);
-      case 'tee':
-        return new TeeRoadTile(road, spawnHandler);
-      case 'intersection':
-        return new IntersectionRoadTile(road, spawnHandler);
+      case 'three-way':
+        return new ThreeWayRoadTile(road, spawnHandler);
+      case 'four-way':
+        return new FourWayRoadTile(road, spawnHandler);
       default:
         console.error(`Road type ${road.style} is not a known value`);
     }
@@ -143,21 +198,24 @@ export class CornerRoadTile extends VehicleGraphTile {
       out: new VehicleGraphNode(halfTileSize, roadOffset)
     };
 
-    const midpoint = {
-      in: new VehicleGraphNode(0.5 * halfTileSize - 1.5 * roadOffset, 0.5 * halfTileSize - 1.5 * roadOffset),
-      out: new VehicleGraphNode(0.5 * halfTileSize - 3 * roadOffset, 0.5 * halfTileSize - 3 * roadOffset)
-    }
+    const midpointBottomRight = new VehicleGraphNode(
+      0.5 * halfTileSize - 1.5 * roadOffset, 
+      0.5 * halfTileSize - 1.5 * roadOffset);
+
+    const midpointTopLeft = new VehicleGraphNode(
+      0.5 * halfTileSize - 3 * roadOffset,
+      0.5 * halfTileSize - 3 * roadOffset);
 
     // Connect together
     // Path #1: Bottom -> Right
-    this.bottom.in.connect(midpoint.in);
-    midpoint.in.connect(this.right.out);
+    this.bottom.in.connect(midpointBottomRight);
+    midpointBottomRight.connect(this.right.out);
     // Path #2: Right -> Bottom
-    this.right.in.connect(midpoint.out);
-    midpoint.out.connect(this.bottom.out);
+    this.right.in.connect(midpointTopLeft);
+    midpointTopLeft.connect(this.bottom.out);
 
-    this.add(midpoint.in);
-    this.add(midpoint.out);
+    this.add(midpointBottomRight);
+    this.add(midpointTopLeft);
     this.add(this.right.in);
     this.add(this.right.out);
     this.add(this.bottom.in);
@@ -166,7 +224,7 @@ export class CornerRoadTile extends VehicleGraphTile {
 }
 
 
-export class TeeRoadTile extends VehicleGraphTile {
+export class ThreeWayRoadTile extends VehicleGraphTile {
   constructor(road, spawnHandler) {
     super(road, spawnHandler);
 
@@ -194,22 +252,22 @@ export class TeeRoadTile extends VehicleGraphTile {
     const midpointTopRight =  new VehicleGraphNode(roadOffset, -roadOffset);
 
     // Connect together
-    // Path #1: Left -> Right
-    // Path #2: Left -> Bottom
+
+    // Connect midpoints
+    midpointBottomLeft.connect(midpointBottomRight);
+    midpointBottomRight.connect(midpointTopRight);
+    midpointTopRight.connect(midpointTopLeft);
+    midpointTopLeft.connect(midpointBottomLeft);
+
+    // Connect inputs to midpoints
     this.left.in.connect(midpointBottomLeft);
-    midpointBottomLeft.connect(this.right.out);
-    midpointBottomLeft.connect(this.bottom.out);
-    // Path #3: Bottom  -> Right
+    this.right.in.connect(midpointTopRight);
     this.bottom.in.connect(midpointBottomRight);
+
+    // Connect midpoints to outputs
+    midpointBottomLeft.connect(this.bottom.out);
     midpointBottomRight.connect(this.right.out);
-    // Path #4: Bottom -> Left
-    this.bottom.in.connect(midpointTopRight);
-    midpointTopRight.connect(this.left.out);
-    // Path #5: Right -> Left
-    this.right.in.connect(midpointTopLeft);
     midpointTopLeft.connect(this.left.out);
-    // Path #6: Right -> Bottom
-    midpointTopLeft.connect(this.bottom.out);
 
     // Add to tile
     this.add(this.left.in);
@@ -225,28 +283,70 @@ export class TeeRoadTile extends VehicleGraphTile {
   }
 }
 
-export class IntersectionRoadTile extends VehicleGraphTile {
+export class FourWayRoadTile extends VehicleGraphTile {
   constructor(road, spawnHandler) {
     super(road, spawnHandler);
 
     this.name = `IntersectionRoadTile (${this.position})`
 
-    this.top = {
-      in: new VehicleGraphNode(-roadOffset, halfTileSize),
-      out: new VehicleGraphNode(roadOffset, halfTileSize)
+    // Create nodes
+    this.left = {
+      in: new VehicleGraphNode(-halfTileSize, roadOffset),
+      out: new VehicleGraphNode(-halfTileSize, -roadOffset)
+    };
+
+    this.right = {
+      in: new VehicleGraphNode(halfTileSize, -roadOffset),
+      out: new VehicleGraphNode(halfTileSize, roadOffset)
     };
 
     this.bottom = {
-      in: new VehicleGraphNode(roadOffset, -halfTileSize),
-      out: new VehicleGraphNode(-roadOffset, -halfTileSize)
+      in: new VehicleGraphNode(roadOffset, halfTileSize),
+      out: new VehicleGraphNode(-roadOffset, halfTileSize)
     };
 
-    this.add(this.top.in);
-    this.add(this.top.out);
+    this.top = {
+      in: new VehicleGraphNode(-roadOffset, -halfTileSize),
+      out: new VehicleGraphNode(roadOffset, -halfTileSize)
+    };
+
+    const midpointBottomLeft =  new VehicleGraphNode(-roadOffset, roadOffset);
+    const midpointBottomRight = new VehicleGraphNode(roadOffset, roadOffset);
+    const midpointTopLeft =  new VehicleGraphNode(-roadOffset, -roadOffset);
+    const midpointTopRight =  new VehicleGraphNode(roadOffset, -roadOffset);
+
+    // Connect together
+
+    // Connect midpoints
+    midpointBottomLeft.connect(midpointBottomRight);
+    midpointBottomRight.connect(midpointTopRight);
+    midpointTopRight.connect(midpointTopLeft);
+    midpointTopLeft.connect(midpointBottomLeft);
+
+    // Connect inputs to midpoints
+    this.left.in.connect(midpointBottomLeft);
+    this.right.in.connect(midpointTopRight);
+    this.bottom.in.connect(midpointBottomRight);
+    this.top.in.connect(midpointTopLeft);
+
+    // Connect midpoints to outputs
+    midpointBottomLeft.connect(this.bottom.out);
+    midpointBottomRight.connect(this.right.out);
+    midpointTopRight.connect(this.top.out);
+    midpointTopLeft.connect(this.left.out);
+
+    // Add to tile
+    this.add(this.left.in);
+    this.add(this.left.out);
+    this.add(this.right.in);
+    this.add(this.right.out);
     this.add(this.bottom.in);
     this.add(this.bottom.out);
-
-    this.bottom.in.connect(this.top.out);
-    this.top.in.connect(this.bottom.out);
+    this.add(this.top.in);
+    this.add(this.top.out);
+    this.add(midpointBottomLeft);
+    this.add(midpointBottomRight);
+    this.add(midpointTopLeft);
+    this.add(midpointTopRight);
   }
 }

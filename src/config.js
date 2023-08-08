@@ -5,10 +5,10 @@ export default {
     maxJobSearchDistance: 4   // Max distance a citizen will search for a job
   },   
   vehicle: {
-    cycleInterval: 2000,      // The time (in milliseconds) it takes for a vehicle to complete one origin -> destination cycle
+    speed: 0.0005,            // Units per millisecond
     fadeTime: 1000,           // The start/end time where the vehicle should fade
     maxLifetime: 10000,       // Maximum lifetime of a vehicle (in milliseconds) before it is removed
-    maxVehicleCount: 50,      // Maximum number of vehicles on the road at any given time
+    maxVehicleCount: 5,       // Maximum number of vehicles on the road at any given time
     spawnChance: 0.2,         // Chance of a vehicle spawning
     spawnInterval: 1000,      // Spawn interval (in milliseconds)
   },

@@ -119,12 +119,12 @@ export default {
     "scale": 100,
     "castShadow": false
   },
-  "road-tee": {
+  "road-three-way": {
     "filename": "tile-road-intersection-t.glb",
     "scale": 100,
     "castShadow": false
   },
-  "road-intersection": {
+  "road-four-way": {
     "filename": "tile-road-intersection.glb",
     "scale": 100,
     "castShadow": false
