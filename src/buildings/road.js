@@ -8,6 +8,7 @@ export class Road extends Building {
     this.type = 'road';
     this.style = 'straight';
     this.hideTerrain = true;
+    this.needsGraphUpdate = false;
   }
 
   /**
@@ -17,8 +18,8 @@ export class Road extends Building {
    */
   refresh(city) {
     // Check which adjacent tiles are roads
-    let top = (city.getTile(this.x, this.y + 1)?.building?.type === this.type) ?? false;
-    let bottom = (city.getTile(this.x, this.y - 1)?.building?.type === this.type) ?? false;
+    let top = (city.getTile(this.x, this.y - 1)?.building?.type === this.type) ?? false;
+    let bottom = (city.getTile(this.x, this.y + 1)?.building?.type === this.type) ?? false;
     let left = (city.getTile(this.x - 1, this.y)?.building?.type === this.type) ?? false;
     let right = (city.getTile(this.x + 1, this.y)?.building?.type === this.type) ?? false;
 
@@ -30,10 +31,10 @@ export class Road extends Building {
     // T intersection
     } else if (!top && bottom && left && right) { // bottom-left-right
       this.style = 'three-way';
-      this.rotation = 180;
+      this.rotation = 0;
     } else if (top && !bottom && left && right) { // top-left-right
       this.style = 'three-way';
-      this.rotation = 0;
+      this.rotation = 180;
     } else if (top && bottom && !left && right) { // top-bottom-right
       this.style = 'three-way';
       this.rotation = 90;
@@ -43,16 +44,16 @@ export class Road extends Building {
     // Corner
     } else if (top && !bottom && left && !right) { // top-left
       this.style = 'corner';
-      this.rotation = 270;
+      this.rotation = 180;
     } else if (top && !bottom && !left && right) { // top-right
       this.style = 'corner';
-      this.rotation = 0;
+      this.rotation = 90;
     } else if (!top && bottom && left && !right) { // bottom-left
       this.style = 'corner';
-      this.rotation = 180;
+      this.rotation = 270;
     } else if (!top && bottom && !left && right) { // bottom-right
       this.style = 'corner';
-      this.rotation = 90;
+      this.rotation = 0;
     // Straight
     } else if (top && bottom && !left && !right) { // top-bottom
       this.style = 'straight';
@@ -63,10 +64,10 @@ export class Road extends Building {
     // Dead end
     } else if (top && !bottom && !left && !right) { // top
       this.style = 'end';
-      this.rotation = 0;
+      this.rotation = 180;
     } else if (!top && bottom && !left && !right) { // bottom
       this.style = 'end';
-      this.rotation = 180;
+      this.rotation = 0;
     } else if (!top && !bottom && left && !right) { // left
       this.style = 'end';
       this.rotation = 270;
@@ -76,6 +77,7 @@ export class Road extends Building {
     }
 
     this.isMeshOutOfDate = true;
+    this.needsGraphUpdate = true;
   }
 
     /**

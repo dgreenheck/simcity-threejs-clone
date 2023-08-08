@@ -1,5 +1,4 @@
 import { Building } from './buildings/building.js';
-import { createBuilding } from './buildings/buildingFactory.js';
 
 export class Tile {
   /**

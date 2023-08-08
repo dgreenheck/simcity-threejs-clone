@@ -34,7 +34,7 @@ export class AssetManager {
    * @returns {THREE.Mesh}
    */
   createGroundMesh(tile) {
-    const mesh = this.getMesh('grass', false);
+    const mesh = this.cloneMesh('grass', false);
     mesh.userData = tile;
     mesh.position.set(tile.x, 0, tile.y);
     return mesh;
@@ -74,7 +74,7 @@ export class AssetManager {
       // TODO  modelName = 'under-construction';
     }
      
-    let mesh = this.getMesh(modelName);
+    let mesh = this.cloneMesh(modelName);
     mesh.userData = tile;
     mesh.rotation.set(0, zone.rotation * DEG2RAD, 0);
     mesh.position.set(zone.x, 0, zone.y);
@@ -94,19 +94,25 @@ export class AssetManager {
    */
   createRoadMesh(tile) {
     const road = tile.building;
-    const mesh = this.getMesh(`${road.type}-${road.style}`);
+    const mesh = this.cloneMesh(`${road.type}-${road.style}`);
     mesh.userData = tile;
     mesh.rotation.set(0, road.rotation * DEG2RAD, 0);
     mesh.position.set(road.x, 0, road.y);
     return mesh;
   }
   
+  getRandomCarMesh() {
+    const carTypes =  ["car-taxi", "car-police", "car-passenger", "car-veteran"];
+    const i = Math.floor(carTypes.length * Math.random());
+    return this.meshes[carTypes[i]];
+  }
+
   /**
-   * Gets a mesh with the specified name. Clones the mesh/material data
+   * Returns a cloned copy of a mesh
    * @param {string} name The name of the mesh to retrieve
    * @returns {THREE.Mesh}
    */
-  getMesh(name) {
+  cloneMesh(name) {
     const mesh = this.meshes[name].clone();
     // Clone materials so each object has a unique material
     // This is so we can set the modify the texture of each
@@ -132,17 +138,20 @@ export class AssetManager {
    * Load the 3D models
    * @param {string} url The URL of the model to load
    */
-  loadModel(name, {filename, scale = 1, receiveShadow = true, castShadow = true}) {
+  loadModel(name, {filename, scale = 1, rotation = 0, receiveShadow = true, castShadow = true}) {
     this.modelLoader.load(`public/models/${filename}`,
       (glb) => {
         let mesh = glb.scene.children[0].children[0];
 
-        mesh.material = new THREE.MeshLambertMaterial({
-          map: this.textures.base,
-          specularMap: this.textures.specular
+        mesh.traverse((node) => {
+          node.material = new THREE.MeshLambertMaterial({
+            map: this.textures.base,
+            specularMap: this.textures.specular
+          })
         });
 
         mesh.position.set(0, 0, 0);
+        mesh.rotation.set(0, THREE.MathUtils.degToRad(rotation), 0);
         mesh.scale.set(scale / 30, scale / 30, scale / 30);
         mesh.receiveShadow = receiveShadow;
         mesh.castShadow = castShadow;

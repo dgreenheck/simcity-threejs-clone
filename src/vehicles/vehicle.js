@@ -1,23 +1,21 @@
 import * as THREE from 'three';
 import config from '../config.js';
 
-const CAR_GEOMETRY = new THREE.BoxGeometry(0.2, 0.1, 0.1);
-
 export class Vehicle extends THREE.Mesh {
   /**
    * Creates a new instance of a vehicle traveling from `origin` to `destination`
    * @param {VehicleGraphNode} origin The node the vehicle is traveling from
    * @param {VehicleGraphNode} destination The node the vehicle is traveling to
    */
-  constructor(origin, destination) {
+  constructor(origin, destination, mesh) {
     super();
 
     this.createdTime = Date.now();
     this.cycleStartTime = this.createdTime;
-    this.geometry = CAR_GEOMETRY;
-    this.material = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true });
+
     this.origin = origin;
     this.destination = destination;
+    this.add(mesh);
 
     // Store world positions of the origin/destination to avoid re-allocating memory
     // each render frame for these
@@ -27,8 +25,6 @@ export class Vehicle extends THREE.Mesh {
     this.orientation = new THREE.Vector3();
 
     this.updateWorldPositions();
-    
-    console.log(`spawning vehicle ${this.id}`)
   }
 
   getCyclePosition() {
@@ -39,7 +35,7 @@ export class Vehicle extends THREE.Mesh {
     // Find position within cycle by dividing time elapsed by
     const cycleTime = Date.now() - this.cycleStartTime;
 
-    return cycleTime / cycleDuration;
+    return Math.max(0, Math.min(cycleTime / cycleDuration, 1));
   }
 
   /**

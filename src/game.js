@@ -127,8 +127,12 @@ export class Game {
     } else {
       const tile = object.userData;
       if (this.activeToolId === 'select') {
-        this.sceneManager.setActiveObject(object);
-        this.focusedObject = tile;
+        if (object.name === 'VehicleGraphNode') {
+          this.focusedObject = object;
+        } else {
+          this.sceneManager.setActiveObject(object);
+          this.focusedObject = tile;
+        }
         this.#updateInfoPanel();
       } else if (this.activeToolId === 'bulldoze') {
         this.city.bulldoze(tile.x, tile.y);

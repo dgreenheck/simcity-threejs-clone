@@ -28,10 +28,9 @@ export class City {
    * @returns {Tile | null}
    */
   getTile(x, y) {
-    if (x < 0 || 
-        y < 0 || 
-        x >= this.size || 
-        y >= this.size) {
+    if (x === undefined || y === undefined ||
+        x < 0 ||  y < 0 ||  
+        x >= this.size ||  y >= this.size) {
       return null;
     } else {
       return this.tiles[x][y];
@@ -57,12 +56,10 @@ export class City {
    * @param {string} buildingType 
    */
   placeBuilding(x, y, buildingType) {
-    if (!x || !y) return;
-    
     const tile = this.getTile(x, y);
 
     // If the tile doesnt' already have a building, place one there
-    if (!tile.building) {
+    if (tile && !tile.building) {
       tile.building = createBuilding(x, y, buildingType);
       tile.building.refresh(this);
 

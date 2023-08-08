@@ -3,9 +3,10 @@ import { Vehicle } from './vehicle.js';
 import { VehicleGraphTile } from './vehicleGraphTile.js';
 
 import config from '../config.js';
+import { AssetManager } from '../assetManager.js';
 
 export class VehicleGraph extends THREE.Group {
-  constructor(size) {
+  constructor(size, assetManager) {
     super();
 
     /**
@@ -15,13 +16,24 @@ export class VehicleGraph extends THREE.Group {
     this.size = size;
 
     /**
+     * @type {AssetManager}
+     */
+    this.assetManager = assetManager;
+
+    /**
      * A 2D array of tiles
      * @type {VehicleGraphTile[][]}
      */
     this.tiles = [];
     
     /**
-     * Collection of vehicles in the graph
+     * Collection of graph scene objects
+     */
+    this.graph = new THREE.Group();
+    this.add(this.graph);
+
+    /**
+     * Collection of vehicle scene objects
      * @type {THREE.Group}
      */
     this.vehicles = new THREE.Group();
@@ -35,6 +47,10 @@ export class VehicleGraph extends THREE.Group {
       }
       this.tiles.push(column);
     }
+
+    this.showGraphVisualization();
+
+    setInterval(this.spawnVehicles.bind(this), config.vehicle.spawnInterval);
   }
 
   /**
@@ -63,44 +79,85 @@ export class VehicleGraph extends THREE.Group {
 
   /**
    * Updates the graph tile at the specified coordinates to match the road
-   * @param {Road} road 
+   * @param {Road | null} road 
    */
   updateTile(x, y, road) {
-    // Remove the existing tile
     const existingTile = this.getTile(x, y);
+
+    const leftTile = this.getTile(x - 1, y);
+    const rightTile = this.getTile(x + 1, y);
+    const topTile = this.getTile(x, y - 1);
+    const bottomTile = this.getTile(x, y + 1);
+
+    // Disconnect the existing tile and all adjacent tiles from each other
+    existingTile?.disconnect();
+    leftTile?.getWorldRightSide()?.out?.disconnectAll();
+    rightTile?.getWorldLeftSide()?.out?.disconnectAll();
+    topTile?.getWorldBottomSide()?.out?.disconnectAll();
+    bottomTile?.getWorldTopSide()?.out?.disconnectAll();
+
     if (existingTile) {
-      this.remove(existingTile);
+      this.graph.remove(existingTile);
     }
 
+    // If placing a road, create the graph tile and connect it to the rest of the graph
     if (road) {
-      const tile = VehicleGraphTile.create(road, this.spawnVehicles.bind(this));
+      const tile = VehicleGraphTile.create(road);
+      
+      // Connect tile to adjacent tiles
+      if (leftTile) {
+        tile.getWorldLeftSide().out?.connect(leftTile.getWorldRightSide().in);
+        leftTile.getWorldRightSide().out?.connect(tile.getWorldLeftSide().in);
+      }
+      if (rightTile) {
+        tile.getWorldRightSide().out?.connect(rightTile.getWorldLeftSide().in);
+        rightTile.getWorldLeftSide().out?.connect(tile.getWorldRightSide().in);
+      }
+      if (topTile) {
+        tile.getWorldTopSide().out?.connect(topTile.getWorldBottomSide().in);
+        topTile.getWorldBottomSide().out?.connect(tile.getWorldTopSide().in);
+      }
+      if (bottomTile) {
+        tile.getWorldBottomSide().out?.connect(bottomTile.getWorldTopSide().in);
+        bottomTile.getWorldTopSide().out?.connect(tile.getWorldBottomSide().in);
+      }
+
+      // Store the tile in the array and add it to the scene
       this.tiles[x][y] = tile;
-      tile.getLeftSide()?.out?.connect(this.getTile(x - 1, y)?.getRightSide()?.in);
-      tile.getRightSide()?.out?.connect(this.getTile(x + 1, y)?.getLeftSide()?.in);
-      tile.getTopSide()?.out?.connect(this.getTile(x, y - 1)?.getBottomSide()?.in);
-      tile.getBottomSide()?.out?.connect(this.getTile(x, y + 1)?.getTopSide()?.in);
-      this.add(tile);
+      this.graph.add(tile);
+    // Otherwise, remove it
     } else {
       this.tiles[x][y] = null;
-      this.getTile(x - 1, y)?.getRightSide()?.out?.disconnectAll();
-      this.getTile(x + 1, y)?.getLeftSide()?.out?.disconnectAll();
-      this.getTile(x, y + 1)?.getTopSide()?.out?.disconnectAll();
-      this.getTile(x, y - 1)?.getBottomSide()?.out?.disconnectAll();
     }
+
+    road.needsGraphUpdate = false;
   }
 
   /**
    * Timer function that is responsible for spawning new vehicles
    * @returns 
    */
-  spawnVehicles(tile) {
+  spawnVehicles() {
     if (this.vehicles.children.length < config.vehicle.maxVehicleCount) {
-      console.log('spawning new vehicle');
-      const origin = tile.getRandomNode();
-      const destination = origin.getRandomNext();
-      const vehicle = new Vehicle(origin, destination);
-      this.vehicles.add(vehicle);
-      return;
+      const i = Math.floor(this.graph.children.length * Math.random());
+      const tile = this.graph.children[i];
+
+      if (tile) {
+        const origin = tile.getRandomNode();
+        const destination = origin.getRandomNext();
+        if (origin && destination) {
+          const vehicle = new Vehicle(origin, destination, this.assetManager.getRandomCarMesh());
+          this.vehicles.add(vehicle);
+        }
+      }
     }
+  }
+
+  showGraphVisualization() {
+    this.graph.visible = true;
+  }
+
+  hideGraphVisualization() {
+    this.graph.visible = false;
   }
 }

@@ -15,36 +15,43 @@ export class VehicleGraphNode extends THREE.Mesh {
     super();
 
     this.name = "VehicleGraphNode";
+    this.position.set(x, 0, y);
+
     /**
      * One or more traffic nodes following this one
      * @type {VehicleGraphNode[]}
      */
     this.next = [];
     
-    this.position.set(x, 0, y);
-    
     this.updateVisualization();
   }
 
+  /**
+   * Sets `node` as a next node
+   * @param {VehicleGraphNode} node 
+   * @returns 
+   */
   connect(node) {
     if (!node) return;
-    
+
     if (!this.next.includes(node)) {
       this.next.push(node);
       this.updateVisualization();
     }
   }
 
-  disconnect(node) {
-    this.next = this.next.filter(x => x !== node);
-    this.updateVisualization();
-  }
-
+  /**
+   * Clears the connections for this node
+   */
   disconnectAll() {
     this.next = [];
     this.updateVisualization();
   }
 
+  /**
+   * Randomly selects one of the next nodes and returns it
+   * @returns {VehicleGraphNode}
+   */
   getRandomNext() {
     if (this.next.length === 0) {
       return null;
@@ -54,6 +61,9 @@ export class VehicleGraphNode extends THREE.Mesh {
     }
   }
 
+  /**
+   * Updates the 3D representation of this node
+   */
   updateVisualization() {
     this.clear();
 
@@ -63,10 +73,10 @@ export class VehicleGraphNode extends THREE.Mesh {
       this.material = CONNECTED_MATERIAL;
 
       const worldPosThis = new THREE.Vector3();
-      const edgeVector = new THREE.Vector3();
       this.getWorldPosition(worldPosThis);
 
       for (const nextNode of this.next) {
+        const edgeVector = new THREE.Vector3();
         nextNode.getWorldPosition(edgeVector);
         edgeVector.sub(worldPosThis);
         const distance = edgeVector.length();
@@ -77,7 +87,7 @@ export class VehicleGraphNode extends THREE.Mesh {
         edge.scale.set(1, distance, 1);
         edge.quaternion.setFromUnitVectors(up, edgeVector.clone().normalize());
 
-        const offset = new THREE.Vector3(0, distance / 2, 0).applyQuaternion(edge.quaternion);
+        const offset = new THREE.Vector3(0, distance / 2, 0).applyQuaternion(edge.quaternion.clone());
         edge.position.set(offset.x, offset.y, offset.z);
 
         this.add(edge);
@@ -85,5 +95,37 @@ export class VehicleGraphNode extends THREE.Mesh {
     } else {
       this.material = DISCONNECTED_MATERIAL;
     }
+  }
+
+  toHTML() {
+    const thisPosition = new THREE.Vector3();
+    const nextPosition = new THREE.Vector3();
+
+    this.getWorldPosition(thisPosition);
+
+    let html = `
+      <span class="info-label">ID </span>
+      <span class="info-value">${this.id}</span>
+      <br>
+      <span class="info-label">Position </span>
+      <span class="info-value">X: ${thisPosition.x} Y: ${thisPosition.z}</span>
+    `;
+    
+    html += `<div class="info-heading">Next Nodes (${this.next.length})</div>`;
+
+    for (const node of this.next) {
+      node.getWorldPosition(nextPosition);
+
+      html += `
+        <span class="info-label">ID </span>
+        <span class="info-value">${node.id}</span>
+        <br>
+        <span class="info-label">Position </span>
+        <span class="info-value">X: ${nextPosition.x} Y: ${nextPosition.z}</span>
+      `;
+    }
+    html += '</ul>';
+
+    return html;
   }
 }

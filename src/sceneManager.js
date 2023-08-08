@@ -63,7 +63,7 @@ export class SceneManager {
   #initialize(city) {
     this.scene.clear();
 
-    this.vehicleGraph = new VehicleGraph(city.size);
+    this.vehicleGraph = new VehicleGraph(city.size, this.assetManager);
     this.scene.add(this.vehicleGraph);
 
     this.buildings = [];
@@ -109,6 +109,7 @@ export class SceneManager {
    * @param {City} city The city data model
    */
   applyChanges(city) {
+    // Update the scene
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
@@ -131,10 +132,16 @@ export class SceneManager {
           this.buildings[x][y] = this.assetManager.createBuildingMesh(tile);
           this.scene.add(this.buildings[x][y]);
           tile.building.isMeshOutOfDate = false;
+        }
+      }
+    }
 
-          if (tile.building.type === 'road') {
-            this.vehicleGraph.updateTile(x, y, tile.building);
-          }
+    // Update the vehicle graph
+    for (let x = 0; x < city.size; x++) {
+      for (let y = 0; y < city.size; y++) {
+        const tile = city.getTile(x, y);
+        if (tile?.building?.needsGraphUpdate) {
+          this.vehicleGraph.updateTile(x, y, tile.building);
         }
       }
     }
