@@ -4,6 +4,7 @@ import { VehicleGraphTile } from './vehicleGraphTile.js';
 
 import config from '../config.js';
 import { AssetManager } from '../assetManager.js';
+import { VehicleGraphHelper } from './vehicleGraphHelper.js';
 
 export class VehicleGraph extends THREE.Group {
   constructor(size, assetManager) {
@@ -25,7 +26,14 @@ export class VehicleGraph extends THREE.Group {
      * @type {VehicleGraphTile[][]}
      */
     this.tiles = [];
-    
+        
+    /**
+     * Visualizer for the graph
+     * @type {VehicleGraphHelper}
+     */
+    this.helper = new VehicleGraphHelper();
+    this.add(this.helper);
+
     /**
      * Collection of graph scene objects
      */
@@ -47,8 +55,6 @@ export class VehicleGraph extends THREE.Group {
       }
       this.tiles.push(column);
     }
-
-    this.showGraphVisualization();
 
     setInterval(this.spawnVehicles.bind(this), config.vehicle.spawnInterval);
   }
@@ -131,6 +137,7 @@ export class VehicleGraph extends THREE.Group {
     }
 
     road.needsGraphUpdate = false;
+    this.helper.update(this);
   }
 
   /**
@@ -151,13 +158,5 @@ export class VehicleGraph extends THREE.Group {
         }
       }
     }
-  }
-
-  showGraphVisualization() {
-    this.graph.visible = true;
-  }
-
-  hideGraphVisualization() {
-    this.graph.visible = false;
   }
 }

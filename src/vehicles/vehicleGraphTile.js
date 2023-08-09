@@ -4,13 +4,13 @@ import { Road } from '../buildings/road.js';
 import { Vehicle } from './vehicle.js';
 
 const roadOffset = 0.05;
-const halfTileSize = 0.33;
+const halfTileSize = 0.25;
 
 /**
  * Represents a sub-graph of the vehicle graph that corresponds
  * to a single tile in the city data model
  */
-export class VehicleGraphTile extends THREE.Object3D {
+export class VehicleGraphTile extends THREE.Group {
   /**
    * Creates a new vehicle graph tile
    * @param {Road} road 
@@ -216,22 +216,22 @@ export class CornerRoadTile extends VehicleGraphTile {
     this.name = `CornerRoadTile (${this.position})`
 
     this.bottom = {
-      in: new VehicleGraphNode(roadOffset, halfTileSize),
-      out: new VehicleGraphNode(-roadOffset, halfTileSize)
+      in: new VehicleGraphNode(roadOffset, halfTileSize + 0.1),
+      out: new VehicleGraphNode(-roadOffset, halfTileSize + 0.1)
     };
 
     this.right = {
-      in: new VehicleGraphNode(halfTileSize, -roadOffset),
-      out: new VehicleGraphNode(halfTileSize, roadOffset)
+      in: new VehicleGraphNode(halfTileSize + 0.1, -roadOffset),
+      out: new VehicleGraphNode(halfTileSize + 0.1, roadOffset)
     };
 
     const midpointBottomRight = new VehicleGraphNode(
-      0.5 * halfTileSize - 1.5 * roadOffset, 
-      0.5 * halfTileSize - 1.5 * roadOffset);
+      halfTileSize - 1.5 * roadOffset, 
+      halfTileSize - 1.5 * roadOffset);
 
     const midpointTopLeft = new VehicleGraphNode(
-      0.5 * halfTileSize - 3 * roadOffset,
-      0.5 * halfTileSize - 3 * roadOffset);
+      halfTileSize - 3 * roadOffset,
+      halfTileSize - 3 * roadOffset);
 
     this.add(midpointBottomRight);
     this.add(midpointTopLeft);
