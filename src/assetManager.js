@@ -104,21 +104,33 @@ export class AssetManager {
   getRandomCarMesh() {
     const carTypes =  ["car-taxi", "car-police", "car-passenger", "car-veteran"];
     const i = Math.floor(carTypes.length * Math.random());
-    return this.meshes[carTypes[i]];
+
+    // https://stackoverflow.com/questions/15994944/transparent-objects-in-three-js
+
+    const carMesh = this.cloneMesh(carTypes[i], true);
+    return carMesh;
   }
 
   /**
    * Returns a cloned copy of a mesh
    * @param {string} name The name of the mesh to retrieve
+   * @param {boolean} transparent True if materials should be transparent. Default is false.
    * @returns {THREE.Mesh}
    */
-  cloneMesh(name) {
+  cloneMesh(name, transparent = false) {
     const mesh = this.meshes[name].clone();
+
     // Clone materials so each object has a unique material
     // This is so we can set the modify the texture of each
     // mesh independently (e.g. highlight on mouse over,
     // abandoned buildings, etc.))
-    mesh.material = mesh.material.clone();
+    mesh.traverse((obj) => {
+      if(obj.material) {
+        obj.material = obj.material.clone();
+        obj.material.transparent = transparent;
+      }
+    });
+
     return mesh;
   }
 

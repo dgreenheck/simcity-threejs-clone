@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import config from '../config.js';
 
-export class Vehicle extends THREE.Mesh {
+export class Vehicle extends THREE.Group {
   /**
    * Creates a new instance of a vehicle traveling from `origin` to `destination`
    * @param {VehicleGraphNode} origin The node the vehicle is traveling from
    * @param {VehicleGraphNode} destination The node the vehicle is traveling to
+   * @param {THREE.Mesh} mesh
    */
   constructor(origin, destination, mesh) {
     super();
@@ -15,7 +16,8 @@ export class Vehicle extends THREE.Mesh {
 
     this.origin = origin;
     this.destination = destination;
-    this.add(mesh);
+    this.vehicleMesh = mesh;
+    this.add(this.vehicleMesh);
 
     // Store world positions of the origin/destination to avoid re-allocating memory
     // each render frame for these
@@ -71,13 +73,21 @@ export class Vehicle extends THREE.Mesh {
   updateOpacity() {
     const age = this.getAge();
 
+    const setOpacity = (value) => {
+      this.vehicleMesh.traverse(obj => {
+        if (obj.material) {
+          obj.material.opacity = Math.min(Math.max(0, value), 1)
+        }
+      });
+    }
+
     // Fade in/out during the last 'console.vehicle.fadeTime' milliseconds of the vehicle's life
     if (age < config.vehicle.fadeTime) {
-      this.material.opacity = Math.min(Math.max(0, age / config.vehicle.fadeTime), 1);
+      setOpacity(age / config.vehicle.fadeTime);
     } else if ((config.vehicle.maxLifetime - age) < config.vehicle.fadeTime) {
-      this.material.opacity = (config.vehicle.maxLifetime - age) / config.vehicle.fadeTime
+      setOpacity((config.vehicle.maxLifetime - age) / config.vehicle.fadeTime);
     } else {
-      this.material.opacity = 1;
+      setOpacity(1);
     }
   }
 
@@ -122,7 +132,7 @@ export class Vehicle extends THREE.Mesh {
   }
 
   dispose() {
-    this.material.dispose();
+    this.vehicleMesh.traverse((obj) => obj.material?.dispose());
     this.removeFromParent();
   }
 }
