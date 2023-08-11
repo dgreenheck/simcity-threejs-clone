@@ -91,8 +91,13 @@ export class VehicleGraphTile extends THREE.Group {
     if (this.right.in) nodes.push(this.right.in);
     if (this.top.in) nodes.push(this.top.in);
     if (this.bottom.in) nodes.push(this.bottom.in);
-    const i = Math.floor(nodes.length * Math.random());
-    return nodes[i];
+
+    if (nodes.length > 0) {
+      const i = Math.floor(nodes.length * Math.random());
+      return nodes[i];
+    } else {
+      return null; 
+    }
   }
 
   /**

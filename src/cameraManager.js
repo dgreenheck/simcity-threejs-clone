@@ -30,7 +30,7 @@ export class CameraManager {
       CAMERA_SIZE / 2,
       CAMERA_SIZE / -2, 1, 1000);
       
-    this.cameraOrigin = new THREE.Vector3(3, 0, 3);
+    this.cameraOrigin = new THREE.Vector3(8, 0, 8);
     this.cameraRadius = 0.5;
     this.cameraAzimuth = 225;
     this.cameraElevation = 45;

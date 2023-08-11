@@ -60,6 +60,7 @@ export class Vehicle extends THREE.Group {
       this.pickNewDestination();
     }
 
+    // If there is no destination, dont' move
     if (this.destination) {
       // Linearly interpolate between the origin and destination based on the
       // current cycle time to get the updated position
@@ -92,16 +93,14 @@ export class Vehicle extends THREE.Group {
   }
 
   pickNewDestination() {
-    // Move the origin to the previous destination (if there was one).
-    // If the vehicle had no previous destination, then it was
-    // stopped at the origin
     if (this.destination) {
+      // The previous destination is now the new origin
       this.origin = this.destination;
     }
 
-    // Pick a new destination
+    // Pick a random node that the origin is connected to
     this.destination = this.origin.getRandomNext();
-
+    
     this.updateWorldPositions();
 
     this.cycleStartTime = Date.now();

@@ -8,8 +8,8 @@ export default {
     speed: 0.0005,            // Units per millisecond
     fadeTime: 1000,           // The start/end time where the vehicle should fade
     maxLifetime: 20000,       // Maximum lifetime of a vehicle (in milliseconds) before it is removed
-    maxVehicleCount: 100,     // Maximum number of vehicles on the road at any given time
-    spawnInterval: 250,       // Spawn interval (in milliseconds)
+    maxVehicleCount: 20,      // Maximum number of vehicles on the road at any given time
+    spawnInterval: 1000,       // Spawn interval (in milliseconds)
   },
   zone: {
     abandonmentThreshold: 10, // Number of days before abandonment

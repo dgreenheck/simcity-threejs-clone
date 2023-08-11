@@ -101,14 +101,13 @@ export class AssetManager {
     return mesh;
   }
   
-  getRandomCarMesh() {
-    const carTypes =  ["car-taxi", "car-police", "car-passenger", "car-veteran"];
-    const i = Math.floor(carTypes.length * Math.random());
+  getRandomVehicleMesh() {
+    const types = Object.entries(models)
+      .filter(x => x[1].type === 'vehicle')
+      .map(x => x[0]);
 
-    // https://stackoverflow.com/questions/15994944/transparent-objects-in-three-js
-
-    const carMesh = this.cloneMesh(carTypes[i], true);
-    return carMesh;
+    const i = Math.floor(types.length * Math.random());
+    return this.cloneMesh(types[i], true);
   }
 
   /**

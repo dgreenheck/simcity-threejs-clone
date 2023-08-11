@@ -21,7 +21,7 @@ export class Game {
      * The city data model
      * @type {City}
      */
-    this.city = new City(12);
+    this.city = new City(16);
 
     /**
      * The 3D game scene

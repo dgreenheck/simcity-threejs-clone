@@ -151,9 +151,9 @@ export class VehicleGraph extends THREE.Group {
 
       if (tile) {
         const origin = tile.getRandomNode();
-        const destination = origin.getRandomNext();
+        const destination = origin?.getRandomNext();
         if (origin && destination) {
-          const vehicle = new Vehicle(origin, destination, this.assetManager.getRandomCarMesh());
+          const vehicle = new Vehicle(origin, destination, this.assetManager.getRandomVehicleMesh());
           this.vehicles.add(vehicle);
         }
       }
