@@ -1,3 +1,4 @@
+import { createBuilding } from './buildings/buildingFactory.js';
 import { Tile } from './tile.js';
 
 export class City {
@@ -27,10 +28,9 @@ export class City {
    * @returns {Tile | null}
    */
   getTile(x, y) {
-    if (x < 0 || 
-        y < 0 || 
-        x >= this.size || 
-        y >= this.size) {
+    if (x === undefined || y === undefined ||
+        x < 0 ||  y < 0 ||  
+        x >= this.size ||  y >= this.size) {
       return null;
     } else {
       return this.tiles[x][y];
@@ -49,14 +49,45 @@ export class City {
   }
   
   /**
-   * Triggers a full refresh of the city state
+   * Places a building at the specified coordinates if the
+   * tile does not already have a building on it
+   * @param {number} x 
+   * @param {number} y 
+   * @param {string} buildingType 
    */
-  refresh() {
-    for (let x = 0; x < this.size; x++) {
-      for (let y = 0; y < this.size; y++) {
-        const tile = this.getTile(x, y);
-        tile.refresh(this);
-      }
+  placeBuilding(x, y, buildingType) {
+    const tile = this.getTile(x, y);
+
+    // If the tile doesnt' already have a building, place one there
+    if (tile && !tile.building) {
+      tile.building = createBuilding(x, y, buildingType);
+      tile.building.refresh(this);
+
+      // Refresh the adjacent buildings as well
+      this.getTile(x - 1, y)?.building?.refresh(this);
+      this.getTile(x + 1, y)?.building?.refresh(this);
+      this.getTile(x, y - 1)?.building?.refresh(this);
+      this.getTile(x, y + 1)?.building?.refresh(this);
+    }
+  }
+
+  /**
+   * Bulldozes the building at the specified coordinates
+   * @param {number} x 
+   * @param {number} y
+   */
+  bulldoze(x, y) {
+    const tile = this.getTile(x, y);
+
+    if (tile.building) {
+      tile.building.dispose();
+      tile.building = null;
+
+      // Refresh the adjacent buildings as well
+      this.getTile(x - 1, y)?.building?.refresh(this);
+      this.getTile(x + 1, y)?.building?.refresh(this);
+      this.getTile(x, y - 1)?.building?.refresh(this);
+      this.getTile(x, y + 1)?.building?.refresh(this);
     }
   }
 

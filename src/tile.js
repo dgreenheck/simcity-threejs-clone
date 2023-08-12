@@ -1,5 +1,4 @@
 import { Building } from './buildings/building.js';
-import { createBuilding } from './buildings/buildingFactory.js';
 
 export class Tile {
   /**
@@ -30,7 +29,7 @@ export class Tile {
      * The type of terrain
      * @type {string}
      */
-    this.terrain = 'ground';
+    this.terrain = 'grass';
 
     /**
      * The building on this tile
@@ -49,45 +48,15 @@ export class Tile {
   }
 
   /**
-   * Performs a full refresh of the tile state
-   * @param {City} city
-   */
-  refresh(city) {
-    this.building?.refresh(city);
-
-    // Refresh the adjacent buildings as well
-    city.getTile(this.x - 1, this.y)?.building?.refresh(city);
-    city.getTile(this.x + 1, this.y)?.building?.refresh(city);
-    city.getTile(this.x, this.y - 1)?.building?.refresh(city);
-    city.getTile(this.x, this.y + 1)?.building?.refresh(city);
-  }
-
-  /**
-   * Removes the building from this tile
-   */
-  removeBuilding() {
-    this.building?.dispose();
-    this.building = null;
-  }
-
-  /**
-   * Places a new building onto the tile
-   * @param {string} type The building type to create
-   */
-  placeBuilding(type) {
-    this.building = createBuilding(this.x, this.y, type);
-  }
-
-  /**
    * 
    * @returns {string} HTML representation of this object
    */
   toHTML() {
     let html = `
-      <span class="info-label">Coordinates: </span>
+      <span class="info-label">Coordinates </span>
       <span class="info-value">X: ${this.x}, Y: ${this.y}</span>
       <br>
-      <span class="info-label">Terrain: </span>
+      <span class="info-label">Terrain </span>
       <span class="info-value">${this.terrain}</span>
       <br>
     `;

@@ -1,7 +1,7 @@
-import { SceneManager } from './sceneManager.js';
 import { City } from './city.js';
 import { Building } from './buildings/building.js';
 import { Tile } from './tile.js';
+import { SceneManager } from './sceneManager.js';
 
 export class Game {
   selectedControl = document.getElementById('button-select');
@@ -21,7 +21,7 @@ export class Game {
      * The city data model
      * @type {City}
      */
-    this.city = new City(12);
+    this.city = new City(16);
 
     /**
      * The 3D game scene
@@ -93,6 +93,8 @@ export class Game {
       const selectedObject = this.sceneManager.getSelectedObject(event);
       this.#useActiveTool(selectedObject);
     }
+
+    this.sceneManager.cameraManager.onMouseMove(event);
   }
 
   /**
@@ -129,22 +131,22 @@ export class Game {
         this.focusedObject = tile;
         this.#updateInfoPanel();
       } else if (this.activeToolId === 'bulldoze') {
-        if (tile.building) {
-          tile.removeBuilding();
-          tile.refresh(this.city);
-          this.sceneManager.applyChanges(this.city);
-        }
+        this.city.bulldoze(tile.x, tile.y);
+        this.sceneManager.applyChanges(this.city);
       } else if (!tile.building) {
         const buildingType = this.activeToolId;
-        tile.placeBuilding(buildingType);
-        tile.refresh(this.city);
+        this.city.placeBuilding(tile.x, tile. y, buildingType);
         this.sceneManager.applyChanges(this.city);
       }
     }
   }
 
   #updateInfoPanel() {
-    document.getElementById('info-details').innerHTML = this.focusedObject?.toHTML() ?? '';
+    if (this.focusedObject?.toHTML) {
+      document.getElementById('info-details').innerHTML = this.focusedObject.toHTML();
+    } else {
+      document.getElementById('info-details').innerHTML = '';
+    }
   }
 
   #updateTitleBar() {
