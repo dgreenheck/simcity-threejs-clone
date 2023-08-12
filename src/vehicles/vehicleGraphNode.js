@@ -49,36 +49,4 @@ export class VehicleGraphNode extends THREE.Group {
       return this.next[i];
     }
   }
-
-  toHTML() {
-    const thisPosition = new THREE.Vector3();
-    const nextPosition = new THREE.Vector3();
-
-    this.getWorldPosition(thisPosition);
-
-    let html = `
-      <span class="info-label">ID </span>
-      <span class="info-value">${this.id}</span>
-      <br>
-      <span class="info-label">Position </span>
-      <span class="info-value">X: ${thisPosition.x} Y: ${thisPosition.z}</span>
-    `;
-    
-    html += `<div class="info-heading">Next Nodes (${this.next.length})</div>`;
-
-    for (const node of this.next) {
-      node.getWorldPosition(nextPosition);
-
-      html += `
-        <span class="info-label">ID </span>
-        <span class="info-value">${node.id}</span>
-        <br>
-        <span class="info-label">Position </span>
-        <span class="info-value">X: ${nextPosition.x} Y: ${nextPosition.z}</span>
-      `;
-    }
-    html += '</ul>';
-
-    return html;
-  }
 }
