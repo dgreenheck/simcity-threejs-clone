@@ -80,17 +80,17 @@ export class Road extends Building {
     this.needsGraphUpdate = true;
   }
 
-    /**
+  /**
    * Returns an HTML representation of this object
    * @returns {string}
    */
-    toHTML() {
-      let html = super.toHTML();
-      html += `
-      <span class="info-label">Style </span>
-      <span class="info-value">${this.style}</span>
-      <br>
-      `;
-      return html;
-    }
+  toHTML() {
+    let html = super.toHTML();
+    html += `
+    <span class="info-label">Style </span>
+    <span class="info-value">${this.style}</span>
+    <br>
+    `;
+    return html;
+  }
 }
