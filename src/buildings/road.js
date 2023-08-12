@@ -79,9 +79,9 @@ export class Road extends Building {
   }
 
   /**
-  * Returns an HTML representation of this object
-  * @returns {string}
-  */
+   * Returns an HTML representation of this object
+   * @returns {string}
+   */
   toHTML() {
     let html = super.toHTML();
     html += `
