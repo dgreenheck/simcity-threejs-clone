@@ -12,6 +12,7 @@ export class AssetManager {
   textures = {
     'base': this.loadTexture('public/textures/base.png'),
     'specular': this.loadTexture('public/textures/specular.png'),
+    'grid': this.loadTexture('public/textures/grid.png')
   };
 
   meshes = {};

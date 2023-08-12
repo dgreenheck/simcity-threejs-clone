@@ -62,6 +62,9 @@ export class SceneManager {
   #initialize(city) {
     this.scene.clear();
 
+    this.root = new THREE.Group();
+    this.scene.add(this.root);
+
     this.buildings = [];
     this.terrain = [];
 
@@ -71,7 +74,7 @@ export class SceneManager {
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
         const mesh = this.assetManager.createGroundMesh(tile);
-        this.scene.add(mesh);
+        this.root.add(mesh);
         column.push(mesh);
       }
       this.buildings.push([...Array(city.size)]);
@@ -79,6 +82,27 @@ export class SceneManager {
     }
 
     this.#setupLights();
+    this.#setupGrid(city);
+  }
+
+  #setupGrid(city) {
+    // Add the grid
+    const gridMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0x000000,
+      map: this.assetManager.textures['grid'],
+      transparent: true,
+      opacity: 0.2
+    });
+    gridMaterial.map.repeat = new THREE.Vector2(city.size, city.size);
+    gridMaterial.map.wrapS = city.size;
+    gridMaterial.map.wrapT = city.size;
+
+    const grid = new THREE.Mesh(
+      new THREE.BoxGeometry(city.size, 0.1, city.size),
+      gridMaterial
+    );
+    grid.position.set(city.size / 2 - 0.5, -0.04, city.size / 2 - 0.5);
+    this.scene.add(grid);
   }
 
   /**
@@ -96,8 +120,8 @@ export class SceneManager {
     sun.shadow.mapSize.height = 1024;
     sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 50;
-    this.scene.add(sun);
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+    this.root.add(sun);
+    this.root.add(new THREE.AmbientLight(0xffffff, 0.2));
   }
 
   /**
@@ -113,17 +137,17 @@ export class SceneManager {
         // Show/hide the terrain
         this.terrain[x][y].visible = !(tile.building?.hideTerrain) ?? true;
 
-        // If the player removes a building, remove it from the this.scene
+        // If the player removes a building, remove it from the root node
         if (!tile.building && existingBuildingMesh) {
-          this.scene.remove(existingBuildingMesh);
+          this.root.remove(existingBuildingMesh);
           this.buildings[x][y] = null;
         }
 
         // If the data model has changed, update the mesh
         if (tile.building && tile.building.isMeshOutOfDate) {
-          this.scene.remove(existingBuildingMesh);
+          this.root.remove(existingBuildingMesh);
           this.buildings[x][y] = this.assetManager.createBuildingMesh(tile);
-          this.scene.add(this.buildings[x][y]);
+          this.root.add(this.buildings[x][y]);
           tile.building.isMeshOutOfDate = false;
         }
       }
@@ -145,7 +169,7 @@ export class SceneManager {
   }
 
   /**
-   * Render the contents of the this.scene
+   * Render the contents of the scene
    */
   #draw() {
     this.renderer.render(this.scene, this.cameraManager.camera);
@@ -192,7 +216,7 @@ export class SceneManager {
 
     this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
 
-    let intersections = this.raycaster.intersectObjects(this.scene.children, true);
+    let intersections = this.raycaster.intersectObjects(this.root.children, true);
     if (intersections.length > 0) {
       return intersections[0].object;
     } else {
