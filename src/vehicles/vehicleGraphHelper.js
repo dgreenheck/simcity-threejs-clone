@@ -7,7 +7,7 @@ const EDGE_GEOMETRY = new THREE.ConeGeometry(0.02, 1, 6);
 
 const CONNECTED_MATERIAL = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const DISCONNECTED_MATERIAL = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-const EDGE_MATERIAL = new THREE.MeshBasicMaterial({ color: 0x000ff});
+const EDGE_MATERIAL = new THREE.MeshBasicMaterial({ color: 0x3050ff});
 
 export class VehicleGraphHelper extends THREE.Group {
   /**

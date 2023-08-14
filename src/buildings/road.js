@@ -8,7 +8,6 @@ export class Road extends Building {
     this.type = 'road';
     this.style = 'straight';
     this.hideTerrain = true;
-    this.needsGraphUpdate = false;
   }
 
   /**
@@ -77,7 +76,6 @@ export class Road extends Building {
     }
 
     this.isMeshOutOfDate = true;
-    this.needsGraphUpdate = true;
   }
 
   /**

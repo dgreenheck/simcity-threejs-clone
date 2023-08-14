@@ -35,12 +35,6 @@ export class VehicleGraph extends THREE.Group {
     this.add(this.helper);
 
     /**
-     * Collection of graph scene objects
-     */
-    this.graph = new THREE.Group();
-    this.add(this.graph);
-
-    /**
      * Collection of vehicle scene objects
      * @type {THREE.Group}
      */
@@ -102,10 +96,6 @@ export class VehicleGraph extends THREE.Group {
     topTile?.getWorldBottomSide()?.out?.disconnectAll();
     bottomTile?.getWorldTopSide()?.out?.disconnectAll();
 
-    if (existingTile) {
-      this.graph.remove(existingTile);
-    }
-
     // If placing a road, create the graph tile and connect it to the rest of the graph
     if (road) {
       const tile = VehicleGraphTile.create(road);
@@ -130,13 +120,10 @@ export class VehicleGraph extends THREE.Group {
 
       // Store the tile in the array and add it to the scene
       this.tiles[x][y] = tile;
-      this.graph.add(tile);
     // Otherwise, remove it
     } else {
       this.tiles[x][y] = null;
     }
-
-    road.needsGraphUpdate = false;
     this.helper.update(this);
   }
 
@@ -146,8 +133,7 @@ export class VehicleGraph extends THREE.Group {
    */
   spawnVehicles() {
     if (this.vehicles.children.length < config.vehicle.maxVehicleCount) {
-      const i = Math.floor(this.graph.children.length * Math.random());
-      const tile = this.graph.children[i];
+      const tile = this.getStartingTile();
 
       if (tile) {
         const origin = tile.getRandomNode();
@@ -157,6 +143,27 @@ export class VehicleGraph extends THREE.Group {
           this.vehicles.add(vehicle);
         }
       }
+    }
+  }
+
+  /**
+   * Gets a random tile for a vehicle to spawn at
+   * @returns {VehicleGraphTile | null}
+   */
+  getStartingTile() {
+    const tiles = [];
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        let tile = this.getTile(x, y);
+        if (tile) tiles.push(tile);
+      }
+    }
+
+    if (tiles.length === 0) {
+      return null;
+    } else {
+      const i = Math.floor(tiles.length * Math.random());
+      return tiles[i];
     }
   }
 }
