@@ -1,6 +1,6 @@
 export default {
   // Set the base directory for GitHub pages
-  base: '/simcity-threejs-clone/',
+  base: process.env.NODE_ENV === 'production' ? '/simcity-threejs-clone/' : '/',
 
   // Set the project root directory (relative to the config file)
   root: './src',
