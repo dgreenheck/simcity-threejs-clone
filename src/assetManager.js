@@ -12,6 +12,7 @@ export class AssetManager {
   textures = {
     'base': this.loadTexture('public/textures/base.png'),
     'specular': this.loadTexture('public/textures/specular.png'),
+    'grid': this.loadTexture('public/textures/grid.png')
   };
 
   meshes = {};
@@ -99,6 +100,22 @@ export class AssetManager {
     mesh.rotation.set(0, road.rotation * DEG2RAD, 0);
     mesh.position.set(road.x, 0, road.y);
     return mesh;
+  }
+
+  /**
+   * Creates a new random vehicle mesh
+   * @returns {THREE.Mesh} A mesh object
+   */
+  createRandomVehicleMesh() {
+    const types = Object.entries(models)
+      .filter(x => x[1].type === 'vehicle')
+      .map(x => x[0]);
+
+    console.log(types);
+
+    const i = Math.floor(types.length * Math.random());
+    console.log(types[i])
+    return this.cloneMesh(types[i], true);
   }
 
   /**

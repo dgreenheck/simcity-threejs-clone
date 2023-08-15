@@ -139,5 +139,55 @@ export default {
     "filename": "tile-plain_grass.glb",
     "scale": 1,
     "castShadow": false
+  },
+  "car-taxi": {
+    "type": "vehicle",
+    "filename": "car-taxi.glb",
+    "rotation": 90
+  },
+  "car-police": {
+    "type": "vehicle",
+    "filename": "car-police.glb",
+    "rotation": 90
+  },
+  "car-passenger": {
+    "type": "vehicle",
+    "filename": "car-passenger.glb",
+    "rotation": 90
+  },
+  "car-veteran": {
+    "type": "vehicle",
+    "filename": "car-veteran.glb",
+    "rotation": 90
+  },
+  "truck": {
+    "type": "vehicle",
+    "filename": "truck.glb",
+    "rotation": 90
+  },
+  "car-hippie-van": {
+    "type": "vehicle",
+    "filename": "car-hippie-van.glb",
+    "rotation": 90
+  },
+  "car-tow-truck": {
+    "type": "vehicle",
+    "filename": "car-tow-truck.glb",
+    "rotation": 90
+  },
+  "car-ambulance-pickup": {
+    "type": "vehicle",
+    "filename": "car-ambulance-pickup.glb",
+    "rotation": 90
+  },
+  "car-passenger-race": {
+    "type": "vehicle",
+    "filename": "car-passenger-race.glb",
+    "rotation": 90
+  },
+  "car-baywatch": {
+    "type": "vehicle",
+    "filename": "car-baywatch.glb",
+    "rotation": 90
   }
 }
