@@ -1,8 +1,10 @@
 import * as THREE from 'three';
+import viteConfig from '../../vite.config';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Tile } from './tile.js';
 import models from './models.js';
 
+const baseUrl = viteConfig.base;
 const DEG2RAD = Math.PI / 180.0;
 
 export class AssetManager {
@@ -10,9 +12,9 @@ export class AssetManager {
   modelLoader = new GLTFLoader();
 
   textures = {
-    'base': this.loadTexture('public/textures/base.png'),
-    'specular': this.loadTexture('public/textures/specular.png'),
-    'grid': this.loadTexture('public/textures/grid.png')
+    'base': this.loadTexture(`${baseUrl}textures/base.png`),
+    'specular': this.loadTexture(`${baseUrl}textures/specular.png`),
+    'grid': this.loadTexture(`${baseUrl}textures/grid.png`)
   };
 
   meshes = {};
@@ -111,10 +113,7 @@ export class AssetManager {
       .filter(x => x[1].type === 'vehicle')
       .map(x => x[0]);
 
-    console.log(types);
-
     const i = Math.floor(types.length * Math.random());
-    console.log(types[i])
     return this.cloneMesh(types[i], true);
   }
 
@@ -158,7 +157,7 @@ export class AssetManager {
    * @param {string} url The URL of the model to load
    */
   loadModel(name, {filename, scale = 1, rotation = 0, receiveShadow = true, castShadow = true}) {
-    this.modelLoader.load(`public/models/${filename}`,
+    this.modelLoader.load(`${baseUrl}models/${filename}`,
       (glb) => {
         let mesh = glb.scene.children[0].children[0];
 

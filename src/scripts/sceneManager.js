@@ -113,7 +113,7 @@ export class SceneManager {
    * Setup the lights for the scene
    */
   #setupLights() {
-    const sun = new THREE.DirectionalLight(0xffffff, 1)
+    const sun = new THREE.DirectionalLight(0xffffff, 2)
     sun.position.set(10, 20, 20);
     sun.castShadow = true;
     sun.shadow.camera.left = -10;
@@ -125,7 +125,7 @@ export class SceneManager {
     sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 50;
     this.root.add(sun);
-    this.root.add(new THREE.AmbientLight(0xffffff, 0.2));
+    this.root.add(new THREE.AmbientLight(0xffffff, 0.5));
   }
 
   /**

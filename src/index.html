@@ -3,19 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="./public/main.css">
-  <link rel="icon" type="image/x-icon" href="./public/favicon.ico">
-
-  <!-- Import Three.js library-->
-  <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@v0.153.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@v0.153.0/examples/jsm/"
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="/main.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 
 <body>
@@ -31,37 +20,37 @@
           My City
         </div>
         <div class="title-bar-right-items title-bar-items">
-          <img id="population-icon" src="public/icons/person.png">
+          <img id="population-icon" src="/icons/person.png">
           <span id="population-counter">0</span>
         </div>
       </div>
       <div id="ui-toolbar" class="container">
         <button id='button-select' class="ui-button selected" data-type="select"
           onclick="game.onToolSelected(event)">
-          <img class="toolbar-icon" src="public/icons/select.png">
+          <img class="toolbar-icon" src="/icons/select.png">
         </button>
         <button id='button-bulldoze' class="ui-button" data-type="bulldoze"
           onclick="game.onToolSelected(event)">
-          <img class="toolbar-icon" src="public/icons/bulldozer.png">
+          <img class="toolbar-icon" src="/icons/bulldozer.png">
         </button>
         <button id='button-residential' class="ui-button" data-type="residential"
           onclick="game.onToolSelected(event)">
-          <img class="toolbar-icon" src="public/icons/house.png">
+          <img class="toolbar-icon" src="/icons/house.png">
         </button>
         <button id='button-commercial' class="ui-button" data-type="commercial"
           onclick="game.onToolSelected(event)">
-          <img class="toolbar-icon" src="public/icons/office.png">
+          <img class="toolbar-icon" src="/icons/office.png">
         </button>
         <button id='button-industrial' class="ui-button" data-type="industrial"
           onclick="game.onToolSelected(event)">
-          <img class="toolbar-icon" src="public/icons/factory.png">
+          <img class="toolbar-icon" src="/icons/factory.png">
         </button>
         <button id='button-road' class="ui-button" data-type="road"
           onclick="game.onToolSelected(event)">
-          <img class="toolbar-icon" src="public/icons/road.png">
+          <img class="toolbar-icon" src="/icons/road.png">
         </button>
         <button id='button-pause' class="ui-button" onclick="game.togglePause()">
-          <img id='pause-button-icon' class="toolbar-icon" src="public/icons/pause.png">
+          <img id='pause-button-icon' class="toolbar-icon" src="/icons/pause.png">
         </button>
       </div>
       <div id="info-panel" class="container">
@@ -70,11 +59,22 @@
         </div>
         <div id="info-details"> </div>
       </div>
+      <div id="instructions">
+        INTERACT - Left Mouse<br>
+        ROTATE - Right Mouse<br>
+        PAN - Control + Right Mouse<br>
+        ZOOM - Scroll
+      </div>
+      <div id="loading">
+        <div>
+          LOADING...
+        </div>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    import { Game } from './src/game.js';
+    import { Game } from './scripts/game.js';
     
     // Create a new game when the window is loaded
     window.onload = () => {
