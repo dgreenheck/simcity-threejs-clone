@@ -1,6 +1,6 @@
 @font-face {
   font-family: Bebas-Regular;
-  src: url('/public/fonts/Bebas-Regular.otf');
+  src: url('fonts/Bebas-Regular.otf');
 }
 
 html, body {
@@ -26,6 +26,27 @@ h1 {
 #render-target {
   position: relative;
   height: 100%;
+}
+
+#instructions {
+  position: absolute;
+  color: white;
+  left: 0;
+  bottom: 0;
+  margin: 8px;
+}
+
+#loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: white;
+  font-size: 5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {

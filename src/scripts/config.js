@@ -8,7 +8,7 @@ export default {
     speed: 0.0005,            // The distance travelled per millisecond
     fadeTime: 1000,           // The start/end time where the vehicle should fade
     maxLifetime: 10000,       // Maximum lifetime of a vehicle
-    maxVehicleCount: 10,      // Maximum number of vehicles in scene at any one time
+    maxVehicleCount: 25,      // Maximum number of vehicles in scene at any one time
     spawnInterval: 1000       // How often vehicles are spawned in milliseconds
   },
   zone: {

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CornerRoadTile, EndRoadTile, FourWayRoadTile, StraightRoadTile, ThreeWayRoadTile, VehicleGraphTile } from './vehicleGraphTile.js';
+import { VehicleGraphTile } from './vehicleGraphTile.js';
 import { VehicleGraphHelper } from './vehicleGraphHelper.js';
 import { AssetManager } from '../assetManager.js';
 import config from '../config.js';
@@ -11,7 +11,7 @@ export class VehicleGraph extends THREE.Group {
     super();
 
     this.size = size;
-
+    
     /**
      * @type {AssetManager}
      */
@@ -58,8 +58,6 @@ export class VehicleGraph extends THREE.Group {
    * @param {Road | null} road 
    */
   updateTile(x, y, road) {
-    console.log(`updating vehicle graph at (x: ${x}, y: ${y})`);
-
     const existingTile = this.getTile(x, y);
     const leftTile = this.getTile(x - 1, y);
     const rightTile = this.getTile(x + 1, y);
@@ -118,7 +116,6 @@ export class VehicleGraph extends THREE.Group {
   }
 
   spawnVehicle() {
-    console.log('spawning vehicle');
     if (this.vehicles.children.length < config.vehicle.maxVehicleCount) {
       const startingTile = this.getStartingTile();
 
@@ -133,13 +130,9 @@ export class VehicleGraph extends THREE.Group {
             this.assetManager.createRandomVehicleMesh()
           )
 
-          console.log('creating new vehicle');
-
           this.vehicles.add(vehicle);
         }
       }
-    } else {
-      console.log('maximum number of vehicles met, not spawning a vehicle');
     }
   }
 

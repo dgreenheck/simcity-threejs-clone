@@ -10,9 +10,9 @@ export class AssetManager {
   modelLoader = new GLTFLoader();
 
   textures = {
-    'base': this.loadTexture('public/textures/base.png'),
-    'specular': this.loadTexture('public/textures/specular.png'),
-    'grid': this.loadTexture('public/textures/grid.png')
+    'base': this.loadTexture('/textures/base.png'),
+    'specular': this.loadTexture('/textures/specular.png'),
+    'grid': this.loadTexture('/textures/grid.png')
   };
 
   meshes = {};
@@ -111,10 +111,7 @@ export class AssetManager {
       .filter(x => x[1].type === 'vehicle')
       .map(x => x[0]);
 
-    console.log(types);
-
     const i = Math.floor(types.length * Math.random());
-    console.log(types[i])
     return this.cloneMesh(types[i], true);
   }
 
@@ -158,7 +155,7 @@ export class AssetManager {
    * @param {string} url The URL of the model to load
    */
   loadModel(name, {filename, scale = 1, rotation = 0, receiveShadow = true, castShadow = true}) {
-    this.modelLoader.load(`public/models/${filename}`,
+    this.modelLoader.load(`/models/${filename}`,
       (glb) => {
         let mesh = glb.scene.children[0].children[0];
 

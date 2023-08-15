@@ -158,11 +158,11 @@ export class Citizen {
         <br>
         <span class="info-citizen-details">
           <span>
-            <img class="info-citizen-icon" src="/public/icons/calendar.png">
+            <img class="info-citizen-icon" src="/icons/calendar.png">
             ${this.age} 
           </span>
           <span>
-            <img class="info-citizen-icon" src="/public/icons/job.png">
+            <img class="info-citizen-icon" src="/icons/job.png">
             ${this.state}
           </span>
         </span>
