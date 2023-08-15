@@ -103,6 +103,22 @@ export class AssetManager {
   }
 
   /**
+   * Creates a new random vehicle mesh
+   * @returns {THREE.Mesh} A mesh object
+   */
+  createRandomVehicleMesh() {
+    const types = Object.entries(models)
+      .filter(x => x[1].type === 'vehicle')
+      .map(x => x[0]);
+
+    console.log(types);
+
+    const i = Math.floor(types.length * Math.random());
+    console.log(types[i])
+    return this.cloneMesh(types[i], true);
+  }
+
+  /**
    * Returns a cloned copy of a mesh
    * @param {string} name The name of the mesh to retrieve
    * @param {boolean} transparent True if materials should be transparent. Default is false.

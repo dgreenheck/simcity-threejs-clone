@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
 import { AssetManager } from './assetManager.js';
 import { City } from './city.js';
+import { VehicleGraph } from './vehicles/vehicleGraph.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
@@ -64,6 +65,9 @@ export class SceneManager {
 
     this.root = new THREE.Group();
     this.scene.add(this.root);
+
+    this.vehicleGraph = new VehicleGraph(city.size, this.assetManager);
+    this.root.add(this.vehicleGraph);
 
     this.buildings = [];
     this.terrain = [];
@@ -141,6 +145,7 @@ export class SceneManager {
         if (!tile.building && existingBuildingMesh) {
           this.root.remove(existingBuildingMesh);
           this.buildings[x][y] = null;
+          this.vehicleGraph.updateTile(x, y, null);
         }
 
         // If the data model has changed, update the mesh
@@ -149,6 +154,10 @@ export class SceneManager {
           this.buildings[x][y] = this.assetManager.createBuildingMesh(tile);
           this.root.add(this.buildings[x][y]);
           tile.building.isMeshOutOfDate = false;
+
+          if (tile.building.type === 'road') {
+            this.vehicleGraph.updateTile(x, y, tile.building);
+          }
         }
       }
     }
@@ -172,6 +181,7 @@ export class SceneManager {
    * Render the contents of the scene
    */
   #draw() {
+    this.vehicleGraph.updateVehicles();
     this.renderer.render(this.scene, this.cameraManager.camera);
   }
 
