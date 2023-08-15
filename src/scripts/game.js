@@ -28,6 +28,7 @@ export class Game {
      */
     this.sceneManager = new SceneManager(this.city, () => {
       console.log('scene loaded');
+      document.getElementById('loading').remove();
       this.sceneManager.start();
       setInterval(this.step.bind(this), 1000);
     });   
@@ -77,9 +78,9 @@ export class Game {
     this.isPaused = !this.isPaused;
     console.log(`Is Paused: ${this.isPaused}`);
     if (this.isPaused) {
-      document.getElementById('pause-button-icon').src = 'public/icons/play.png';
+      document.getElementById('pause-button-icon').src = '/icons/play.png';
     } else {
-      document.getElementById('pause-button-icon').src = 'public/icons/pause.png';
+      document.getElementById('pause-button-icon').src = '/icons/pause.png';
     }
   }
 
