@@ -22,7 +22,7 @@ Want to know how I made this? Follow the YouTube tutorial series [here](https://
 
 Here you go!
 
-https://dgreenheck.github.io/citysim-js/
+https://dgreenheck.github.io/simcity-threejs-clone
 
 ## License
 
