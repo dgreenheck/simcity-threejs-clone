@@ -1,8 +1,12 @@
-import { createBuilding } from './buildings/buildingFactory.js';
-import { Tile } from './tile.js';
+import { BuildingKind } from "../types/Building";
+import { createBuilding } from "./buildings/buildingFactory";
+import { Tile, TileType } from "./tile";
 
 export class City {
-  constructor(size) {
+  size: number;
+  tiles: TileType[][];
+
+  constructor(size: number) {
     this.size = size;
 
     /**
@@ -18,19 +22,24 @@ export class City {
         column.push(tile);
       }
       this.tiles.push(column);
-    }  
+    }
   }
- 
+
   /** Returns the title at the coordinates. If the coordinates
    * are out of bounds, then `null` is returned.
    * @param {number} x The x-coordinate of the tile
    * @param {number} y The y-coordinate of the tile
    * @returns {Tile | null}
    */
-  getTile(x, y) {
-    if (x === undefined || y === undefined ||
-        x < 0 ||  y < 0 ||  
-        x >= this.size ||  y >= this.size) {
+  getTile(x: number, y: number) {
+    if (
+      x === undefined ||
+      y === undefined ||
+      x < 0 ||
+      y < 0 ||
+      x >= this.size ||
+      y >= this.size
+    ) {
       return null;
     } else {
       return this.tiles[x][y];
@@ -42,20 +51,22 @@ export class City {
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
         const tile = this.getTile(x, y);
-        population += tile.building?.residents?.length ?? 0;
+        if (!tile) continue;
+
+        population += tile.building?.residents.length ?? 0;
       }
     }
     return population;
   }
-  
+
   /**
    * Places a building at the specified coordinates if the
    * tile does not already have a building on it
-   * @param {number} x 
-   * @param {number} y 
-   * @param {string} buildingType 
+   * @param {number} x
+   * @param {number} y
+   * @param {string} buildingType
    */
-  placeBuilding(x, y, buildingType) {
+  placeBuilding(x: number, y: number, buildingType: BuildingKind) {
     const tile = this.getTile(x, y);
 
     // If the tile doesnt' already have a building, place one there
@@ -73,13 +84,13 @@ export class City {
 
   /**
    * Bulldozes the building at the specified coordinates
-   * @param {number} x 
+   * @param {number} x
    * @param {number} y
    */
-  bulldoze(x, y) {
+  bulldoze(x: number, y: number) {
     const tile = this.getTile(x, y);
 
-    if (tile.building) {
+    if (tile && tile.building) {
       tile.building.dispose();
       tile.building = null;
 
@@ -99,7 +110,7 @@ export class City {
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
         const tile = this.getTile(x, y);
-        tile.building?.step(this);
+        tile?.building?.step(this);
       }
     }
 
@@ -107,9 +118,9 @@ export class City {
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
         const tile = this.getTile(x, y);
-        const residents = tile.building?.residents;
+        const residents = tile?.building?.residents;
         if (residents) {
-          residents.forEach(resident => resident.step(this));
+          residents.forEach((resident) => resident.step(this));
         }
       }
     }
@@ -124,33 +135,41 @@ export class City {
    * @param {number} maxDistance The maximum distance to search from the starting tile
    * @returns {Tile} The first tile matching `criteria`, otherwiser `null`
    */
-  findTile(start, filter, maxDistance) {
+  findTile(
+    start: { x: number; y: number },
+    filter: (tile: Tile) => boolean,
+    maxDistance: number
+  ) {
     const startTile = this.getTile(start.x, start.y);
     const visited = new Set();
-    const tilesToSearch = [];
+    const tilesToSearch: (Tile | null)[] = [];
 
-    // Initialze our search with the starting tile
-    tilesToSearch.push(startTile);
+    if (startTile) {
+      // Initialze our search with the starting tile
+      tilesToSearch.push(startTile);
+    }
 
     while (tilesToSearch.length > 0) {
       const tile = tilesToSearch.shift();
 
+      if (!tile) continue;
+
       // Has this tile been visited? If so, ignore it and move on
-      if (visited.has(tile.id)) {
+      if (visited.has(tile?.id)) {
         continue;
       } else {
-        visited.add(tile.id);
+        visited.add(tile?.id);
       }
 
       // Check if tile is outside the search bounds
-      const distance = startTile.distanceTo(tile);
-      if (distance > maxDistance) continue;
+      const distance = startTile?.distanceTo(tile);
+      if (distance && distance > maxDistance) continue;
 
       // Add this tiles neighbor's to the search list
       tilesToSearch.push(...this.getTileNeighbors(tile.x, tile.y));
 
-      // If this tile passes the criteria 
-      if (filter(tile)) {
+      // If this tile passes the criteria
+      if (tile && filter(tile)) {
         return tile;
       }
     }
@@ -163,7 +182,7 @@ export class City {
    * @param {number} x The x-coordinate of the tile
    * @param {number} y The y-coordinate of the tile
    */
-  getTileNeighbors(x, y) {
+  getTileNeighbors(x: number, y: number) {
     const neighbors = [];
 
     if (x > 0) {

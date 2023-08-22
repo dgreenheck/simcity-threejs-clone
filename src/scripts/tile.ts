@@ -1,18 +1,27 @@
-import { Building } from './buildings/building.js';
+import { Building } from "./buildings/building";
+
+export type TileType = Tile;
 
 export class Tile {
   /**
    * Creates a new `Tile` object
-   * @param {number} x The x-coordinate of the tile 
+   * @param {number} x The x-coordinate of the tile
    * @param {number} y The y-coordinate of the tile
    */
-  constructor(x, y) {
+
+  x: number;
+  y: number;
+  id: string;
+  terrain: string;
+  building: Building | null;
+
+  constructor(x: number, y: number) {
     /**
      * Unique identifier for this tile
      * @type {string}
      */
     this.id = crypto.randomUUID();
-    
+
     /**
      * The x-coordinate of the tile
      * @type {number}
@@ -29,7 +38,7 @@ export class Tile {
      * The type of terrain
      * @type {string}
      */
-    this.terrain = 'grass';
+    this.terrain = "grass";
 
     /**
      * The building on this tile
@@ -40,15 +49,15 @@ export class Tile {
 
   /**
    * Gets the Manhattan distance between two tiles
-   * @param {Tile} tile 
-   * @returns 
+   * @param {Tile} tile
+   * @returns
    */
-  distanceTo(tile) {
+  distanceTo(tile: Tile) {
     return Math.abs(this.x - tile.x) + Math.abs(this.y - tile.y);
   }
 
   /**
-   * 
+   *
    * @returns {string} HTML representation of this object
    */
   toHTML() {
@@ -67,4 +76,4 @@ export class Tile {
 
     return html;
   }
-};
+}

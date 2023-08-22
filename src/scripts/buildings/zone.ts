@@ -1,14 +1,22 @@
-import config from '../config.js';
-import { Building } from './building.js';
+import { CityType } from "../../types/City.js";
+import config from "../config.js";
+import { Building } from "./building.js";
 
 /**
  * Represents a zoned building such as residential, commercial or industrial
  */
 export class Zone extends Building {
-  constructor(x, y) {
+  style: string;
+  abandoned: boolean;
+  developed: boolean;
+  hasRoadAccess: boolean;
+  level: number;
+  abandonmentCounter: number;
+
+  constructor(x: number, y: number) {
     super(x, y);
     this.rotation = 90 * Math.floor(4 * Math.random());
-    
+
     /**
      * The mesh style to use when rendering
      */
@@ -45,9 +53,9 @@ export class Zone extends Building {
 
   /**
    * Updates the state of this building by one simulation step
-   * @param {City} city 
+   * @param {City} city
    */
-  step(city) {
+  step(city: CityType) {
     super.step(city);
 
     // Check to see if this zone's development criteria are met. If they
@@ -60,8 +68,8 @@ export class Zone extends Building {
         this.isMeshOutOfDate = true;
       }
 
-    // If the zone has failed to meet its basic requirements
-    // for enough time, there is a chance of the zone becoming abandoned
+      // If the zone has failed to meet its basic requirements
+      // for enough time, there is a chance of the zone becoming abandoned
     } else {
       this.abandonmentCounter++;
       if (this.abandonmentCounter >= config.zone.abandonmentThreshold) {
@@ -76,7 +84,7 @@ export class Zone extends Building {
   /**
    * Returns true if this zone is able to be developed
    */
-  checkDevelopmentCriteria(city) {
+  checkDevelopmentCriteria(city: CityType) {
     this.checkRoadAccess(city);
     return this.hasRoadAccess;
   }
@@ -84,12 +92,16 @@ export class Zone extends Building {
   /**
    * Checks nearby tiles to see if a road is available. This check
    * is only triggered when `refresh()` is called.
-   * @param {City} city 
+   * @param {City} city
    */
-  checkRoadAccess(city) {
-    const road = city.findTile(this, (tile) => {
-      return tile.building?.type === 'road'
-    }, config.zone.maxRoadSearchDistance);
+  checkRoadAccess(city: CityType) {
+    const road = city.findTile(
+      this,
+      (tile) => {
+        return tile.building?.type === "road";
+      },
+      config.zone.maxRoadSearchDistance
+    );
 
     if (road) {
       this.hasRoadAccess = true;

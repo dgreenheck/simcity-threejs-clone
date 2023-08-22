@@ -1,12 +1,12 @@
-import { City } from '../city.js';
-import { Zone } from './zone.js';
+import { City } from "../city";
+import { Zone } from "./zone";
 
 export class IndustrialZone extends Zone {
   constructor(x, y) {
     super(x, y);
 
     this.name = generateBusinessName();
-    this.type = 'industrial';
+    this.type = "industrial";
 
     this.level = 1; // currently only has one level due to lack of models
 
@@ -34,10 +34,10 @@ export class IndustrialZone extends Zone {
   numberOfJobsFilled() {
     return this.workers.length;
   }
-  
+
   /**
    * Steps the state of the zone forward in time by one simulation step
-   * @param {City} city 
+   * @param {City} city
    */
   step(city) {
     super.step(city);
@@ -75,28 +75,53 @@ export class IndustrialZone extends Zone {
     let html = super.toHTML();
 
     html += `
-    <div class="info-heading">Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</div>`;
+    <div class="info-heading">Workers (${this.numberOfJobsFilled()}/${
+      this.maxWorkers
+    })</div>`;
 
     html += '<ul class="info-citizen-list">';
     for (const worker of this.workers) {
       html += worker.toHTML();
     }
-    html += '</ul>';
+    html += "</ul>";
 
     return html;
   }
 }
 
 // Arrays of words for generating business names
-const prefixes = ['Apex', 'Vortex', 'Elevate', 'Zenith', 'Nova', 'Synapse', 'Pulse', 'Enigma', 'Catalyst', 'Axiom'];
-const suffixes = ['Dynamics', 'Ventures', 'Solutions', 'Technologies', 'Innovations', 'Industries', 'Enterprises', 'Systems', 'Mechanics', 'Manufacturing'];
-const businessSuffixes = ['LLC', 'Inc.', 'Co.', 'Corp.', 'Ltd.'];
+const prefixes = [
+  "Apex",
+  "Vortex",
+  "Elevate",
+  "Zenith",
+  "Nova",
+  "Synapse",
+  "Pulse",
+  "Enigma",
+  "Catalyst",
+  "Axiom",
+];
+const suffixes = [
+  "Dynamics",
+  "Ventures",
+  "Solutions",
+  "Technologies",
+  "Innovations",
+  "Industries",
+  "Enterprises",
+  "Systems",
+  "Mechanics",
+  "Manufacturing",
+];
+const businessSuffixes = ["LLC", "Inc.", "Co.", "Corp.", "Ltd."];
 
 // Function to generate a random industrial business name
 function generateBusinessName() {
   const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
   const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-  const businessSuffix = businessSuffixes[Math.floor(Math.random() * businessSuffixes.length)];
+  const businessSuffix =
+    businessSuffixes[Math.floor(Math.random() * businessSuffixes.length)];
 
-  return prefix + ' ' + suffix + ' ' + businessSuffix;
+  return prefix + " " + suffix + " " + businessSuffix;
 }

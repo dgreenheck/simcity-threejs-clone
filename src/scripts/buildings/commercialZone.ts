@@ -1,14 +1,14 @@
-import { City } from '../city.js';
-import { Zone } from './zone.js';
-import config from '../config.js';
+import { City } from "../city";
+import { Zone } from "./zone";
+import config from "../config";
 
 export class CommercialZone extends Zone {
   constructor(x, y) {
     super(x, y);
-    
+
     this.name = generateBusinessName();
-    this.type = 'commercial';
-    
+    this.type = "commercial";
+
     // Citizens that work here
     this.workers = [];
     // The maximum level this building can be upgraded to
@@ -44,7 +44,7 @@ export class CommercialZone extends Zone {
 
   /**
    * Steps the state of the zone forward in time by one simulation step
-   * @param {City} city 
+   * @param {City} city
    */
   step(city) {
     super.step(city);
@@ -77,7 +77,7 @@ export class CommercialZone extends Zone {
   /**
    * Handles any clean up needed before a building is removed
    */
-  dispose() { 
+  dispose() {
     this.#layOffWorkers();
     super.dispose();
   }
@@ -96,22 +96,45 @@ export class CommercialZone extends Zone {
     for (const worker of this.workers) {
       html += worker.toHTML();
     }
-    html += '</ul>';
+    html += "</ul>";
 
     return html;
   }
 }
 
 // Arrays of words for generating business names
-const prefixes = ['Prime', 'Elite', 'Global', 'Exquisite', 'Vibrant', 'Luxury', 'Innovative', 'Sleek', 'Premium', 'Dynamic'];
-const suffixes = ['Commerce', 'Trade', 'Marketplace', 'Ventures', 'Enterprises', 'Retail', 'Group', 'Emporium', 'Boutique', 'Mall'];
-const businessSuffixes = ['LLC', 'Inc.', 'Co.', 'Corp.', 'Ltd.'];
+const prefixes = [
+  "Prime",
+  "Elite",
+  "Global",
+  "Exquisite",
+  "Vibrant",
+  "Luxury",
+  "Innovative",
+  "Sleek",
+  "Premium",
+  "Dynamic",
+];
+const suffixes = [
+  "Commerce",
+  "Trade",
+  "Marketplace",
+  "Ventures",
+  "Enterprises",
+  "Retail",
+  "Group",
+  "Emporium",
+  "Boutique",
+  "Mall",
+];
+const businessSuffixes = ["LLC", "Inc.", "Co.", "Corp.", "Ltd."];
 
 // Function to generate a random commercial business name
 function generateBusinessName() {
   const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
   const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-  const businessSuffix = businessSuffixes[Math.floor(Math.random() * businessSuffixes.length)];
+  const businessSuffix =
+    businessSuffixes[Math.floor(Math.random() * businessSuffixes.length)];
 
-  return prefix + ' ' + suffix + ' ' + businessSuffix;
+  return prefix + " " + suffix + " " + businessSuffix;
 }

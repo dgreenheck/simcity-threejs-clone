@@ -1,25 +1,37 @@
-import * as THREE from 'three';
-import { CameraManager } from './cameraManager.js';
-import { AssetManager } from './assetManager.js';
-import { City } from './city.js';
-import { VehicleGraph } from './vehicles/vehicleGraph.js';
+import * as THREE from "three";
+import { CameraManager } from "./cameraManager";
+import { AssetManager } from "./assetManager";
+import { VehicleGraph } from "./vehicles/vehicleGraph";
+import { City } from "./city";
 
-/** 
+/**
  * Manager for the Three.js scene. Handles rendering of a `City` object
  */
 export class SceneManager {
+  gameWindow: HTMLElement | null;
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  assetManager: AssetManager;
+  cameraManager: CameraManager;
+  buildings: THREE.Mesh[][];
+  terrain: THREE.Mesh[][];
+  raycaster: THREE.Raycaster;
+  mouse: THREE.Vector2;
+  activeObject: THREE.Mesh;
+  hoverObject: THREE.Mesh;
+
   /**
    * Initializes a new Scene object
-   * @param {City} city 
+   * @param {City} city
    */
-  constructor(city, onLoad) {
-    this.renderer = new THREE.WebGLRenderer({ 
-      antialias: true
+  constructor(city: City, onLoad: () => void) {
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
     });
     this.scene = new THREE.Scene();
-    this.gameWindow = document.getElementById('render-target');
+    this.gameWindow = document.getElementById("render-target");
     this.assetManager = new AssetManager(() => {
-      console.log('assets loaded');
+      console.log("assets loaded");
       this.#initialize(city);
       onLoad();
     });
@@ -38,14 +50,17 @@ export class SceneManager {
     this.terrain = [];
 
     // Configure the renderer
-    this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
+    this.renderer.setSize(
+      this.gameWindow.clientWidth,
+      this.gameWindow.clientHeight
+    );
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // Add the renderer to the DOM
     this.gameWindow.appendChild(this.renderer.domElement);
-    window.addEventListener('resize', this.onResize.bind(this), false);
+    window.addEventListener("resize", this.onResize.bind(this), false);
 
     // Variables for object selection
     this.raycaster = new THREE.Raycaster();
@@ -89,13 +104,13 @@ export class SceneManager {
     this.#setupGrid(city);
   }
 
-  #setupGrid(city) {
+  #setupGrid(city: City) {
     // Add the grid
-    const gridMaterial = new THREE.MeshBasicMaterial({ 
+    const gridMaterial = new THREE.MeshBasicMaterial({
       color: 0x000000,
-      map: this.assetManager.textures['grid'],
+      map: this.assetManager.textures["grid"],
       transparent: true,
-      opacity: 0.2
+      opacity: 0.2,
     });
     gridMaterial.map.repeat = new THREE.Vector2(city.size, city.size);
     gridMaterial.map.wrapS = city.size;
@@ -113,7 +128,7 @@ export class SceneManager {
    * Setup the lights for the scene
    */
   #setupLights() {
-    const sun = new THREE.DirectionalLight(0xffffff, 2)
+    const sun = new THREE.DirectionalLight(0xffffff, 2);
     sun.position.set(10, 20, 20);
     sun.castShadow = true;
     sun.shadow.camera.left = -10;
@@ -132,14 +147,14 @@ export class SceneManager {
    * Applies the latest changes in the data model to the scene
    * @param {City} city The city data model
    */
-  applyChanges(city) {
+  applyChanges(city: City) {
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
         const existingBuildingMesh = this.buildings[x][y];
 
         // Show/hide the terrain
-        this.terrain[x][y].visible = !(tile.building?.hideTerrain) ?? true;
+        this.terrain[x][y].visible = !tile.building?.hideTerrain ?? true;
 
         // If the player removes a building, remove it from the root node
         if (!tile.building && existingBuildingMesh) {
@@ -155,7 +170,7 @@ export class SceneManager {
           this.root.add(this.buildings[x][y]);
           tile.building.isMeshOutOfDate = false;
 
-          if (tile.building.type === 'road') {
+          if (tile.building.type === "road") {
             this.vehicleGraph.updateTile(x, y, tile.building);
           }
         }
@@ -187,7 +202,7 @@ export class SceneManager {
 
   /**
    * Sets the object that is currently highlighted
-   * @param {THREE.Mesh} mesh 
+   * @param {THREE.Mesh} mesh
    */
   setHighlightedMesh(mesh) {
     // Unhighlight the previously hovered object (if it isn't currently selected)
@@ -204,9 +219,9 @@ export class SceneManager {
   }
 
   /**
-   * Sets the emission color of the mesh 
-   * @param {THREE.Mesh} mesh 
-   * @param {number} color 
+   * Sets the emission color of the mesh
+   * @param {THREE.Mesh} mesh
+   * @param {number} color
    */
   #setMeshEmission(mesh, color) {
     if (!mesh) return;
@@ -221,12 +236,17 @@ export class SceneManager {
    */
   getSelectedObject(event) {
     // Compute normalized this.mouse coordinates
-    this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    this.mouse.x =
+      (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    this.mouse.y =
+      -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
 
     this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
 
-    let intersections = this.raycaster.intersectObjects(this.root.children, true);
+    let intersections = this.raycaster.intersectObjects(
+      this.root.children,
+      true
+    );
     if (intersections.length > 0) {
       return intersections[0].object;
     } else {
@@ -236,7 +256,7 @@ export class SceneManager {
 
   /**
    * Sets the currently selected object and highlights it
-   * @param {object} object 
+   * @param {object} object
    */
   setActiveObject(object) {
     // Clear highlight on previously active object
@@ -251,6 +271,9 @@ export class SceneManager {
    */
   onResize() {
     this.cameraManager.resize(this.gameWindow);
-    this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
+    this.renderer.setSize(
+      this.gameWindow.clientWidth,
+      this.gameWindow.clientHeight
+    );
   }
 }

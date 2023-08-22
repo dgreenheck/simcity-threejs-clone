@@ -1,6 +1,6 @@
-import * as THREE from 'three';
-import { VehicleGraphNode } from './vehicleGraphNode.js';
-import config from '../config.js';
+import * as THREE from "three";
+import { VehicleGraphNode } from "./vehicleGraphNode";
+import config from "../config";
 
 const FORWARD = new THREE.Vector3(1, 0, 0);
 
@@ -78,16 +78,16 @@ export class Vehicle extends THREE.Group {
     const age = this.getAge();
 
     const setOpacity = (opacity) => {
-      this.traverse(obj => {
+      this.traverse((obj) => {
         if (obj.material) {
-          obj.material.opacity = Math.max(0, Math.min(opacity, 1))
+          obj.material.opacity = Math.max(0, Math.min(opacity, 1));
         }
       });
-    }
+    };
 
     if (age < config.vehicle.fadeTime) {
       setOpacity(age / config.vehicle.fadeTime);
-    } else if ((config.vehicle.maxLifetime - age) < config.vehicle.fadeTime) {
+    } else if (config.vehicle.maxLifetime - age < config.vehicle.fadeTime) {
       setOpacity((config.vehicle.maxLifetime - age) / config.vehicle.fadeTime);
     } else {
       setOpacity(1);
