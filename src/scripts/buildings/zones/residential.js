@@ -1,6 +1,6 @@
-import { Citizen } from '../citizens.js';
-import { City } from '../city.js';
-import config from '../config.js';
+import { Citizen } from '../../citizens.js';
+import { City } from '../../city.js';
+import config from '../../config.js';
 import { Zone } from './zone.js';
 
 export class ResidentialZone extends Zone {
@@ -14,16 +14,14 @@ export class ResidentialZone extends Zone {
      * @type {Citizen[]}
      */
     this.residents = [];
-
-    this.maxLevel = 3;
   }
 
   /**
    * Steps the state of the zone forward in time by one simulation step
    * @param {City} city 
    */
-  step(city) {
-    super.step(city);
+  simulate(city) {
+    super.simulate(city);
 
     // If building is abandoned, all residents are evicted and
     // no more residents are allowed to move in.
@@ -32,17 +30,13 @@ export class ResidentialZone extends Zone {
       return;
     }
     
-    if (this.developed) {
+    if (this.development.state === 'developed') {
       // Move in new residents if there is room
       if (this.residents.length < this.getMaxResidents() &&
           Math.random() < config.zone.residentMoveInChance) {
         const resident = new Citizen(this);
         this.residents.push(resident);
       // If building is full, then small chance to upgrade
-      } else {
-        if (Math.random() < 0.03 && this.level < this.maxLevel) {
-          this.level++;
-        }
       }
     }
   }
@@ -52,7 +46,7 @@ export class ResidentialZone extends Zone {
    * @returns {number}
    */
   getMaxResidents() {
-    return Math.pow(config.zone.maxResidents, this.level);
+    return Math.pow(config.zone.maxResidents, this.development.level);
   }
 
   /**

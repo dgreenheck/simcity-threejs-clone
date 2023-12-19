@@ -39,17 +39,17 @@ export class Building {
   }
 
   /**
-   * Performs a full refresh of the building state
+   * Performs a full onMapUpdate of the building state
    * @param {City} city 
    */
-  refresh(city) {
+  update(city) {
   }
 
   /**
    * Updates the state of this building by one simulation step
    * @param {City} city 
    */
-  step(city) {
+  simulate(city) {
   }
 
   /**

@@ -1,6 +1,6 @@
-import { CommercialZone } from './commercialZone.js';
-import { ResidentialZone } from './residentialZone.js';
-import { IndustrialZone } from './industrialZone.js';
+import { CommercialZone } from './zones/commercial.js';
+import { ResidentialZone } from './zones/residential.js';
+import { IndustrialZone } from './zones/industrial.js';
 import { Road } from './road.js';
 import { Building } from './building.js';
 

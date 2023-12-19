@@ -1,6 +1,6 @@
-import { City } from '../city.js';
+import { City } from '../../city.js';
 import { Zone } from './zone.js';
-import config from '../config.js';
+import config from '../../config.js';
 
 export class CommercialZone extends Zone {
   constructor(x, y) {
@@ -11,8 +11,6 @@ export class CommercialZone extends Zone {
     
     // Citizens that work here
     this.workers = [];
-    // The maximum level this building can be upgraded to
-    this.maxLevel = 3;
   }
 
   /**
@@ -20,7 +18,7 @@ export class CommercialZone extends Zone {
    * @returns {number}
    */
   getMaxWorkers() {
-    return Math.pow(config.zone.maxWorkers, this.level);
+    return Math.pow(config.zone.maxWorkers, this.development.level);
   }
 
   /**
@@ -46,21 +44,14 @@ export class CommercialZone extends Zone {
    * Steps the state of the zone forward in time by one simulation step
    * @param {City} city 
    */
-  step(city) {
-    super.step(city);
+  simulate(city) {
+    super.simulate(city);
 
     // If building is abandoned, all workers are laid off and no
     // more workers are allowed to work here
     if (this.abandoned) {
       this.#layOffWorkers();
       return;
-    }
-
-    // If building is developed, have a random chance of developing
-    if (this.developed) {
-      if (Math.random() < 0.03 && this.level < this.maxLevel) {
-        this.level++;
-      }
     }
   }
 

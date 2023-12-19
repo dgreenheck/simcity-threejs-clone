@@ -1,4 +1,4 @@
-import { City } from '../city.js';
+import { City } from '../../city.js';
 import { Zone } from './zone.js';
 
 export class IndustrialZone extends Zone {
@@ -8,12 +8,16 @@ export class IndustrialZone extends Zone {
     this.name = generateBusinessName();
     this.type = 'industrial';
 
-    this.level = 1; // currently only has one level due to lack of models
-
     // Citizens that work here
     this.workers = [];
-    // Maximum number of workers this building can support
-    this.maxWorkers = 4;
+  }
+
+  /**
+   * Maximuim number of workers that can work at this building
+   * @returns {number}
+   */
+  getMaxWorkers() {
+    return Math.pow(config.zone.maxWorkers, this.development.level);
   }
 
   /**
@@ -24,7 +28,7 @@ export class IndustrialZone extends Zone {
     // If building is not developed, there are no available jobs
     if (this.abandoned || !this.developed) return 0;
     // Otherwise return the number of vacant positions
-    return this.maxWorkers - this.workers.length;
+    return this.getMaxWorkers() - this.workers.length;
   }
 
   /**
@@ -39,8 +43,8 @@ export class IndustrialZone extends Zone {
    * Steps the state of the zone forward in time by one simulation step
    * @param {City} city 
    */
-  step(city) {
-    super.step(city);
+  simulate(city) {
+    super.simulate(city);
 
     // If building is abandoned, all workers are laid off and no
     // more workers are allowed to work here
@@ -75,7 +79,7 @@ export class IndustrialZone extends Zone {
     let html = super.toHTML();
 
     html += `
-    <div class="info-heading">Workers (${this.numberOfJobsFilled()}/${this.maxWorkers})</div>`;
+    <div class="info-heading">Workers (${this.numberOfJobsFilled()}/${this.getMaxWorkers()})</div>`;
 
     html += '<ul class="info-citizen-list">';
     for (const worker of this.workers) {

@@ -1,6 +1,6 @@
-import { CommercialZone } from './buildings/commercialZone.js';
-import { IndustrialZone } from './buildings/industrialZone.js';
-import { ResidentialZone } from './buildings/residentialZone.js';
+import { CommercialZone } from './buildings/zones/commercial.js';
+import { IndustrialZone } from './buildings/zones/industrial.js';
+import { ResidentialZone } from './buildings/zones/residential.js';
 import config from './config.js';
 
 export class Citizen {
@@ -66,7 +66,7 @@ export class Citizen {
    * Steps the state of the citizen forward in time by one simulation step
    * @param {object} city 
    */
-  step(city) {
+  simulate(city) {
     switch (this.state) {
       case 'idle':
       case 'school':

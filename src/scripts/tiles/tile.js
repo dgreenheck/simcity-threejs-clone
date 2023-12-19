@@ -1,4 +1,5 @@
-import { Building } from './buildings/building.js';
+import { RoadAccessAttribute } from './attributes/roadAccess.js';
+import { Building } from '../buildings/building.js';
 
 export class Tile {
   /**
@@ -36,6 +37,28 @@ export class Tile {
      * @type {Building?}
      */
     this.building = null;
+
+    /**
+     * True if this tile has access to a road
+     * @type {RoadAccessAttribute}
+     */
+    this.roadAccess = new RoadAccessAttribute(this);
+  }
+
+  /**
+   * Updates the state of the tile and any buildings on it
+   */
+  onMapUpdate(city) {
+    this.roadAccess.update(city);
+    this.building?.update(city);
+  }
+
+  /**
+   * Steps the simulation state of the tile
+   * @param {*} city 
+   */
+  simulate(city) {
+    this.building?.simulate(city);
   }
 
   /**
@@ -58,6 +81,9 @@ export class Tile {
       <br>
       <span class="info-label">Terrain </span>
       <span class="info-value">${this.terrain}</span>
+      <br>
+      <span class="info-label">Road Access </span>
+      <span class="info-value">${this.roadAccess.value}</span>
       <br>
     `;
 

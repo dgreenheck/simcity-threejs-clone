@@ -1,6 +1,6 @@
 import { City } from './city.js';
 import { Building } from './buildings/building.js';
-import { Tile } from './tile.js';
+import { Tile } from './tiles/tile.js';
 import { SceneManager } from './sceneManager.js';
 
 export class Game {
@@ -30,7 +30,7 @@ export class Game {
       console.log('scene loaded');
       document.getElementById('loading').remove();
       this.sceneManager.start();
-      setInterval(this.step.bind(this), 1000);
+      setInterval(this.simulate.bind(this), 1000);
     });   
     
     // Hookup event listeners
@@ -45,10 +45,10 @@ export class Game {
   /**
    * Main update method for the game
    */
-  step() {
+  simulate() {
     if (this.isPaused) return;
     // Update the city data model first, then update the scene
-    this.city.step();
+    this.city.simulate();
     this.sceneManager.applyChanges(this.city);
 
     this.#updateTitleBar();

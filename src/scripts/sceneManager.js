@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
-import { AssetManager } from './assetManager.js';
+import { AssetManager } from './assets/assetManager.js';
 import { City } from './city.js';
 import { VehicleGraph } from './vehicles/vehicleGraph.js';
 

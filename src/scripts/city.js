@@ -1,5 +1,5 @@
 import { createBuilding } from './buildings/buildingFactory.js';
-import { Tile } from './tile.js';
+import { Tile } from './tiles/tile.js';
 
 export class City {
   constructor(size) {
@@ -18,9 +18,9 @@ export class City {
         column.push(tile);
       }
       this.tiles.push(column);
-    }  
+    }
   }
- 
+
   /** Returns the title at the coordinates. If the coordinates
    * are out of bounds, then `null` is returned.
    * @param {number} x The x-coordinate of the tile
@@ -29,8 +29,8 @@ export class City {
    */
   getTile(x, y) {
     if (x === undefined || y === undefined ||
-        x < 0 ||  y < 0 ||  
-        x >= this.size ||  y >= this.size) {
+      x < 0 || y < 0 ||
+      x >= this.size || y >= this.size) {
       return null;
     } else {
       return this.tiles[x][y];
@@ -47,7 +47,7 @@ export class City {
     }
     return population;
   }
-  
+
   /**
    * Places a building at the specified coordinates if the
    * tile does not already have a building on it
@@ -61,13 +61,7 @@ export class City {
     // If the tile doesnt' already have a building, place one there
     if (tile && !tile.building) {
       tile.building = createBuilding(x, y, buildingType);
-      tile.building.refresh(this);
-
-      // Refresh the adjacent buildings as well
-      this.getTile(x - 1, y)?.building?.refresh(this);
-      this.getTile(x + 1, y)?.building?.refresh(this);
-      this.getTile(x, y - 1)?.building?.refresh(this);
-      this.getTile(x, y + 1)?.building?.refresh(this);
+      this.onMapUpdate();
     }
   }
 
@@ -82,34 +76,38 @@ export class City {
     if (tile.building) {
       tile.building.dispose();
       tile.building = null;
-
-      // Refresh the adjacent buildings as well
-      this.getTile(x - 1, y)?.building?.refresh(this);
-      this.getTile(x + 1, y)?.building?.refresh(this);
-      this.getTile(x, y - 1)?.building?.refresh(this);
-      this.getTile(x, y + 1)?.building?.refresh(this);
+      this.onMapUpdate();
     }
   }
 
   /**
-   * Update the state of each tile in the city
+   * Updates 
    */
-  step() {
+  onMapUpdate() {
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        this.getTile(x, y).onMapUpdate(this);
+      }
+    }
+  }
+
+  /**
+   * Step the simulation forward by one step
+   */
+  simulate() {
     // Update each building
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
-        const tile = this.getTile(x, y);
-        tile.building?.step(this);
+        this.getTile(x, y).simulate(this);
       }
     }
 
     // Update each citizen
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
-        const tile = this.getTile(x, y);
-        const residents = tile.building?.residents;
+        const residents = this.getTile(x, y).building?.residents;
         if (residents) {
-          residents.forEach(resident => resident.step(this));
+          residents.forEach(resident => resident.simulate(this));
         }
       }
     }
@@ -122,7 +120,7 @@ export class City {
    * tile in the search field until `filter` returns true, or there are
    * no more tiles left to search.
    * @param {number} maxDistance The maximum distance to search from the starting tile
-   * @returns {Tile} The first tile matching `criteria`, otherwiser `null`
+   * @returns {Tile | null} The first tile matching `criteria`, otherwiser `null`
    */
   findTile(start, filter, maxDistance) {
     const startTile = this.getTile(start.x, start.y);

@@ -11,11 +11,10 @@ export class Road extends Building {
   }
 
   /**
-   * Updates the road mesh based on which adjacent tiles
-   * are roads as well
+   * Updates the road mesh based on which adjacent tiles are roads as well
    * @param {City} city 
    */
-  refresh(city) {
+  onMapUpdate(city) {
     // Check which adjacent tiles are roads
     let top = (city.getTile(this.x, this.y - 1)?.building?.type === this.type) ?? false;
     let bottom = (city.getTile(this.x, this.y + 1)?.building?.type === this.type) ?? false;
