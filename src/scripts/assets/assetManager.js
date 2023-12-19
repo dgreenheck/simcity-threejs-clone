@@ -38,7 +38,7 @@ export class AssetManager {
    */
   createGroundMesh(tile) {
     const mesh = this.cloneMesh('grass', false);
-    mesh.userData = tile;
+    mesh.traverse((obj) => obj.userData = tile);
     mesh.position.set(tile.x, 0, tile.y);
     return mesh;
   }
@@ -73,16 +73,15 @@ export class AssetManager {
     const zone = tile.building;
 
     let modelName;
-    if (zone.development.state === 'undeveloped') {
-      modelName = 'car-ambulance-pickup';
-    } else if (zone.development.state === 'under-construction') {
-      modelName = 'car-ambulance-pickup';
+    if (zone.development.state === 'undeveloped' ||
+        zone.development.state === 'under-construction') {
+      modelName = 'under-construction';
     } else if (zone.development.state === 'developed') {
       modelName = `${zone.type}-${zone.style}${zone.development.level}`;
     }
 
     let mesh = this.cloneMesh(modelName);
-    mesh.userData = tile;
+    mesh.traverse((obj) => obj.userData = tile);
     mesh.rotation.set(0, zone.rotation * DEG2RAD, 0);
     mesh.position.set(zone.x, 0, zone.y);
 
@@ -102,7 +101,7 @@ export class AssetManager {
   createRoadMesh(tile) {
     const road = tile.building;
     const mesh = this.cloneMesh(`${road.type}-${road.style}`);
-    mesh.userData = tile;
+    mesh.traverse((obj) => obj.userData = tile);
     mesh.rotation.set(0, road.rotation * DEG2RAD, 0);
     mesh.position.set(road.x, 0, road.y);
     return mesh;
@@ -118,6 +117,7 @@ export class AssetManager {
       .map(x => x[0]);
 
     const i = Math.floor(types.length * Math.random());
+
     return this.cloneMesh(types[i], true);
   }
 
@@ -163,20 +163,22 @@ export class AssetManager {
   loadModel(name, {filename, scale = 1, rotation = 0, receiveShadow = true, castShadow = true}) {
     this.modelLoader.load(`${baseUrl}models/${filename}`,
       (glb) => {
-        let mesh = glb.scene.children[0].children[0];
+        let mesh = glb.scene;
 
-        mesh.traverse((node) => {
-          node.material = new THREE.MeshLambertMaterial({
-            map: this.textures.base,
-            specularMap: this.textures.specular
-          })
+        mesh.traverse((obj) => {
+          if (obj.material) {
+            obj.material = new THREE.MeshLambertMaterial({
+              map: this.textures.base,
+              specularMap: this.textures.specular
+            })
+            obj.receiveShadow = receiveShadow;
+            obj.castShadow = castShadow;
+          }
         });
 
         mesh.position.set(0, 0, 0);
         mesh.rotation.set(0, THREE.MathUtils.degToRad(rotation), 0);
         mesh.scale.set(scale / 30, scale / 30, scale / 30);
-        mesh.receiveShadow = receiveShadow;
-        mesh.castShadow = castShadow;
 
         this.meshes[name] = mesh;
 

@@ -1,4 +1,4 @@
-import { City } from '../../city.js';
+import { City } from '../../sim/city.js';
 import config from '../../config.js';
 import { Tile } from '../tile.js';
 

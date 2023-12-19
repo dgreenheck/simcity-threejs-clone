@@ -1,4 +1,4 @@
-import { City } from '../../city.js';
+import { City } from '../../sim/city.js';
 import { Zone } from './zone.js';
 import config from '../../config.js';
 

@@ -1,5 +1,5 @@
-import { Citizen } from '../../citizens.js';
-import { City } from '../../city.js';
+import { Citizen } from '../../sim/citizen.js';
+import { City } from '../../sim/city.js';
 import config from '../../config.js';
 import { Zone } from './zone.js';
 

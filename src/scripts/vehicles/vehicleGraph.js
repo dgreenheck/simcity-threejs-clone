@@ -116,22 +116,20 @@ export class VehicleGraph extends THREE.Group {
   }
 
   spawnVehicle() {
-    if (this.vehicles.children.length < config.vehicle.maxVehicleCount) {
-      const startingTile = this.getStartingTile();
+    const startingTile = this.getStartingTile();
 
-      if (startingTile != null) {
-        const origin = startingTile.getRandomNode();
-        const destination = origin?.getRandomNextNode();
+    if (startingTile != null) {
+      const origin = startingTile.getRandomNode();
+      const destination = origin?.getRandomNextNode();
 
-        if (origin && destination) {
-          const vehicle = new Vehicle(
-            origin,
-            destination,
-            this.assetManager.createRandomVehicleMesh()
-          )
+      if (origin && destination) {
+        const vehicle = new Vehicle(
+          origin,
+          destination,
+          this.assetManager.createRandomVehicleMesh()
+        )
 
-          this.vehicles.add(vehicle);
-        }
+        this.vehicles.add(vehicle);
       }
     }
   }

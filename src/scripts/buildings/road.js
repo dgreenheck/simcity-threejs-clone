@@ -1,5 +1,5 @@
 import { Building } from './building.js';
-import { City } from '../city.js';
+import { City } from '../sim/city.js';
 
 export class Road extends Building {
   constructor(x, y) {

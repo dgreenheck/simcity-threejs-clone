@@ -1,7 +1,7 @@
-import { CommercialZone } from './buildings/zones/commercial.js';
-import { IndustrialZone } from './buildings/zones/industrial.js';
-import { ResidentialZone } from './buildings/zones/residential.js';
-import config from './config.js';
+import { CommercialZone } from '../buildings/zones/commercial.js';
+import { IndustrialZone } from '../buildings/zones/industrial.js';
+import { ResidentialZone } from '../buildings/zones/residential.js';
+import config from '../config.js';
 
 export class Citizen {
   constructor(residence) {

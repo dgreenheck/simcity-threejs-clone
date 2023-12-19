@@ -1,5 +1,5 @@
-import { createBuilding } from './buildings/buildingFactory.js';
-import { Tile } from './tiles/tile.js';
+import { createBuilding } from '../buildings/buildingFactory.js';
+import { Tile } from '../tiles/tile.js';
 
 export class City {
   constructor(size) {

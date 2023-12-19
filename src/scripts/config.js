@@ -17,13 +17,11 @@ export default {
     // The distance travelled per millisecond
     speed: 0.0005,            
     // The start/end time where the vehicle should fade
-    fadeTime: 1000,  
-    // Maximum lifetime of a vehicle         
+    fadeTime: 500,  
+    // Maximum lifetime of a vehicle (controls max # of vehicles on screen)     
     maxLifetime: 10000,
-    // Maximum number of vehicles in scene at any one time
-    maxVehicleCount: 25,
     // How often vehicles are spawned in milliseconds
-    spawnInterval: 1000       
+    spawnInterval: 1000     
   },
   zone: {
     // Number of simulation cycles the road must fail the abandonment

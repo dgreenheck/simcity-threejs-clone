@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
-import { AssetManager } from './assets/assetManager.js';
-import { City } from './city.js';
-import { VehicleGraph } from './vehicles/vehicleGraph.js';
+import { AssetManager } from '../assets/assetManager.js';
+import { City } from '../sim/city.js';
+import { VehicleGraph } from '../vehicles/vehicleGraph.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
@@ -41,7 +41,7 @@ export class SceneManager {
     this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Add the renderer to the DOM
     this.gameWindow.appendChild(this.renderer.domElement);
@@ -118,12 +118,13 @@ export class SceneManager {
     sun.castShadow = true;
     sun.shadow.camera.left = -10;
     sun.shadow.camera.right = 10;
-    sun.shadow.camera.top = 0;
+    sun.shadow.camera.top = 10;
     sun.shadow.camera.bottom = -10;
-    sun.shadow.mapSize.width = 1024;
-    sun.shadow.mapSize.height = 1024;
+    sun.shadow.mapSize.width = 2048;
+    sun.shadow.mapSize.height = 2048;
     sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 50;
+    sun.shadow.normalBias = 0.01;
     this.root.add(sun);
     this.root.add(new THREE.AmbientLight(0xffffff, 0.5));
   }
