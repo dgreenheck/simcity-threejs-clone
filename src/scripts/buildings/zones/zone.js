@@ -32,9 +32,6 @@ export class Zone extends Building {
   toHTML() {
     let html = super.toHTML();
     html += `
-    <span class="info-label">Style </span>
-    <span class="info-value">${this.style}</span>
-    <br>
     <span class="info-label">State </span>
     <span class="info-value">${this.development.state}</span>
     <br>

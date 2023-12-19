@@ -8,12 +8,12 @@ export class DevelopmentAttribute {
   /**
    * The zone's current state of development
    */
-  state = 'undeveloped';
+  #state = 'undeveloped';
 
   /**
    * Level of development
    */
-  level = 1;
+  #level = 1;
 
   /**
    * Maximum level of development
@@ -37,6 +37,23 @@ export class DevelopmentAttribute {
    */
   constructor(zone) {
     this.#zone = zone;
+  }
+
+  get level() {
+    return this.#level;
+  }
+
+  set level(value) {
+    this.#level = value;
+    this.#zone.isMeshOutOfDate = true;
+  }
+  get state() {
+    return this.#state;
+  }
+
+  set state(value) {
+    this.#state = value;
+    this.#zone.isMeshOutOfDate = true;
   }
 
   /**
