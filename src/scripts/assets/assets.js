@@ -88,6 +88,30 @@ export default {
     "type": "zone",
     "filename": "industry-warehouse.glb"
   },
+  "industrial-A2": {
+    "type": "zone",
+    "filename": "industry-factory.glb"
+  },
+  "industrial-B2": {
+    "type": "zone",
+    "filename": "industry-factory-old.glb"
+  },
+  "industrial-C2": {
+    "type": "zone",
+    "filename": "industry-warehouse.glb"
+  },
+  "industrial-A3": {
+    "type": "zone",
+    "filename": "industry-factory.glb"
+  },
+  "industrial-B3": {
+    "type": "zone",
+    "filename": "industry-factory-old.glb"
+  },
+  "industrial-C3": {
+    "type": "zone",
+    "filename": "industry-warehouse.glb"
+  },
   "road-straight": {
     "type": "road",
     "filename": "tile-road-straight.glb",

@@ -105,10 +105,10 @@ export class Citizen {
    */
   dispose() {
     // Remove resident from its  workplace
-    const workerIndex = this.workplace?.workers.indexOf(this);
+    const workerIndex = this.workplace?.jobs.workers.indexOf(this);
 
     if (workerIndex !== undefined && workerIndex > -1) {
-      this.workplace.workers.splice(workerIndex);
+      this.workplace.jobs.workers.splice(workerIndex);
     }
   }
 
@@ -122,7 +122,7 @@ export class Citizen {
       // Search for an industrial or commercial building with at least one available job
       if (tile.building?.type === 'industrial' || 
           tile.building?.type === 'commercial') {
-        if (tile.building.numberOfJobsAvailable() > 0) {
+        if (tile.building.jobs.availableJobs > 0) {
           return true;
         }
       }
@@ -132,7 +132,7 @@ export class Citizen {
 
     if (tile) {
       // Employ the citizen at the building
-      tile.building.workers.push(this);
+      tile.building.jobs.workers.push(this);
       return tile.building;
     } else {
       return null;

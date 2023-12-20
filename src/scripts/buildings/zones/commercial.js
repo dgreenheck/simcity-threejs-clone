@@ -1,43 +1,19 @@
 import { City } from '../../sim/city.js';
 import { Zone } from './zone.js';
-import config from '../../config.js';
+import { JobsAttribute } from '../attributes/jobs.js';
 
 export class CommercialZone extends Zone {
   constructor(x, y) {
     super(x, y);
-    
+
     this.name = generateBusinessName();
     this.type = 'commercial';
-    
+
     // Citizens that work here
-    this.workers = [];
-  }
-
-  /**
-   * Maximuim number of workers that can work at this building
-   * @returns {number}
-   */
-  getMaxWorkers() {
-    return Math.pow(config.zone.maxWorkers, this.development.level);
-  }
-
-  /**
-   * Returns the number of job openings
-   * @returns {number}
-   */
-  numberOfJobsAvailable() {
-    // If building is abandoned or undeveloped, there are no available jobs
-    if (this.abandoned || !this.developed) return 0;
-    // Otherwise return the number of vacant positions
-    return this.getMaxWorkers() - this.workers.length;
-  }
-
-  /**
-   * Returns the number of positions that are filled
-   * @returns {number}
-   */
-  numberOfJobsFilled() {
-    return this.workers.length;
+    /**
+     * @type {JobsAttribute}
+     */
+    this.jobs = new JobsAttribute(this);
   }
 
   /**
@@ -46,30 +22,14 @@ export class CommercialZone extends Zone {
    */
   simulate(city) {
     super.simulate(city);
-
-    // If building is abandoned, all workers are laid off and no
-    // more workers are allowed to work here
-    if (this.abandoned) {
-      this.#layOffWorkers();
-      return;
-    }
-  }
-
-  /**
-   * Lay off all existing workers
-   */
-  #layOffWorkers() {
-    for (const worker of this.workers) {
-      worker.setWorkplace(null);
-    }
-    this.workers = [];
+    this.jobs.update();
   }
 
   /**
    * Handles any clean up needed before a building is removed
    */
-  dispose() { 
-    this.#layOffWorkers();
+  dispose() {
+    this.jobs.dispose();
     super.dispose();
   }
 
@@ -79,16 +39,7 @@ export class CommercialZone extends Zone {
    */
   toHTML() {
     let html = super.toHTML();
-
-    html += `
-    <div class="info-heading">Workers (${this.numberOfJobsFilled()}/${this.getMaxWorkers()})</div>`;
-
-    html += '<ul class="info-citizen-list">';
-    for (const worker of this.workers) {
-      html += worker.toHTML();
-    }
-    html += '</ul>';
-
+    html += this.jobs.toHTML();
     return html;
   }
 }
