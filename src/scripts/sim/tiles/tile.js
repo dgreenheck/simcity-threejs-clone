@@ -48,7 +48,7 @@ export class Tile {
   /**
    * Updates the state of the tile and any buildings on it
    */
-  onMapUpdate(city) {
+  update(city) {
     this.roadAccess.update(city);
     this.building?.update(city);
   }

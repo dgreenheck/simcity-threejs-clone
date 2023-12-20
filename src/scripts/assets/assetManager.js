@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import viteConfig from '../../../vite.config.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { Tile } from '../tiles/tile.js';
+import { Tile } from '../sim/tiles/tile.js';
 import models from './assets.js';
 
 const baseUrl = viteConfig.base;
@@ -24,7 +24,6 @@ export class AssetManager {
     this.loadedModelCount = 0;
 
     for (const [name, meta] of Object.entries(models)) {
-
       this.loadModel(name, meta);
     }
 

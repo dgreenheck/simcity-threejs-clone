@@ -1,28 +1,18 @@
 import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
-import { AssetManager } from '../assets/assetManager.js';
 import { City } from '../sim/city.js';
-import { VehicleGraph } from '../vehicles/vehicleGraph.js';
+import { VehicleGraph } from '../sim/vehicles/vehicleGraph.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
  */
 export class SceneManager {
-  /**
-   * Initializes a new Scene object
-   * @param {City} city 
-   */
-  constructor(city, onLoad) {
+  constructor() {
     this.renderer = new THREE.WebGLRenderer({ 
       antialias: true
     });
     this.scene = new THREE.Scene();
     this.gameWindow = document.getElementById('render-target');
-    this.assetManager = new AssetManager(() => {
-      console.log('assets loaded');
-      this.#initialize(city);
-      onLoad();
-    });
     this.cameraManager = new CameraManager(this.gameWindow);
 
     /**
@@ -60,13 +50,13 @@ export class SceneManager {
   /**
    * Initalizes the scene, clearing all existing assets
    */
-  #initialize(city) {
+  initialize(city) {
     this.scene.clear();
 
     this.root = new THREE.Group();
     this.scene.add(this.root);
 
-    this.vehicleGraph = new VehicleGraph(city.size, this.assetManager);
+    this.vehicleGraph = new VehicleGraph(city.size);
     this.root.add(this.vehicleGraph);
 
     this.buildings = [];
@@ -77,7 +67,7 @@ export class SceneManager {
       const column = [];
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
-        const mesh = this.assetManager.createGroundMesh(tile);
+        const mesh = window.assetManager.createGroundMesh(tile);
         this.root.add(mesh);
         column.push(mesh);
       }
@@ -87,13 +77,15 @@ export class SceneManager {
 
     this.#setupLights();
     this.#setupGrid(city);
+
+    console.log('scene loaded');
   }
 
   #setupGrid(city) {
     // Add the grid
     const gridMaterial = new THREE.MeshBasicMaterial({ 
       color: 0x000000,
-      map: this.assetManager.textures['grid'],
+      map: window.assetManager.textures['grid'],
       transparent: true,
       opacity: 0.2
     });
@@ -152,7 +144,7 @@ export class SceneManager {
         // If the data model has changed, update the mesh
         if (tile.building && tile.building.isMeshOutOfDate) {
           this.root.remove(existingBuildingMesh);
-          this.buildings[x][y] = this.assetManager.createBuildingMesh(tile);
+          this.buildings[x][y] = window.assetManager.createBuildingMesh(tile);
           this.root.add(this.buildings[x][y]);
           tile.building.isMeshOutOfDate = false;
 

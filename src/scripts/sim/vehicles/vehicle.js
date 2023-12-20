@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { VehicleGraphNode } from './vehicleGraphNode.js';
-import config from '../config.js';
+import config from '../../config.js';
 
 const FORWARD = new THREE.Vector3(1, 0, 0);
 
 export class Vehicle extends THREE.Group {
-  constructor(origin, destination, mesh) {
+  constructor(origin, destination) {
     super();
 
     this.createdTime = Date.now();
@@ -26,7 +26,8 @@ export class Vehicle extends THREE.Group {
     this.originToDestination = new THREE.Vector3();
     this.orientation = new THREE.Vector3();
 
-    this.add(mesh);
+    this.mesh = window.assetManager.createRandomVehicleMesh();
+    this.add(this.mesh);
 
     this.updateWorldPositions();
   }
@@ -34,18 +35,18 @@ export class Vehicle extends THREE.Group {
   /**
    * @returns {number} Returns cycle time between 0 and 1
    */
-  getCycleTime() {
+  get cycleTime() {
     const distance = this.originToDestination.length();
     const cycleDuration = distance / config.vehicle.speed;
-    const cycleTime = (Date.now() - this.cycleStartTime) / cycleDuration;
+    const value = (Date.now() - this.cycleStartTime) / cycleDuration;
 
-    return Math.max(0, Math.min(cycleTime, 1));
+    return Math.max(0, Math.min(value, 1));
   }
 
   /**
    * @returns {number} Age of the vehicle in milliseconds
    */
-  getAge() {
+  get age() {
     return Date.now() - this.createdTime;
   }
 
@@ -58,25 +59,30 @@ export class Vehicle extends THREE.Group {
       return;
     }
 
-    if (this.getAge() > config.vehicle.maxLifetime) {
+    // If a road tile was removed, the vehicles will still maintain reference
+    // to the nodes. Automatically remove vehicles when the destination node
+    // is no longer part of the scene
+    if (!this.destination.parent) {
       this.dispose();
       return;
     }
 
-    const cycleTime = this.getCycleTime();
-    if (cycleTime === 1) {
+    if (this.age > config.vehicle.maxLifetime) {
+      this.dispose();
+      return;
+    }
+
+    if (this.cycleTime === 1) {
       this.pickNewDestination();
     } else {
       this.position.copy(this.originWorldPosition);
-      this.position.lerp(this.destinationWorldPosition, cycleTime);
+      this.position.lerp(this.destinationWorldPosition, this.cycleTime);
     }
 
     this.updateOpacity();
   }
 
   updateOpacity() {
-    const age = this.getAge();
-
     const setOpacity = (opacity) => {
       this.traverse(obj => {
         if (obj.material) {
@@ -85,10 +91,10 @@ export class Vehicle extends THREE.Group {
       });
     }
 
-    if (age < config.vehicle.fadeTime) {
-      setOpacity(age / config.vehicle.fadeTime);
-    } else if ((config.vehicle.maxLifetime - age) < config.vehicle.fadeTime) {
-      setOpacity((config.vehicle.maxLifetime - age) / config.vehicle.fadeTime);
+    if (this.age < config.vehicle.fadeTime) {
+      setOpacity(this.age / config.vehicle.fadeTime);
+    } else if ((config.vehicle.maxLifetime - this.age) < config.vehicle.fadeTime) {
+      setOpacity((config.vehicle.maxLifetime - this.age) / config.vehicle.fadeTime);
     } else {
       setOpacity(1);
     }

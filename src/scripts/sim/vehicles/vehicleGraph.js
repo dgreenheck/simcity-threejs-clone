@@ -1,21 +1,15 @@
 import * as THREE from 'three';
 import { VehicleGraphTile } from './vehicleGraphTile.js';
 import { VehicleGraphHelper } from './vehicleGraphHelper.js';
-import { AssetManager } from '../assets/assetManager.js';
-import config from '../config.js';
+import config from '../../config.js';
 import { Vehicle } from './vehicle.js';
 import { Road } from '../buildings/road.js';
 
 export class VehicleGraph extends THREE.Group {
-  constructor(size, assetManager) {
+  constructor(size) {
     super();
 
     this.size = size;
-    
-    /**
-     * @type {AssetManager}
-     */
-    this.assetManager = assetManager;
 
     /**
      * @type {VehicleGraphTile[][]}
@@ -73,7 +67,7 @@ export class VehicleGraph extends THREE.Group {
     
     if (road) {
       const tile = VehicleGraphTile.create(x, y, road.rotation, road.style);
-      
+
       // Connect tile to adjacent tiles
       if (leftTile) {
         tile.getWorldLeftSide().out?.connect(leftTile.getWorldRightSide().in);
@@ -93,7 +87,7 @@ export class VehicleGraph extends THREE.Group {
       }
 
       this.tiles[x][y] = tile;
-      this.add(tile);
+      this.add(tile);      
     } else {
       this.tiles[x][y] = null;
     }
@@ -123,12 +117,7 @@ export class VehicleGraph extends THREE.Group {
       const destination = origin?.getRandomNextNode();
 
       if (origin && destination) {
-        const vehicle = new Vehicle(
-          origin,
-          destination,
-          this.assetManager.createRandomVehicleMesh()
-        )
-
+        const vehicle = new Vehicle(origin, destination);
         this.vehicles.add(vehicle);
       }
     }

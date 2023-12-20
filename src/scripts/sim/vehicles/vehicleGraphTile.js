@@ -63,7 +63,7 @@ export class VehicleGraphTile extends THREE.Group {
    * Disconnect the tile from the vehicle graph
    */
   disconnectAll() {
-    for (const node of this.children) {
+    for (let node of this.children) {
       node.disconnectAll();
       node.removeFromParent();
     }

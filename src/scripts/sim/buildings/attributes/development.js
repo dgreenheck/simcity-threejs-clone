@@ -1,5 +1,5 @@
-import config from '../../config.js';
-import { City } from '../../sim/city.js';
+import config from '../../../config.js';
+import { City } from '../../city.js';
 import { Zone } from '../zones/zone.js';
 
 export class DevelopmentAttribute {

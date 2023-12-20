@@ -1,6 +1,6 @@
-import { Citizen } from '../../sim/citizen.js';
-import { City } from '../../sim/city.js';
-import config from '../../config.js';
+import { Citizen } from '../../citizen.js';
+import { City } from '../../city.js';
+import config from '../../../config.js';
 import { Zone } from './zone.js';
 
 export class ResidentialZone extends Zone {

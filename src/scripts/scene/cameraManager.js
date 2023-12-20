@@ -34,6 +34,8 @@ export class CameraManager {
     this.cameraRadius = 0.5;
     this.cameraAzimuth = 225;
     this.cameraElevation = 45;
+
+    this.updateCameraPosition();
   }
 
   /**
