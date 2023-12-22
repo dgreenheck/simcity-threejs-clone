@@ -1,7 +1,8 @@
-import { City } from './city.js';
-import { Building } from './buildings/building.js';
-import { Tile } from './tile.js';
-import { SceneManager } from './sceneManager.js';
+import { City } from './sim/city.js';
+import { Building } from './sim/buildings/building.js';
+import { Tile } from './sim/tiles/tile.js';
+import { SceneManager } from './scene/sceneManager.js';
+import { AssetManager } from './assets/assetManager.js';
 
 export class Game {
   selectedControl = document.getElementById('button-select');
@@ -26,13 +27,8 @@ export class Game {
     /**
      * The 3D game scene
      */
-    this.sceneManager = new SceneManager(this.city, () => {
-      console.log('scene loaded');
-      document.getElementById('loading').remove();
-      this.sceneManager.start();
-      setInterval(this.step.bind(this), 1000);
-    });   
-    
+    this.sceneManager = new SceneManager(this.city);
+
     // Hookup event listeners
     this.sceneManager.gameWindow.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this.sceneManager.cameraManager), false);
     this.sceneManager.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
@@ -40,15 +36,26 @@ export class Game {
 
     // Prevent context menu from popping up
     this.sceneManager.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
+
+    /**
+     * Global instance of the asset manager
+     */
+    window.assetManager = new AssetManager(() => {
+      console.log('assets loaded');
+      document.getElementById('loading').remove();
+      this.sceneManager.initialize(this.city);
+      this.sceneManager.start();
+      setInterval(this.simulate.bind(this), 1000);
+    });
   }
 
   /**
    * Main update method for the game
    */
-  step() {
+  simulate() {
     if (this.isPaused) return;
     // Update the city data model first, then update the scene
-    this.city.step();
+    this.city.simulate();
     this.sceneManager.applyChanges(this.city);
 
     this.#updateTitleBar();
@@ -151,6 +158,6 @@ export class Game {
   }
 
   #updateTitleBar() {
-    document.getElementById('population-counter').innerHTML = this.city.getPopulation();
+    document.getElementById('population-counter').innerHTML = this.city.population;
   }
 }
