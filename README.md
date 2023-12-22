@@ -1,4 +1,4 @@
-# simcity-threejs-clone
+# CitySim.js
 
 ## What is this?
 
@@ -25,8 +25,6 @@ Here you go! (FYI - At the moment this game does not have mobile support)
 https://dgreenheck.github.io/simcity-threejs-clone
 
 ## Support
-
-Support on Patreon
 
 🌟 Love what I’m building? Consider showing your support by becoming a patron! Your support helps me dedicate more time to developing this project. Plus, you’ll get the chance to influence future development by voting on what features I work on next! Every bit of support makes a huge difference!
 
