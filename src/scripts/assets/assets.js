@@ -18,15 +18,15 @@ export default {
   },
   "residential-A2": {
     "type": "zone",
-    "filename": "building-block-4floor-short.glb"
+    "filename": "building-block-4floor-short.glb",
   },
   "residential-B2": {
     "type": "zone",
-    "filename": "building-block-4floor-corner.glb"
+    "filename": "building-block-4floor-corner.glb",
   },
   "residential-C2": {
     "type": "zone",
-    "filename": "building-block-5floor.glb"
+    "filename": "building-block-5floor.glb",
   },
   "residential-A3": {
     "type": "zone",

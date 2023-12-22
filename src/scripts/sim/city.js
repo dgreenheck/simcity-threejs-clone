@@ -21,6 +21,21 @@ export class City {
     }
   }
 
+  /**
+   * The total population of the city
+   * @type {number}
+   */
+  get population() {
+    let population = 0;
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        const tile = this.getTile(x, y);
+        population += tile.building?.residents?.count ?? 0;
+      }
+    }
+    return population;
+  }
+
   /** Returns the title at the coordinates. If the coordinates
    * are out of bounds, then `null` is returned.
    * @param {number} x The x-coordinate of the tile
@@ -35,17 +50,6 @@ export class City {
     } else {
       return this.tiles[x][y];
     }
-  }
-
-  getPopulation() {
-    let population = 0;
-    for (let x = 0; x < this.size; x++) {
-      for (let y = 0; y < this.size; y++) {
-        const tile = this.getTile(x, y);
-        population += tile.building?.residents?.length ?? 0;
-      }
-    }
-    return population;
   }
 
   /**
@@ -100,16 +104,6 @@ export class City {
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
         this.getTile(x, y).simulate(this);
-      }
-    }
-
-    // Update each citizen
-    for (let x = 0; x < this.size; x++) {
-      for (let y = 0; y < this.size; y++) {
-        const residents = this.getTile(x, y).building?.residents;
-        if (residents) {
-          residents.forEach(resident => resident.simulate(this));
-        }
       }
     }
   }

@@ -4,6 +4,9 @@ import { ResidentialZone } from './buildings/zones/residential.js';
 import config from '../config.js';
 
 export class Citizen {
+  /**
+   * @param {ResidentialZone} residence 
+   */
   constructor(residence) {
     /**
      * Unique identifier for the citizen

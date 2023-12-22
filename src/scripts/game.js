@@ -158,6 +158,6 @@ export class Game {
   }
 
   #updateTitleBar() {
-    document.getElementById('population-counter').innerHTML = this.city.getPopulation();
+    document.getElementById('population-counter').innerHTML = this.city.population;
   }
 }

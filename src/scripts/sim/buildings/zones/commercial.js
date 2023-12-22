@@ -9,7 +9,6 @@ export class CommercialZone extends Zone {
     this.name = generateBusinessName();
     this.type = 'commercial';
 
-    // Citizens that work here
     /**
      * @type {JobsAttribute}
      */

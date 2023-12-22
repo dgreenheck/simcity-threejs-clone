@@ -105,7 +105,7 @@ export class DevelopmentAttribute {
   checkDevelopmentCriteria(city) {
     const { x, y } = this.#zone;
 
-    if (city.getTile(x, y).roadAccess) {
+    if (city.getTile(x, y).roadAccess.value) {
       return true;
     } else {
       return false;
@@ -119,7 +119,7 @@ export class DevelopmentAttribute {
   checkAbandonmentCriteria(city) {
     const { x, y } = this.#zone;
 
-    if (!city.getTile(x, y).roadAccess) {
+    if (!city.getTile(x, y).roadAccess.value) {
       this.#abandonmentCounter++;
     } else {
       this.#abandonmentCounter = 0;
