@@ -1,7 +1,7 @@
 # 1.1.0
 The focus for this update was refactoring logic for tiles and zones into attributes. For example, the logic controlling the zone development state machine is now encapsulated in `DevelopmentAttribute`. The motivation behind this was to break simulation behaviors into small, composable chunks that can be re-used between different building types. The zone classes were beginning to turn into spaghetti code as the behaviors became more intertwined. This makes the code easier to reason about and more testable, and facilitates adding additional tile/building attributes in the future (power, water, crime, pollution, etc.)
 
-## Features
+## Updates
 
 - Added new cars
 - Added new model when buildings are under construction
@@ -9,6 +9,7 @@ The focus for this update was refactoring logic for tiles and zones into attribu
   - `DevelopmentAttribute` - Logic for the zone development state machine
   - `JobsAttribute` - Logic for industrial/commerical jobs
   - `ResidentsAttribute` - Logic for citizens moving in/out of residenial buildings
+- Reorganized files into a more logical structure
 
 ## Fixes
 
