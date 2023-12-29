@@ -19,7 +19,7 @@ export class IndustrialZone extends Zone {
    */
   simulate(city) {
     super.simulate(city);
-    this.jobs.update();
+    this.jobs.simulate();
   }
 
   /**

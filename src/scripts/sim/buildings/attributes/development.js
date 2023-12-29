@@ -2,13 +2,20 @@ import config from '../../../config.js';
 import { City } from '../../city.js';
 import { Zone } from '../zones/zone.js';
 
+export const DevelopmentState = {
+  abandoned: 'abandoned',
+  developed: 'developed',
+  underConstruction: 'under-construction',
+  undeveloped: 'undeveloped',
+};
+
 export class DevelopmentAttribute {
   #zone;
 
   /**
    * The zone's current state of development
    */
-  #state = 'undeveloped';
+  #state = DevelopmentState.undeveloped;
 
   /**
    * Level of development
@@ -59,28 +66,28 @@ export class DevelopmentAttribute {
   /**
    * @param {City} city 
    */
-  update(city) {
+  simulate(city) {
     this.checkAbandonmentCriteria(city);
 
     switch (this.state) {
-      case 'undeveloped':
+      case DevelopmentState.undeveloped:
         if (this.checkDevelopmentCriteria(city) &&
           Math.random() < config.zone.redevelopChance) {
-          this.state = 'under-construction';
+          this.state = DevelopmentState.underConstruction;
           this.#constructionCounter = 0;
         }
         break;
-      case 'under-construction':
+      case DevelopmentState.underConstruction:
         if (++this.#constructionCounter === config.zone.constructionTime) {
-          this.state = 'developed';
+          this.state = DevelopmentState.developed;
           this.level = 1;
           this.#constructionCounter = 0;
         }
         break;
-      case 'developed':
+      case DevelopmentState.developed:
         if (this.#abandonmentCounter > config.zone.abandonThreshold) {
           if (Math.random() < config.zone.abandonChance) {
-            this.state = 'abandoned';
+            this.state = DevelopmentState.abandoned;
           }
         } else {
           if (this.level < this.maxLevel && Math.random() < config.zone.levelUpChance) {
@@ -88,10 +95,10 @@ export class DevelopmentAttribute {
           }
         }
         break;
-      case 'abandoned':
+      case DevelopmentState.abandoned:
         if (this.#abandonmentCounter == 0) {
           if (Math.random() < config.zone.redevelopChance) {
-            this.state = 'developed';
+            this.state = DevelopmentState.developed;
           }
         }
         break;

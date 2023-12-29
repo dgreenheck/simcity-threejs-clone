@@ -65,14 +65,14 @@ export class City {
     // If the tile doesnt' already have a building, place one there
     if (tile && !tile.building) {
       tile.building = createBuilding(x, y, buildingType);
-      tile.update(this);
+      tile.refresh(this);
       
       // Update buildings on adjacent tile in case they need to
       // change their mesh (e.g. roads)
-      this.getTile(x - 1, y)?.update(this);
-      this.getTile(x + 1, y)?.update(this);
-      this.getTile(x, y - 1)?.update(this);
-      this.getTile(x, y + 1)?.update(this);
+      this.getTile(x - 1, y)?.refresh(this);
+      this.getTile(x + 1, y)?.refresh(this);
+      this.getTile(x, y - 1)?.refresh(this);
+      this.getTile(x, y + 1)?.refresh(this);
     }
   }
 
@@ -87,12 +87,13 @@ export class City {
     if (tile.building) {
       tile.building.dispose();
       tile.building = null;
+      tile.refresh(this);
 
       // Update neighboring tiles in case they need to change their mesh (e.g. roads)
-      this.getTile(x - 1, y)?.update(this);
-      this.getTile(x + 1, y)?.update(this);
-      this.getTile(x, y - 1)?.update(this);
-      this.getTile(x, y + 1)?.update(this);
+      this.getTile(x - 1, y)?.refresh(this);
+      this.getTile(x + 1, y)?.refresh(this);
+      this.getTile(x, y - 1)?.refresh(this);
+      this.getTile(x, y + 1)?.refresh(this);
     }
   }
 

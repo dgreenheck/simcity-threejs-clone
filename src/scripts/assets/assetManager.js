@@ -3,6 +3,7 @@ import viteConfig from '../../../vite.config.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Tile } from '../sim/tiles/tile.js';
 import models from './assets.js';
+import { DevelopmentState } from '../sim/buildings/attributes/development.js';
 
 const baseUrl = viteConfig.base;
 const DEG2RAD = Math.PI / 180.0;
@@ -72,11 +73,14 @@ export class AssetManager {
     const zone = tile.building;
 
     let modelName;
-    if (zone.development.state === 'undeveloped' ||
-        zone.development.state === 'under-construction') {
-      modelName = 'under-construction';
-    } else if (zone.development.state === 'developed') {
-      modelName = `${zone.type}-${zone.style}${zone.development.level}`;
+    switch (zone.development.state) {
+      case DevelopmentState.underConstruction,
+           DevelopmentState.undeveloped:
+        modelName = 'under-construction';
+        break;
+      default:
+        modelName = `${zone.type}-${zone.style}${zone.development.level}`;
+        break;
     }
 
     let mesh = this.cloneMesh(modelName);
@@ -85,8 +89,12 @@ export class AssetManager {
     mesh.position.set(zone.x, 0, zone.y);
 
     // Tint building a dark color if it is abandoned
-    if (zone.development.state === 'abandoned') {
-      mesh.material.color = new THREE.Color(0x707070);
+    if (zone.development.state === DevelopmentState.abandoned) {
+      mesh.traverse((obj) => {
+        if (obj.material) {
+          obj.material.color = new THREE.Color(0x707070);
+        }
+      });
     }
     
     return mesh;

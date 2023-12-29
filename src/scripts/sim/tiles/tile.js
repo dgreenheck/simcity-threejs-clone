@@ -46,11 +46,10 @@ export class Tile {
   }
 
   /**
-   * Updates the state of the tile and any buildings on it
+   * Performs a full refresh of the tile
    */
-  update(city) {
-    this.roadAccess.update(city);
-    this.building?.update(city);
+  refresh(city) {
+    this.building?.refresh(city);
   }
 
   /**
@@ -58,6 +57,7 @@ export class Tile {
    * @param {*} city 
    */
   simulate(city) {
+    this.roadAccess.simulate(city);
     this.building?.simulate(city);
   }
 

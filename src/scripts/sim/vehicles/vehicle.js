@@ -53,7 +53,7 @@ export class Vehicle extends THREE.Group {
   /**
    * Updates the vehicle position each render frame
    */
-  update() {
+  simulate() {
     if (!this.origin || !this.destination) {
       this.dispose();
       return;

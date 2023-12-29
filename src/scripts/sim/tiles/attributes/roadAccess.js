@@ -19,7 +19,7 @@ export class RoadAccessAttribute {
    * Updates the state of this attribute
    * @param {City} city 
    */
-  update(city) {
+  simulate(city) {
     const road = city.findTile(
       this.#tile, 
       (tile) => tile.building?.type === 'road', 
