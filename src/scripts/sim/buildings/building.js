@@ -39,10 +39,10 @@ export class Building {
   }
 
   /**
-   * Performs a full onMapUpdate of the building state
+   * Performs a full refresh of the building
    * @param {City} city 
    */
-  update(city) {
+  refresh(city) {
   }
 
   /**

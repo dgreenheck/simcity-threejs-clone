@@ -22,7 +22,7 @@ export class Zone extends Building {
 
   simulate(city) {
     super.simulate(city);
-    this.development.update(city);
+    this.development.simulate(city);
   }
 
   /**

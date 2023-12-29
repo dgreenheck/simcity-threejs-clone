@@ -2,6 +2,7 @@ import config from '../../../config.js';
 import { Citizen } from '../../citizen.js';
 import { City } from '../../city.js';
 import { Zone } from '../zones/zone.js';
+import { DevelopmentState } from './development.js';
 
 export class ResidentsAttribute {
   /**
@@ -40,11 +41,11 @@ export class ResidentsAttribute {
   /**
    * @param {City} city 
    */
-  update(city) {
+  simulate(city) {
     // If building is abandoned, all residents are evicted and no more residents are allowed to move in.
-    if (this.#zone.development.state === 'abandoned' && this.#residents.length > 0) {
+    if (this.#zone.development.state === DevelopmentState.abandoned && this.#residents.length > 0) {
       this.evictAll();
-    } else if (this.#zone.development.state === 'developed') {
+    } else if (this.#zone.development.state === DevelopmentState.developed) {
       // Move in new residents if there is room
       if (this.#residents.length < this.maximum && Math.random() < config.zone.residentMoveInChance) {
         this.#residents.push(new Citizen(this.#zone));

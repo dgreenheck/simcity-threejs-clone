@@ -34,14 +34,14 @@ export class VehicleGraph extends THREE.Group {
       this.tiles.push(column);
     }
 
-    this.helper.update(this);
+    this.helper.refresh(this);
 
     setInterval(this.spawnVehicle.bind(this), config.vehicle.spawnInterval);
   }
 
   updateVehicles() {
     for (const vehicle of this.vehicles.children) {
-      vehicle.update();
+      vehicle.simulate();
     }
   }
 
@@ -93,7 +93,7 @@ export class VehicleGraph extends THREE.Group {
     }
 
     // Update the vehicle graph visualization
-    this.helper.update(this);
+    this.helper.refresh(this);
   }
 
   /**

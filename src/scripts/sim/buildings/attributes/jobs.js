@@ -2,6 +2,7 @@ import config from '../../../config.js';
 import { Citizen } from '../../citizen.js';
 import { City } from '../../city.js';
 import { Zone } from '../zones/zone.js';
+import { DevelopmentState } from './development.js';
 
 export class JobsAttribute {
   /**
@@ -24,8 +25,7 @@ export class JobsAttribute {
    */
   get maxWorkers() {
     // If building is not developed, there are no available jobs
-    if (this.#zone.development.state === 'abandoned' ||
-      this.#zone.development.state === 'undeveloped') {
+    if (this.#zone.development.state === DevelopmentState.developed) {
       return 0;
     } else {
       return Math.pow(config.zone.maxWorkers, this.#zone.development.level);
@@ -52,10 +52,10 @@ export class JobsAttribute {
    * Steps the state of the zone forward in time by one simulation step
    * @param {City} city 
    */
-  update(city) {
+  simulate(city) {
     // If building is abandoned, all workers are laid off and no
     // more workers are allowed to work here
-    if (this.#zone.development.state === 'abandoned') {
+    if (this.#zone.development.state === DevelopmentState.abandoned) {
       this.layOffWorkers();
     }
   }
