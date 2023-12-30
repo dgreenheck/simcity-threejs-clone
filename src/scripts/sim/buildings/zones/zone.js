@@ -9,6 +9,8 @@ export class Zone extends Building {
   constructor(x = 0, y = 0) {
     super(x, y);
     
+    this.name = 'Zone';
+    
     // Randomize the building rotation
     this.rotation.y = 90 * Math.floor(4 * Math.random()) * DEG2RAD;
     
@@ -23,7 +25,7 @@ export class Zone extends Building {
     this.development = new DevelopmentAttribute(this);
   }
 
-  refresh(city) {
+  updateMesh(city) {
     let modelName;
     switch (this.development.state) {
       case DevelopmentState.underConstruction,

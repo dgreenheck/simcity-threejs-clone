@@ -73,14 +73,14 @@ export class DevelopmentAttribute {
         if (this.#checkDevelopmentCriteria(city) &&
           Math.random() < config.zone.redevelopChance) {
           this.state = DevelopmentState.underConstruction;
-          this.#zone.refresh(city);
+          this.#zone.updateMesh(city);
           this.#constructionCounter = 0;
         }
         break;
       case DevelopmentState.underConstruction:
         if (++this.#constructionCounter === config.zone.constructionTime) {
           this.state = DevelopmentState.developed;
-          this.#zone.refresh(city);
+          this.#zone.updateMesh(city);
           this.level = 1;
           this.#constructionCounter = 0;
         }
@@ -89,12 +89,12 @@ export class DevelopmentAttribute {
         if (this.#abandonmentCounter > config.zone.abandonThreshold) {
           if (Math.random() < config.zone.abandonChance) {
             this.state = DevelopmentState.abandoned;
-            this.#zone.refresh(city);
+            this.#zone.updateMesh(city);
           }
         } else {
           if (this.level < this.maxLevel && Math.random() < config.zone.levelUpChance) {
             this.level++;
-            this.#zone.refresh(city);
+            this.#zone.updateMesh(city);
           }
         }
         break;
@@ -102,7 +102,7 @@ export class DevelopmentAttribute {
         if (this.#abandonmentCounter == 0) {
           if (Math.random() < config.zone.redevelopChance) {
             this.state = DevelopmentState.developed;
-            this.#zone.refresh(city);
+            this.#zone.updateMesh(city);
           }
         }
         break;

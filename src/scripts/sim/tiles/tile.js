@@ -34,23 +34,30 @@ export class Tile extends SimObject {
   /**
    * @type {Building} value
    */
-  set building(value) {
+  setBuilding(value) {
+    // Remove and dispose resources for existing building
     if (this.#building) {
       this.#building.dispose();
       this.remove(this.#building);
     }
+
     this.#building = value;
-    this.add(this.#building);
+
+    // Add to scene graph
+    if (value) {
+      this.add(this.#building);
+    }
   }
 
-  refresh(city) {
-    const mesh = window.assetManager.createInstance(this.terrain, this);
-    mesh.name = this.terrain;
-    // Show/hide the terrain based on building preference
-    mesh.visible = !(this.#building?.hideTerrain) ?? true;
-    this.setMesh(mesh);;
-
-    this.building?.refresh(city);
+  updateMesh(city) {
+    this.building?.updateMesh(city);
+    if (this.building?.hideTerrain) {
+      this.setMesh(null);
+    } else {
+      const mesh = window.assetManager.createInstance(this.terrain, this);
+      mesh.name = this.terrain;
+      this.setMesh(mesh);
+    }
   }
 
   simulate(city) {

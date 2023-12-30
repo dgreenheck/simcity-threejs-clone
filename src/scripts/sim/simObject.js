@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 
+const SELECTED_COLOR = 0xaaaa55;
+const HIGHLIGHTED_COLOR = 0x555555;
+
 export class SimObject extends THREE.Object3D {
   /**
    * @type {THREE.Mesh?}
@@ -17,6 +20,7 @@ export class SimObject extends THREE.Object3D {
    */
   constructor(x = 0, y = 0) {
     super();
+    this.name = 'SimObject';
     this.position.x = x;
     this.position.z = y;
   }
@@ -42,19 +46,25 @@ export class SimObject extends THREE.Object3D {
    * @type {THREE.Mesh} value
    */
   setMesh(value) {
+    // Remove resources for existing mesh
     if (this.#mesh) {
       this.dispose();
       this.remove(this.#mesh);
     }
+
     this.#mesh = value;
-    this.add(this.#mesh);
+
+    // Add to scene graph
+    if (value) {
+      this.add(this.#mesh);
+    }
   }
 
   /**
    * Performs a full refresh of the object
    * @param {City} city 
    */
-  refresh(city) {
+  updateMesh(city) {
     // Override in subclass
   }
 
@@ -64,6 +74,31 @@ export class SimObject extends THREE.Object3D {
    */
   simulate(city) {
     // Override in subclass
+  }
+
+  setSelected(value) {
+    if (value) {
+      this.#setMeshEmission(SELECTED_COLOR);
+    } else {
+      this.#setMeshEmission(0);
+    }
+  }
+
+  setFocused(value) {
+    if (value) {
+      this.#setMeshEmission(HIGHLIGHTED_COLOR);
+    } else {
+      this.#setMeshEmission(0);
+    }
+  }
+
+  /**
+   * Sets the emission color of the mesh 
+   * @param {number} color 
+   */
+  #setMeshEmission(color) {
+    if (!this.mesh) return;
+    this.mesh.traverse((obj) => obj.material?.emissive?.setHex(color));
   }
 
   /**

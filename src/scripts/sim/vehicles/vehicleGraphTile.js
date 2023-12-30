@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { VehicleGraphNode } from './vehicleGraphNode.js';
+import { RAD2DEG } from 'three/src/math/MathUtils.js';
 
 const roadOffset = 0.05;
 const tileOffset = 0.25;
@@ -9,9 +10,9 @@ export class VehicleGraphTile extends THREE.Group {
     super();
 
     this.position.set(x, 0, y);
-    this.rotation.set(0, THREE.MathUtils.degToRad(rotation), 0);
+    this.rotation.set(0, rotation, 0);
 
-    this.roadRotation = rotation;
+    this.roadRotation = Math.round(rotation * RAD2DEG);
 
     /**
      * @type {{ in: VehicleGraphNode, out: VehicleGraphNode }}

@@ -6,7 +6,7 @@ export class Road extends Building {
   constructor(x, y) {
     super(x, y);
     this.type = 'road';
-    this.name = 'Two-Lane Road';
+    this.name = 'Road';
     this.style = 'straight';
     this.hideTerrain = true;
   }
@@ -15,7 +15,7 @@ export class Road extends Building {
    * Updates the road mesh based on which adjacent tiles are roads as well
    * @param {City} city 
    */
-  refresh(city) {
+  updateMesh(city) {
     // Check which adjacent tiles are roads
     let top = (city.getTile(this.x, this.y - 1)?.building?.type === this.type) ?? false;
     let bottom = (city.getTile(this.x, this.y + 1)?.building?.type === this.type) ?? false;
@@ -78,6 +78,7 @@ export class Road extends Building {
     const mesh = window.assetManager.createInstance(`road-${this.style}`, this);
 
     this.setMesh(mesh);
+    city.vehicleGraph.updateTile(this.x, this.y, this);
   }
 
   /**

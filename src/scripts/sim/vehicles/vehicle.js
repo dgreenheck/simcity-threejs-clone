@@ -138,4 +138,8 @@ export class Vehicle extends SimObject {
     this.traverse((obj) => obj.material?.dispose());
     this.removeFromParent();
   }
+
+  toHTML() {
+    return 'Car';
+  }
 }

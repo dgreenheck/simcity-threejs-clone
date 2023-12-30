@@ -36,6 +36,10 @@ export class CameraManager {
     this.cameraElevation = 45;
 
     this.updateCameraPosition();
+
+    gameWindow.addEventListener('wheel', this.onMouseScroll.bind(this), false);
+    gameWindow.addEventListener('mousedown', this.onMouseMove.bind(this), false);
+    gameWindow.addEventListener('mousemove', this.onMouseMove.bind(this), false);
   }
 
   /**
@@ -49,6 +53,7 @@ export class CameraManager {
     this.camera.position.add(this.cameraOrigin);
     this.camera.lookAt(this.cameraOrigin);
     this.camera.updateProjectionMatrix();
+    this.camera.updateMatrixWorld();
   }
 
   /**

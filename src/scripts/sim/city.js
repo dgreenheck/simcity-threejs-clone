@@ -34,6 +34,7 @@ export class City extends THREE.Group {
   constructor(size) {
     super();
 
+    this.name = 'City';
     this.size = size;
     
     this.add(this.debugMeshes);
@@ -44,7 +45,7 @@ export class City extends THREE.Group {
       const column = [];
       for (let y = 0; y < this.size; y++) {
         const tile = new Tile(x, y);
-        tile.refresh(this);
+        tile.updateMesh(this);
         this.root.add(tile);
         column.push(tile);
       }
@@ -98,15 +99,15 @@ export class City extends THREE.Group {
 
     // If the tile doesnt' already have a building, place one there
     if (tile && !tile.building) {
-      tile.building = createBuilding(x, y, buildingType);
-      tile.refresh(this);
+      tile.setBuilding(createBuilding(x, y, buildingType));
+      tile.updateMesh(this);
       
       // Update buildings on adjacent tile in case they need to
       // change their mesh (e.g. roads)
-      this.getTile(x - 1, y)?.refresh(this);
-      this.getTile(x + 1, y)?.refresh(this);
-      this.getTile(x, y - 1)?.refresh(this);
-      this.getTile(x, y + 1)?.refresh(this);
+      this.getTile(x - 1, y)?.updateMesh(this);
+      this.getTile(x + 1, y)?.updateMesh(this);
+      this.getTile(x, y - 1)?.updateMesh(this);
+      this.getTile(x, y + 1)?.updateMesh(this);
 
       if (tile.building.type === BuildingType.road) {
         this.vehicleGraph.updateTile(x, y, tile.building);
@@ -128,13 +129,14 @@ export class City extends THREE.Group {
       }
 
       tile.building.dispose();
-      tile.building = null;
-      tile.refresh(this);
+      tile.setBuilding(null);
+      tile.updateMesh(this);
 
       // Update neighboring tiles in case they need to change their mesh (e.g. roads)
-      this.getTile(x - 1, y)?.refresh(this);
-      this.getTile(x + 1, y)?.refresh(this);
-      this.getTile(x, y - 1)?.refresh(this);
+      this.getTile(x - 1, y)?.updateMesh(this);
+      this.getTile(x + 1, y)?.updateMesh(this);
+      this.getTile(x, y - 1)?.updateMesh(this);
+      this.getTile(x, y + 1)?.updateMesh(this);
     }
   }
 

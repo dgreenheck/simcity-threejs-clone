@@ -15,25 +15,15 @@ export class Game {
    */
   selectedControl = document.getElementById('button-select');
   /**
-   * Currently selected tool
-   * @type {string}
-   */
-  activeToolId = 'select';
-  /**
    * True if the game is currently paused
    * @type {boolean}
    */
   isPaused = false;
-  /**
-   * The current focused object
+    /**
+   * The currently selected object
    * @type {Building | Tile}
    */
-  focusedObject = null;
-  /**
-   * The last time the mouse was moved
-   * @type {Date}
-   */
-  lastMove = new Date();
+  selectedObject = null;
 
   constructor() {
     /**
@@ -49,14 +39,6 @@ export class Game {
       this.sceneManager.initialize(this.city);
       this.sceneManager.start();
 
-      // Hookup event listeners
-      this.sceneManager.gameWindow.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this.sceneManager.cameraManager), false);
-      this.sceneManager.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
-      this.sceneManager.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
-
-      // Prevent context menu from popping up
-      this.sceneManager.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
-
       setInterval(this.simulate.bind(this), 1000);
     });
   }
@@ -71,7 +53,7 @@ export class Game {
     this.city.simulate(1);
 
     this.#updateTitleBar();
-    this.#updateInfoPanel();
+    this.sceneManager.updateInfoPanel(this.sceneManager.selectedObject);
   }
 
   /**
@@ -85,9 +67,7 @@ export class Game {
     }
     this.selectedControl = event.target;
     this.selectedControl.classList.add('selected');
-
-    this.activeToolId = this.selectedControl.getAttribute('data-type');
-    console.log(this.activeToolId);
+    this.sceneManager.activeToolId = this.selectedControl.getAttribute('data-type');
   }
 
   /**
@@ -100,67 +80,6 @@ export class Game {
       document.getElementById('pause-button-icon').src = '/icons/play.png';
     } else {
       document.getElementById('pause-button-icon').src = '/icons/pause.png';
-    }
-  }
-
-  /**
-   * Event handler for `mousedown` event
-   * @param {MouseEvent} event 
-   */
-  #onMouseDown(event) {
-    console.log('onMouseDown');
-    // Check if left mouse button pressed
-    if (event.button === 0) {
-      const selectedObject = this.sceneManager.getSelectedObject(event);
-      this.#useActiveTool(selectedObject);
-    }
-
-    this.sceneManager.cameraManager.onMouseMove(event);
-  }
-
-  /**
-   * Event handler for 'mousemove' event
-   * @param {MouseEvent} event 
-   */
-  #onMouseMove(event) {
-    console.log('onMouseMove');
-
-    // Throttle event handler so it doesn't kill the browser
-    if (Date.now() - this.lastMove < (1 / 60.0)) return;
-    this.lastMove = Date.now();
-
-    // Get the object the mouse is currently hovering over
-    const hoverObject = this.sceneManager.getSelectedObject(event);
-    
-    this.sceneManager.setHighlightedMesh(hoverObject);
-    this.sceneManager.cameraManager.onMouseMove(event);
-  }
-
-  #useActiveTool(object) {
-    // If no object is selected, clear the info panel
-    if (!object) {
-      this.#updateInfoPanel(null);
-    } else {
-      if (this.activeToolId === 'select') {
-        this.sceneManager.setActiveObject(object);
-        this.focusedObject = object;
-        this.#updateInfoPanel();
-      } else if (this.activeToolId === 'bulldoze') {
-        this.city.bulldoze(object.x, object.y);
-      } else if (!this.city.getTile(object.x, object.y).building) {
-        const buildingType = this.activeToolId;
-        console.log(object.x, object.y);
-        this.city.placeBuilding(object.x, object.y, buildingType);
-      }
-    }
-  }
-
-  #updateInfoPanel() {
-    if (this.focusedObject) {
-      const tile = this.city.getTile(this.focusedObject.x, this.focusedObject.y);
-      document.getElementById('info-details').innerHTML = tile.toHTML();
-    } else {
-      document.getElementById('info-details').innerHTML = '';
     }
   }
 

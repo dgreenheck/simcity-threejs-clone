@@ -1,15 +1,37 @@
 import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
 import { City } from '../sim/city.js';
+import { SimObject } from '../sim/simObject.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
  */
 export class SceneManager {
   /**
+   * Currently selected tool
+   * @type {string}
+   */
+  activeToolId = 'select';
+  /**
    * @type {City}
    */
   city;
+  /**
+   * Object that currently hs focus
+   * @type {SimObject | null}
+   */
+  focusedObject = null;
+  /**
+   * Last mouse position from 'mousemove' event
+   * @type {THREE.Vector2}
+   */
+  mouse = new THREE.Vector2();
+  isMouseDown = false;
+  /**
+   * Object that is currently selected
+   * @type {SimObject | null}
+   */
+  selectedObject = null;
 
   constructor(city) {
     this.city = city;
@@ -29,16 +51,15 @@ export class SceneManager {
 
     // Add the renderer to the DOM
     this.gameWindow.appendChild(this.renderer.domElement);
-    window.addEventListener('resize', this.onResize.bind(this), false);
 
     // Variables for object selection
     this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
 
-    // Last object the user has clicked on
-    this.activeObject = null;
-    // Object the mouse is currently hovering over
-    this.hoverObject = null;
+    window.addEventListener('resize', this.onResize.bind(this), false);
+    this.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
+    this.gameWindow.addEventListener('mouseup', this.#onMouseUp.bind(this), false);
+    this.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
+    this.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
   }
 
   /**
@@ -49,7 +70,6 @@ export class SceneManager {
     this.scene.add(city);
     this.#setupLights();
     this.#setupGrid(city);
-
     console.log('scene loaded');
   }
 
@@ -112,35 +132,85 @@ export class SceneManager {
    */
   #draw() {
     this.city.draw();
+    this.#updateFocusedObject();
+
+    if (this.isMouseDown) {
+      this.useActiveTool();
+    }
+
     this.renderer.render(this.scene, this.cameraManager.camera);
   }
 
   /**
-   * Sets the object that is currently highlighted
-   * @param {THREE.Mesh} mesh 
+   * Event handler for `mousedown` event
+   * @param {MouseEvent} event 
    */
-  setHighlightedMesh(mesh) {
-    // Unhighlight the previously hovered object (if it isn't currently selected)
-    if (this.hoverObject && this.hoverObject !== this.activeObject) {
-      this.#setMeshEmission(this.hoverObject, 0x000000);
-    }
-
-    this.hoverObject = mesh;
-
-    if (this.hoverObject) {
-      // Highlight the new hovered object (if it isn't currently selected))
-      this.#setMeshEmission(this.hoverObject, 0x555555);
+  #onMouseDown(event) {
+    if (event.button === 0) {
+      this.isMouseDown = true;
     }
   }
 
   /**
-   * Sets the emission color of the mesh 
-   * @param {THREE.Mesh} mesh 
-   * @param {number} color 
+   * Event handler for `mouseup` event
+   * @param {MouseEvent} event 
    */
-  #setMeshEmission(mesh, color) {
-    if (!mesh) return;
-    mesh.traverse((obj) => obj.material?.emissive?.setHex(color));
+  #onMouseUp(event) {
+    if (event.button === 0) {
+      this.isMouseDown = false;
+    }
+  }
+
+  /**
+   * Event handler for 'mousemove' event
+   * @param {MouseEvent} event 
+   */
+  #onMouseMove(event) {
+    this.isMouseDown = event.buttons & 1;
+    this.mouse.x = event.clientX;
+    this.mouse.y = event.clientY;
+  }
+
+  useActiveTool() {
+    switch (this.activeToolId) {
+      case 'select':
+        this.updateSelectedObject();
+        this.updateInfoPanel(this.selectedObject);
+        break;
+      case 'bulldoze':
+        if (this.focusedObject) {
+          const { x, y } = this.focusedObject;
+          this.city.bulldoze(x, y);
+        }
+        break;
+      default:
+        if (this.focusedObject) {
+          const { x, y } = this.focusedObject;
+          this.city.placeBuilding(x, y, this.activeToolId);
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Sets the currently selected object and highlights it
+   */
+  updateSelectedObject() {
+    this.selectedObject?.setSelected(false);
+    this.selectedObject = this.focusedObject;
+    this.selectedObject?.setSelected(true);
+  }
+
+  /**
+   * Sets the object that is currently highlighted
+   */
+  #updateFocusedObject() {  
+    this.focusedObject?.setFocused(false);
+    const newObject = this.#raycast();
+    if (newObject !== this.focusedObject) {
+      this.focusedObject = this.#raycast();
+    }
+    this.focusedObject?.setFocused(true);
   }
 
   /**
@@ -149,35 +219,31 @@ export class SceneManager {
    * @param {MouseEvent} event Mouse event
    * @returns {THREE.Mesh?}
    */
-  getSelectedObject(event) {
-    // Compute normalized this.mouse coordinates
-    this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+  #raycast() {
+    var coords = {
+      x: (this.mouse.x / this.renderer.domElement.clientWidth) * 2 - 1,
+      y: -(this.mouse.y / this.renderer.domElement.clientHeight) * 2 + 1
+    };
 
-    this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
+    this.raycaster.setFromCamera(coords, this.cameraManager.camera);
 
     let intersections = this.raycaster.intersectObjects(this.city.root.children, true);
     if (intersections.length > 0) {
-      console.log(intersections);
       // The SimObject attached to the mesh is stored in the user data
       const selectedObject = intersections[0].object.userData;
-      console.log(selectedObject);
       return selectedObject;
     } else {
       return null;
     }
   }
 
-  /**
-   * Sets the currently selected object and highlights it
-   * @param {object} object 
-   */
-  setActiveObject(object) {
-    // Clear highlight on previously active object
-    this.#setMeshEmission(this.activeObject, 0x000000);
-    this.activeObject = object;
-    // Highlight new active object
-    this.#setMeshEmission(this.activeObject, 0xaaaa55);
+  updateInfoPanel(object) {
+    if (object) {
+      const tile = this.city.getTile(object.x, object.y);
+      document.getElementById('info-details').innerHTML = tile.toHTML();
+    } else {
+      document.getElementById('info-details').innerHTML = '';
+    }
   }
 
   /**
