@@ -21,6 +21,10 @@ export class City extends THREE.Group {
    */
   size = 16;
   /**
+   * The current simulation time
+   */
+  simTime = 0;
+  /**
    * 2D array of tiles that make up the city
    * @type {Tile[][]}
    */
@@ -31,10 +35,10 @@ export class City extends THREE.Group {
    */
   vehicleGraph;
 
-  constructor(size) {
+  constructor(size, name = 'My City') {
     super();
 
-    this.name = 'City';
+    this.name = name;
     this.size = size;
     
     this.add(this.debugMeshes);
@@ -85,6 +89,23 @@ export class City extends THREE.Group {
     } else {
       return this.tiles[x][y];
     }
+  }
+
+  /**
+   * Step the simulation forward by one step
+   * @type {number} steps Number of steps to simulate forward in time
+   */
+  simulate(steps = 1) {
+    let count = 0;
+    while (count++ < steps) {
+      // Update each building
+      for (let x = 0; x < this.size; x++) {
+        for (let y = 0; y < this.size; y++) {
+          this.getTile(x, y).simulate(this);
+        }
+      }
+    }
+    this.simTime++;
   }
 
   /**
@@ -145,22 +166,6 @@ export class City extends THREE.Group {
 
   draw() {
     this.vehicleGraph.updateVehicles();
-  }
-
-  /**
-   * Step the simulation forward by one step
-   * @type {number} steps Number of steps to simulate forward in time
-   */
-  simulate(steps = 1) {
-    let count = 0;
-    while (count++ < steps) {
-      // Update each building
-      for (let x = 0; x < this.size; x++) {
-        for (let y = 0; y < this.size; y++) {
-          this.getTile(x, y).simulate(this);
-        }
-      }
-    }
   }
 
   /**

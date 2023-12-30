@@ -23,11 +23,11 @@ export class InputManager {
    */
   isRightMouseDown = false;
 
-  constructor(gameWindow) {
-    gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
-    gameWindow.addEventListener('mouseup', this.#onMouseUp.bind(this), false);
-    gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
-    gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
+  constructor() {
+    window.ui.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
+    window.ui.gameWindow.addEventListener('mouseup', this.#onMouseUp.bind(this), false);
+    window.ui.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
+    window.ui.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
   }
 
   /**

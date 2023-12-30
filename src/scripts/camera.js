@@ -2,7 +2,6 @@ import * as THREE from 'three';
 
 // -- Constants --
 const DEG2RAD = Math.PI / 180.0;
-const MIDDLE_MOUSE_BUTTON = 4;
 const RIGHT_MOUSE_BUTTON = 2;
 
 // Camera constraints
@@ -21,8 +20,8 @@ const PAN_SENSITIVITY = -0.01;
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 export class CameraManager {
-  constructor(gameWindow) {
-    const aspect = gameWindow.clientWidth / gameWindow.clientHeight;
+  constructor() {
+    const aspect = window.ui.gameWindow.clientWidth / window.ui.gameWindow.clientHeight;
 
     this.camera = new THREE.OrthographicCamera(
       (CAMERA_SIZE * aspect) / -2,
@@ -37,9 +36,9 @@ export class CameraManager {
 
     this.updateCameraPosition();
 
-    gameWindow.addEventListener('wheel', this.onMouseScroll.bind(this), false);
-    gameWindow.addEventListener('mousedown', this.onMouseMove.bind(this), false);
-    gameWindow.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+    window.ui.gameWindow.addEventListener('wheel', this.onMouseScroll.bind(this), false);
+    window.ui.gameWindow.addEventListener('mousedown', this.onMouseMove.bind(this), false);
+    window.ui.gameWindow.addEventListener('mousemove', this.onMouseMove.bind(this), false);
   }
 
   /**
@@ -90,8 +89,8 @@ export class CameraManager {
     this.updateCameraPosition();
   }
 
-  resize(gameWindow) {
-    const aspect = gameWindow.clientWidth / gameWindow.clientHeight;
+  resize() {
+    const aspect = window.ui.gameWindow.clientWidth / window.ui.gameWindow.clientHeight;
     this.camera.left = (CAMERA_SIZE * aspect) / -2;
     this.camera.right = (CAMERA_SIZE * aspect) / 2;
     this.camera.updateProjectionMatrix();

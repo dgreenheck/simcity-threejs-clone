@@ -17,6 +17,18 @@ export class GameUI {
    */
   isPaused = false;
 
+  get gameWindow() {
+    return document.getElementById('render-target');
+  }
+
+  showLoadingText() {
+    document.getElementById('loading').style.visibility = 'visible';
+  }
+
+  hideLoadingText() {
+    document.getElementById('loading').style.visibility = 'hidden';
+  }
+  
   /**
    * 
    * @param {*} event 
@@ -50,7 +62,13 @@ export class GameUI {
    * @param {Game} game 
    */
   updateTitleBar(game) {
+    document.getElementById('city-name').innerHTML = game.city.name;
     document.getElementById('population-counter').innerHTML = game.city.population;
+
+    const date = new Date('1/1/2023');
+    date.setDate(date.getDate() + game.city.simTime);
+    console.log(date);
+    document.getElementById('sim-time').innerHTML = date.toLocaleDateString();
   }
 
   /**
