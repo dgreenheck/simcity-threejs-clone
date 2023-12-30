@@ -1,24 +1,58 @@
-import { createBuilding } from './buildings/buildingFactory.js';
+import * as THREE from 'three';
+import { BuildingType, createBuilding } from './buildings/buildingFactory.js';
 import { Tile } from './tiles/tile.js';
+import { VehicleGraph } from './vehicles/vehicleGraph.js';
 
-export class City {
+export class City extends THREE.Group {
+  /**
+   * Separate group for organizing debug meshes so they aren't included
+   * in raycasting checks
+   * @type {THREE.Group}
+   */
+  debugMeshes = new THREE.Group();
+  /**
+   * Root node for all scene objects 
+   * @type {THREE.Group}
+   */
+  root = new THREE.Group();
+  /**
+   * The size of the city in tiles
+   * @type {number}
+   */
+  size = 16;
+  /**
+   * 2D array of tiles that make up the city
+   * @type {Tile[][]}
+   */
+  tiles = [];
+  /**
+   * 
+   * @param {VehicleGraph} size 
+   */
+  vehicleGraph;
+
   constructor(size) {
+    super();
+
     this.size = size;
+    
+    this.add(this.debugMeshes);
+    this.add(this.root);
 
-    /**
-     * 2D array of tiles that make up the city
-     * @type {Tile[][]}
-     */
     this.tiles = [];
-
     for (let x = 0; x < this.size; x++) {
       const column = [];
       for (let y = 0; y < this.size; y++) {
         const tile = new Tile(x, y);
+        tile.refresh(this);
+        this.root.add(tile);
         column.push(tile);
       }
       this.tiles.push(column);
     }
+
+    this.vehicleGraph = new VehicleGraph(this.size);
+    this.debugMeshes.add(this.vehicleGraph);
   }
 
   /**
@@ -73,6 +107,10 @@ export class City {
       this.getTile(x + 1, y)?.refresh(this);
       this.getTile(x, y - 1)?.refresh(this);
       this.getTile(x, y + 1)?.refresh(this);
+
+      if (tile.building.type === BuildingType.road) {
+        this.vehicleGraph.updateTile(x, y, tile.building);
+      }
     }
   }
 
@@ -85,6 +123,10 @@ export class City {
     const tile = this.getTile(x, y);
 
     if (tile.building) {
+      if (tile.building.type === BuildingType.road) {
+        this.vehicleGraph.updateTile(x, y, null);
+      }
+
       tile.building.dispose();
       tile.building = null;
       tile.refresh(this);
@@ -93,18 +135,25 @@ export class City {
       this.getTile(x - 1, y)?.refresh(this);
       this.getTile(x + 1, y)?.refresh(this);
       this.getTile(x, y - 1)?.refresh(this);
-      this.getTile(x, y + 1)?.refresh(this);
     }
+  }
+
+  draw() {
+    this.vehicleGraph.updateVehicles();
   }
 
   /**
    * Step the simulation forward by one step
+   * @type {number} steps Number of steps to simulate forward in time
    */
-  simulate() {
-    // Update each building
-    for (let x = 0; x < this.size; x++) {
-      for (let y = 0; y < this.size; y++) {
-        this.getTile(x, y).simulate(this);
+  simulate(steps = 1) {
+    let count = 0;
+    while (count++ < steps) {
+      // Update each building
+      for (let x = 0; x < this.size; x++) {
+        for (let y = 0; y < this.size; y++) {
+          this.getTile(x, y).simulate(this);
+        }
       }
     }
   }

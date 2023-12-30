@@ -1,31 +1,25 @@
 import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
 import { City } from '../sim/city.js';
-import { VehicleGraph } from '../sim/vehicles/vehicleGraph.js';
 
 /** 
  * Manager for the Three.js scene. Handles rendering of a `City` object
  */
 export class SceneManager {
-  constructor() {
+  /**
+   * @type {City}
+   */
+  city;
+
+  constructor(city) {
+    this.city = city;
+
     this.renderer = new THREE.WebGLRenderer({ 
       antialias: true
     });
     this.scene = new THREE.Scene();
     this.gameWindow = document.getElementById('render-target');
     this.cameraManager = new CameraManager(this.gameWindow);
-
-    /**
-     * 2D array of building meshes at each tile location
-     * @type {THREE.Mesh[][]}
-     */
-    this.buildings = [];
-
-    /**
-     * 2D array of terrain mesh data
-     * @type {THREE.Mesh[][]}
-     */
-    this.terrain = [];
 
     // Configure the renderer
     this.renderer.setSize(this.gameWindow.clientWidth, this.gameWindow.clientHeight);
@@ -52,29 +46,7 @@ export class SceneManager {
    */
   initialize(city) {
     this.scene.clear();
-
-    this.root = new THREE.Group();
-    this.scene.add(this.root);
-
-    this.vehicleGraph = new VehicleGraph(city.size);
-    this.root.add(this.vehicleGraph);
-
-    this.buildings = [];
-    this.terrain = [];
-
-    // Initialize the buildings array
-    for (let x = 0; x < city.size; x++) {
-      const column = [];
-      for (let y = 0; y < city.size; y++) {
-        const tile = city.getTile(x, y);
-        const mesh = window.assetManager.createGroundMesh(tile);
-        this.root.add(mesh);
-        column.push(mesh);
-      }
-      this.buildings.push([...Array(city.size)]);
-      this.terrain.push(column);
-    }
-
+    this.scene.add(city);
     this.#setupLights();
     this.#setupGrid(city);
 
@@ -117,45 +89,10 @@ export class SceneManager {
     sun.shadow.camera.near = 10;
     sun.shadow.camera.far = 50;
     sun.shadow.normalBias = 0.01;
-    this.root.add(sun);
-    this.root.add(new THREE.AmbientLight(0xffffff, 0.5));
+    this.scene.add(sun);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
   }
-
-  /**
-   * Applies the latest changes in the data model to the scene
-   * @param {City} city The city data model
-   */
-  applyChanges(city) {
-    for (let x = 0; x < city.size; x++) {
-      for (let y = 0; y < city.size; y++) {
-        const tile = city.getTile(x, y);
-        const existingBuildingMesh = this.buildings[x][y];
-
-        // Show/hide the terrain
-        this.terrain[x][y].visible = !(tile.building?.hideTerrain) ?? true;
-
-        // If the player removes a building, remove it from the root node
-        if (!tile.building && existingBuildingMesh) {
-          this.root.remove(existingBuildingMesh);
-          this.buildings[x][y] = null;
-          this.vehicleGraph.updateTile(x, y, null);
-        }
-
-        // If the data model has changed, update the mesh
-        if (tile.building && tile.building.isMeshOutOfDate) {
-          this.root.remove(existingBuildingMesh);
-          this.buildings[x][y] = window.assetManager.createBuildingMesh(tile);
-          this.root.add(this.buildings[x][y]);
-          tile.building.isMeshOutOfDate = false;
-
-          if (tile.building.type === 'road') {
-            this.vehicleGraph.updateTile(x, y, tile.building);
-          }
-        }
-      }
-    }
-  }
-
+  
   /**
    * Starts the renderer
    */
@@ -174,7 +111,7 @@ export class SceneManager {
    * Render the contents of the scene
    */
   #draw() {
-    this.vehicleGraph.updateVehicles();
+    this.city.draw();
     this.renderer.render(this.scene, this.cameraManager.camera);
   }
 
@@ -203,7 +140,7 @@ export class SceneManager {
    */
   #setMeshEmission(mesh, color) {
     if (!mesh) return;
-    mesh.material.emissive?.setHex(color);
+    mesh.traverse((obj) => obj.material?.emissive?.setHex(color));
   }
 
   /**
@@ -219,9 +156,13 @@ export class SceneManager {
 
     this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
 
-    let intersections = this.raycaster.intersectObjects(this.root.children, true);
+    let intersections = this.raycaster.intersectObjects(this.city.root.children, true);
     if (intersections.length > 0) {
-      return intersections[0].object;
+      console.log(intersections);
+      // The SimObject attached to the mesh is stored in the user data
+      const selectedObject = intersections[0].object.userData;
+      console.log(selectedObject);
+      return selectedObject;
     } else {
       return null;
     }

@@ -60,26 +60,27 @@ export class DevelopmentAttribute {
 
   set state(value) {
     this.#state = value;
-    this.#zone.isMeshOutOfDate = true;
   }
 
   /**
    * @param {City} city 
    */
   simulate(city) {
-    this.checkAbandonmentCriteria(city);
+    this.#checkAbandonmentCriteria(city);
 
     switch (this.state) {
       case DevelopmentState.undeveloped:
-        if (this.checkDevelopmentCriteria(city) &&
+        if (this.#checkDevelopmentCriteria(city) &&
           Math.random() < config.zone.redevelopChance) {
           this.state = DevelopmentState.underConstruction;
+          this.#zone.refresh(city);
           this.#constructionCounter = 0;
         }
         break;
       case DevelopmentState.underConstruction:
         if (++this.#constructionCounter === config.zone.constructionTime) {
           this.state = DevelopmentState.developed;
+          this.#zone.refresh(city);
           this.level = 1;
           this.#constructionCounter = 0;
         }
@@ -88,10 +89,12 @@ export class DevelopmentAttribute {
         if (this.#abandonmentCounter > config.zone.abandonThreshold) {
           if (Math.random() < config.zone.abandonChance) {
             this.state = DevelopmentState.abandoned;
+            this.#zone.refresh(city);
           }
         } else {
           if (this.level < this.maxLevel && Math.random() < config.zone.levelUpChance) {
             this.level++;
+            this.#zone.refresh(city);
           }
         }
         break;
@@ -99,6 +102,7 @@ export class DevelopmentAttribute {
         if (this.#abandonmentCounter == 0) {
           if (Math.random() < config.zone.redevelopChance) {
             this.state = DevelopmentState.developed;
+            this.#zone.refresh(city);
           }
         }
         break;
@@ -109,7 +113,7 @@ export class DevelopmentAttribute {
    * @param {City} city 
    * @returns 
    */
-  checkDevelopmentCriteria(city) {
+  #checkDevelopmentCriteria(city) {
     const { x, y } = this.#zone;
 
     if (city.getTile(x, y).roadAccess.value) {
@@ -123,7 +127,7 @@ export class DevelopmentAttribute {
    * @param {City} city 
    * @returns 
    */
-  checkAbandonmentCriteria(city) {
+  #checkAbandonmentCriteria(city) {
     const { x, y } = this.#zone;
 
     if (!city.getTile(x, y).roadAccess.value) {

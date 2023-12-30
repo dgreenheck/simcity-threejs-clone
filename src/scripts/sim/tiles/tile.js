@@ -1,61 +1,58 @@
 import { RoadAccessAttribute } from './attributes/roadAccess.js';
 import { Building } from '../buildings/building.js';
+import { SimObject } from '../simObject.js';
 
-export class Tile {
+export class Tile extends SimObject {
   /**
-   * Creates a new `Tile` object
-   * @param {number} x The x-coordinate of the tile 
-   * @param {number} y The y-coordinate of the tile
+   * The type of terrain
+   * @type {string}
    */
+  terrain = 'grass';
+  /**
+   * The building on this tile
+   * @type {Building?}
+   */
+  #building = null;
+  /**
+   * True if this tile has access to a road
+   * @type {RoadAccessAttribute}
+   */
+  roadAccess = new RoadAccessAttribute(this);
+
   constructor(x, y) {
-    /**
-     * Unique identifier for this tile
-     * @type {string}
-     */
-    this.id = crypto.randomUUID();
-    
-    /**
-     * The x-coordinate of the tile
-     * @type {number}
-     */
-    this.x = x;
-
-    /**
-     * The y-coordinate of the tile
-     * @type {number}
-     */
-    this.y = y;
-
-    /**
-     * The type of terrain
-     * @type {string}
-     */
-    this.terrain = 'grass';
-
-    /**
-     * The building on this tile
-     * @type {Building?}
-     */
-    this.building = null;
-
-    /**
-     * True if this tile has access to a road
-     * @type {RoadAccessAttribute}
-     */
-    this.roadAccess = new RoadAccessAttribute(this);
+    super(x, y);
+    this.name = `Tile-${this.x}-${this.y}`;
   }
 
   /**
-   * Performs a full refresh of the tile
+   * @type {Building}
    */
+  get building() {
+    return this.#building;
+  }
+
+  /**
+   * @type {Building} value
+   */
+  set building(value) {
+    if (this.#building) {
+      this.#building.dispose();
+      this.remove(this.#building);
+    }
+    this.#building = value;
+    this.add(this.#building);
+  }
+
   refresh(city) {
+    const mesh = window.assetManager.createInstance(this.terrain, this);
+    mesh.name = this.terrain;
+    // Show/hide the terrain based on building preference
+    mesh.visible = !(this.#building?.hideTerrain) ?? true;
+    this.setMesh(mesh);;
+
     this.building?.refresh(city);
   }
 
-  /**
-   * Steps the simulation state of the tile
-   * @param {*} city 
-   */
   simulate(city) {
     this.roadAccess.simulate(city);
     this.building?.simulate(city);

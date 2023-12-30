@@ -25,7 +25,7 @@ export class JobsAttribute {
    */
   get maxWorkers() {
     // If building is not developed, there are no available jobs
-    if (this.#zone.development.state === DevelopmentState.developed) {
+    if (this.#zone.development.state !== DevelopmentState.developed) {
       return 0;
     } else {
       return Math.pow(config.zone.maxWorkers, this.#zone.development.level);
@@ -63,7 +63,7 @@ export class JobsAttribute {
   /**
    * Lay off all existing workers
    */
-  layOffWorkers() {
+  #layOffWorkers() {
     for (const worker of this.workers) {
       worker.setWorkplace(null);
     }
@@ -74,7 +74,7 @@ export class JobsAttribute {
    * Handles any clean up needed before a building is removed
    */
   dispose() {
-    this.layOffWorkers();
+    this.#layOffWorkers();
   }
 
   /**
