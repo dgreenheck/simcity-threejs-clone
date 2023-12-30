@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { CameraManager } from './cameraManager.js';
+import { InputManager } from '../inputManager.js';
 import { City } from '../sim/city.js';
 import { SimObject } from '../sim/simObject.js';
 
@@ -7,11 +8,6 @@ import { SimObject } from '../sim/simObject.js';
  * Manager for the Three.js scene. Handles rendering of a `City` object
  */
 export class SceneManager {
-  /**
-   * Currently selected tool
-   * @type {string}
-   */
-  activeToolId = 'select';
   /**
    * @type {City}
    */
@@ -22,11 +18,10 @@ export class SceneManager {
    */
   focusedObject = null;
   /**
-   * Last mouse position from 'mousemove' event
-   * @type {THREE.Vector2}
+   * Class for managing user input
+   * @type {InputManager}
    */
-  mouse = new THREE.Vector2();
-  isMouseDown = false;
+  inputManager;
   /**
    * Object that is currently selected
    * @type {SimObject | null}
@@ -41,6 +36,8 @@ export class SceneManager {
     });
     this.scene = new THREE.Scene();
     this.gameWindow = document.getElementById('render-target');
+
+    this.inputManager = new InputManager(this.gameWindow);
     this.cameraManager = new CameraManager(this.gameWindow);
 
     // Configure the renderer
@@ -56,10 +53,6 @@ export class SceneManager {
     this.raycaster = new THREE.Raycaster();
 
     window.addEventListener('resize', this.onResize.bind(this), false);
-    this.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
-    this.gameWindow.addEventListener('mouseup', this.#onMouseUp.bind(this), false);
-    this.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
-    this.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
   }
 
   /**
@@ -134,48 +127,21 @@ export class SceneManager {
     this.city.draw();
     this.#updateFocusedObject();
 
-    if (this.isMouseDown) {
-      this.useActiveTool();
+    if (this.inputManager.isLeftMouseDown) {
+      this.useTool();
     }
 
     this.renderer.render(this.scene, this.cameraManager.camera);
   }
 
   /**
-   * Event handler for `mousedown` event
-   * @param {MouseEvent} event 
+   * Uses the currently active tool
    */
-  #onMouseDown(event) {
-    if (event.button === 0) {
-      this.isMouseDown = true;
-    }
-  }
-
-  /**
-   * Event handler for `mouseup` event
-   * @param {MouseEvent} event 
-   */
-  #onMouseUp(event) {
-    if (event.button === 0) {
-      this.isMouseDown = false;
-    }
-  }
-
-  /**
-   * Event handler for 'mousemove' event
-   * @param {MouseEvent} event 
-   */
-  #onMouseMove(event) {
-    this.isMouseDown = event.buttons & 1;
-    this.mouse.x = event.clientX;
-    this.mouse.y = event.clientY;
-  }
-
-  useActiveTool() {
-    switch (this.activeToolId) {
+  useTool() {
+    switch (window.ui.activeToolId) {
       case 'select':
         this.updateSelectedObject();
-        this.updateInfoPanel(this.selectedObject);
+        window.ui.updateInfoPanel(this.selectedObject);
         break;
       case 'bulldoze':
         if (this.focusedObject) {
@@ -186,7 +152,7 @@ export class SceneManager {
       default:
         if (this.focusedObject) {
           const { x, y } = this.focusedObject;
-          this.city.placeBuilding(x, y, this.activeToolId);
+          this.city.placeBuilding(x, y, window.ui.activeToolId);
         }
         break;
     }
@@ -214,15 +180,15 @@ export class SceneManager {
   }
 
   /**
-   * Gets the mesh currently under the this.mouse cursor. If there is nothing under
-   * the this.mouse cursor, returns null
+   * Gets the mesh currently under the the mouse cursor. If there is nothing under
+   * the the mouse cursor, returns null
    * @param {MouseEvent} event Mouse event
-   * @returns {THREE.Mesh?}
+   * @returns {THREE.Mesh | null}
    */
   #raycast() {
     var coords = {
-      x: (this.mouse.x / this.renderer.domElement.clientWidth) * 2 - 1,
-      y: -(this.mouse.y / this.renderer.domElement.clientHeight) * 2 + 1
+      x: (this.inputManager.mouse.x / this.renderer.domElement.clientWidth) * 2 - 1,
+      y: -(this.inputManager.mouse.y / this.renderer.domElement.clientHeight) * 2 + 1
     };
 
     this.raycaster.setFromCamera(coords, this.cameraManager.camera);
@@ -234,15 +200,6 @@ export class SceneManager {
       return selectedObject;
     } else {
       return null;
-    }
-  }
-
-  updateInfoPanel(object) {
-    if (object) {
-      const tile = this.city.getTile(object.x, object.y);
-      document.getElementById('info-details').innerHTML = tile.toHTML();
-    } else {
-      document.getElementById('info-details').innerHTML = '';
     }
   }
 

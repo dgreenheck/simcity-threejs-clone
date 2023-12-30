@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="/main.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <script type="module" src="./scripts/game.js"></script>
+  <script type="module" src="./scripts/ui.js"></script>
 </head>
 
 <body>
@@ -26,38 +28,34 @@
       </div>
       <div id="ui-toolbar" class="container">
         <button id='button-select' class="ui-button selected" data-type="select"
-          onclick="game.onToolSelected(event)">
+          onclick="ui.onToolSelected(event)">
           <img class="toolbar-icon" src="/icons/select.png">
         </button>
         <button id='button-bulldoze' class="ui-button" data-type="bulldoze"
-          onclick="game.onToolSelected(event)">
+          onclick="ui.onToolSelected(event)">
           <img class="toolbar-icon" src="/icons/bulldozer.png">
         </button>
         <button id='button-residential' class="ui-button" data-type="residential"
-          onclick="game.onToolSelected(event)">
+          onclick="ui.onToolSelected(event)">
           <img class="toolbar-icon" src="/icons/house.png">
         </button>
         <button id='button-commercial' class="ui-button" data-type="commercial"
-          onclick="game.onToolSelected(event)">
+          onclick="ui.onToolSelected(event)">
           <img class="toolbar-icon" src="/icons/office.png">
         </button>
         <button id='button-industrial' class="ui-button" data-type="industrial"
-          onclick="game.onToolSelected(event)">
+          onclick="ui.onToolSelected(event)">
           <img class="toolbar-icon" src="/icons/factory.png">
         </button>
         <button id='button-road' class="ui-button" data-type="road"
-          onclick="game.onToolSelected(event)">
+          onclick="ui.onToolSelected(event)">
           <img class="toolbar-icon" src="/icons/road.png">
         </button>
-        <button id='button-pause' class="ui-button" onclick="game.togglePause()">
+        <button id='button-pause' class="ui-button" onclick="ui.togglePause()">
           <img id='pause-button-icon' class="toolbar-icon" src="/icons/pause.png">
         </button>
       </div>
       <div id="info-panel" class="container">
-        <div class="info-heading" style="margin-top: 0;">
-          <span>INFO</span>
-        </div>
-        <div id="info-details"> </div>
       </div>
       <div id="instructions">
         INTERACT - Left Mouse<br>
@@ -72,15 +70,6 @@
       </div>
     </div>
   </div>
-
-  <script type="module">
-    import { Game } from './scripts/game.js';
-    
-    // Create a new game when the window is loaded
-    window.onload = () => {
-      window.game = new Game();
-    }
-  </script>
 </body>
 
 </html>

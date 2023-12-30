@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import viteConfig from '../../../vite.config.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import viteConfig from '../../../vite.config.js';
 import models from './assets.js';
 
 const baseUrl = viteConfig.base;
@@ -10,9 +10,9 @@ export class AssetManager {
   modelLoader = new GLTFLoader();
 
   textures = {
-    'base': this.loadTexture(`${baseUrl}textures/base.png`),
-    'specular': this.loadTexture(`${baseUrl}textures/specular.png`),
-    'grid': this.loadTexture(`${baseUrl}textures/grid.png`)
+    'base': this.#loadTexture(`${baseUrl}textures/base.png`),
+    'specular': this.#loadTexture(`${baseUrl}textures/specular.png`),
+    'grid': this.#loadTexture(`${baseUrl}textures/grid.png`)
   };
 
   meshes = {};
@@ -22,7 +22,7 @@ export class AssetManager {
     this.loadedModelCount = 0;
 
     for (const [name, meta] of Object.entries(models)) {
-      this.loadModel(name, meta);
+      this.#loadModel(name, meta);
     }
 
     this.onLoad = onLoad;
@@ -58,7 +58,7 @@ export class AssetManager {
    * @param {string} url 
    * @returns {THREE.Texture} A texture object
    */
-  loadTexture(url) {
+  #loadTexture(url) {
     const texture = this.textureLoader.load(url)
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.flipY = false;
@@ -69,7 +69,7 @@ export class AssetManager {
    * Load the 3D models
    * @param {string} url The URL of the model to load
    */
-  loadModel(name, {filename, scale = 1, rotation = 0, receiveShadow = true, castShadow = true}) {
+  #loadModel(name, {filename, scale = 1, rotation = 0, receiveShadow = true, castShadow = true}) {
     this.modelLoader.load(`${baseUrl}models/${filename}`,
       (glb) => {
         let mesh = glb.scene;
