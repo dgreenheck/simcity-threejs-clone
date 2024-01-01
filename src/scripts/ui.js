@@ -1,5 +1,7 @@
 import { Game } from './game';
 import { SimObject } from './sim/simObject';
+import playIconUrl from '/icons/play.png';
+import pauseIconUrl from '/icons/pause.png';
 
 export class GameUI {
   /**
@@ -51,9 +53,11 @@ export class GameUI {
     this.isPaused = !this.isPaused;
     console.log(`Is Paused: ${this.isPaused}`);
     if (this.isPaused) {
-      document.getElementById('pause-button-icon').src = '/icons/play.png';
+      document.getElementById('pause-button-icon').src = playIconUrl;
+      document.getElementById('paused-text').style.visibility = 'visible';
     } else {
-      document.getElementById('pause-button-icon').src = '/icons/pause.png';
+      document.getElementById('pause-button-icon').src = pauseIconUrl;
+      document.getElementById('paused-text').style.visibility = 'hidden';
     }
   }
 

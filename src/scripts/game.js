@@ -152,7 +152,7 @@ export class Game {
    * Moves the simulation forward by one step
    */
   simulate() {
-    if (this.isPaused) return;
+    if (window.ui.isPaused) return;
 
     // Update the city data model first, then update the scene
     this.city.simulate(1);

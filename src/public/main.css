@@ -36,7 +36,7 @@ h1 {
   margin: 8px;
 }
 
-#loading {
+.text-overlay {
   position: absolute;
   top: 0;
   left: 0;
