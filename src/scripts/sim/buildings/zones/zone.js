@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { DEG2RAD } from 'three/src/math/MathUtils.js';
 import { DevelopmentAttribute, DevelopmentState } from '../attributes/development.js';
 import { Building } from '../building.js';
