@@ -1,10 +1,10 @@
-import config from '../../../config.js';
-import { Citizen } from '../../citizen.js';
-import { City } from '../../city.js';
-import { Zone } from '../zones/zone.js';
+import config from '../config.js';
+import { Citizen } from '../sim/citizen.js';
+import { City } from '../sim/city.js';
+import { Zone } from '../sim/buildings/zones/zone.js';
 import { DevelopmentState } from './development.js';
 
-export class JobsAttribute {
+export class JobsModule {
   /**
    * @type {Zone}
    */
@@ -28,7 +28,7 @@ export class JobsAttribute {
     if (this.#zone.development.state !== DevelopmentState.developed) {
       return 0;
     } else {
-      return Math.pow(config.zone.maxWorkers, this.#zone.development.level);
+      return Math.pow(config.modules.jobs.maxWorkers, this.#zone.development.level);
     }
   }
 

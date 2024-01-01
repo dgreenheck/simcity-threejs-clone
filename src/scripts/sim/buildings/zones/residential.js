@@ -1,9 +1,7 @@
-import { Citizen } from '../../citizen.js';
 import { City } from '../../city.js';
-import config from '../../../config.js';
 import { Zone } from './zone.js';
-import { ResidentsAttribute } from '../attributes/residents.js';
-import { BuildingType } from '../buildingFactory.js';
+import { ResidentsModule } from '../../../modules/residents.js';
+import { BuildingType } from '../building.js';
 
 export class ResidentialZone extends Zone {
   constructor(x, y) {
@@ -12,9 +10,9 @@ export class ResidentialZone extends Zone {
     this.type = BuildingType.residential;
     
     /**
-     * @type {ResidentsAttribute}
+     * @type {ResidentsModule}
      */
-    this.residents = new ResidentsAttribute(this);
+    this.residents = new ResidentsModule(this);
   }
 
   /**

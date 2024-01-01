@@ -51,7 +51,6 @@ export class GameUI {
    */
   togglePause() {
     this.isPaused = !this.isPaused;
-    console.log(`Is Paused: ${this.isPaused}`);
     if (this.isPaused) {
       document.getElementById('pause-button-icon').src = playIconUrl;
       document.getElementById('paused-text').style.visibility = 'visible';
@@ -71,7 +70,6 @@ export class GameUI {
 
     const date = new Date('1/1/2023');
     date.setDate(date.getDate() + game.city.simTime);
-    console.log(date);
     document.getElementById('sim-time').innerHTML = date.toLocaleDateString();
   }
 

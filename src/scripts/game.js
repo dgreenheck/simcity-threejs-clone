@@ -56,7 +56,6 @@ export class Game {
      * Global instance of the asset manager
      */
     window.assetManager = new AssetManager(() => {
-      console.log('assets loaded');
       window.ui.hideLoadingText();
 
       this.city = new City(16);
@@ -77,7 +76,6 @@ export class Game {
     this.scene.add(city);
     this.#setupLights();
     this.#setupGrid(city);
-    console.log('scene loaded');
   }
 
   #setupGrid(city) {

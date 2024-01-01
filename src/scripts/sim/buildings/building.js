@@ -1,5 +1,12 @@
 import { SimObject } from '../simObject';
 
+export const BuildingType = {
+  residential: 'residential',
+  commercial: 'commercial',
+  industrial: 'industrial',
+  road: 'road'
+}
+
 export class Building extends SimObject {
   /**
    * The building type

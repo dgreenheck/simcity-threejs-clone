@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { BuildingType, createBuilding } from './buildings/buildingFactory.js';
-import { Tile } from './tiles/tile.js';
+import { Tile } from './tile.js';
 import { VehicleGraph } from './vehicles/vehicleGraph.js';
 
 export class City extends THREE.Group {

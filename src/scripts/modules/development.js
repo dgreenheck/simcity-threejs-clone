@@ -1,6 +1,6 @@
-import config from '../../../config.js';
-import { City } from '../../city.js';
-import { Zone } from '../zones/zone.js';
+import config from '../config.js';
+import { City } from '../sim/city.js';
+import { Zone } from '../sim/buildings/zones/zone.js';
 
 export const DevelopmentState = {
   abandoned: 'abandoned',
@@ -9,7 +9,7 @@ export const DevelopmentState = {
   undeveloped: 'undeveloped',
 };
 
-export class DevelopmentAttribute {
+export class DevelopmentModule {
   #zone;
 
   /**
@@ -71,14 +71,14 @@ export class DevelopmentAttribute {
     switch (this.state) {
       case DevelopmentState.undeveloped:
         if (this.#checkDevelopmentCriteria(city) &&
-          Math.random() < config.zone.redevelopChance) {
+          Math.random() < config.modules.development.redevelopChance) {
           this.state = DevelopmentState.underConstruction;
           this.#zone.updateMesh(city);
           this.#constructionCounter = 0;
         }
         break;
       case DevelopmentState.underConstruction:
-        if (++this.#constructionCounter === config.zone.constructionTime) {
+        if (++this.#constructionCounter === config.modules.development.constructionTime) {
           this.state = DevelopmentState.developed;
           this.#zone.updateMesh(city);
           this.level = 1;
@@ -86,13 +86,13 @@ export class DevelopmentAttribute {
         }
         break;
       case DevelopmentState.developed:
-        if (this.#abandonmentCounter > config.zone.abandonThreshold) {
-          if (Math.random() < config.zone.abandonChance) {
+        if (this.#abandonmentCounter > config.modules.development.abandonThreshold) {
+          if (Math.random() < config.modules.development.abandonChance) {
             this.state = DevelopmentState.abandoned;
             this.#zone.updateMesh(city);
           }
         } else {
-          if (this.level < this.maxLevel && Math.random() < config.zone.levelUpChance) {
+          if (this.level < this.maxLevel && Math.random() < config.modules.development.levelUpChance) {
             this.level++;
             this.#zone.updateMesh(city);
           }
@@ -100,7 +100,7 @@ export class DevelopmentAttribute {
         break;
       case DevelopmentState.abandoned:
         if (this.#abandonmentCounter == 0) {
-          if (Math.random() < config.zone.redevelopChance) {
+          if (Math.random() < config.modules.development.redevelopChance) {
             this.state = DevelopmentState.developed;
             this.#zone.updateMesh(city);
           }

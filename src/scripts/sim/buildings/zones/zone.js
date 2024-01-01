@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { DEG2RAD } from 'three/src/math/MathUtils.js';
-import { DevelopmentAttribute, DevelopmentState } from '../attributes/development.js';
+import { DevelopmentModule, DevelopmentState } from '../../../modules/development.js';
 import { Building } from '../building.js';
 
 /**
@@ -23,7 +23,7 @@ export class Zone extends Building {
     /**
      * True if this zone is developed
      */
-    this.development = new DevelopmentAttribute(this);
+    this.development = new DevelopmentModule(this);
   }
 
   updateMesh(city) {

@@ -1,11 +1,11 @@
-import { City } from '../../city.js';
-import config from '../../../config.js';
-import { Tile } from '../tile.js';
+import config from '../config.js';
+import { City } from '../sim/city.js';
+import { Tile } from '../sim/tile.js';
 
 /**
  * Logic for controlling building abandonment
  */
-export class RoadAccessAttribute {
+export class RoadAccessModule {
   /**
    * @type {Tile}
    */
@@ -23,7 +23,7 @@ export class RoadAccessAttribute {
     const road = city.findTile(
       this.#tile, 
       (tile) => tile.building?.type === 'road', 
-      config.attributes.roadAccess.searchDistance);
+      config.modules.roadAccess.searchDistance);
 
     this.value = (road !== null);
   }

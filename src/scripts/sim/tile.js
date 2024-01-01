@@ -1,6 +1,6 @@
-import { RoadAccessAttribute } from './attributes/roadAccess.js';
-import { Building } from '../buildings/building.js';
-import { SimObject } from '../simObject.js';
+import { RoadAccessModule } from '../modules/roadAccess.js';
+import { Building } from './buildings/building.js';
+import { SimObject } from './simObject.js';
 
 export class Tile extends SimObject {
   /**
@@ -15,9 +15,9 @@ export class Tile extends SimObject {
   #building = null;
   /**
    * True if this tile has access to a road
-   * @type {RoadAccessAttribute}
+   * @type {RoadAccessModule}
    */
-  roadAccess = new RoadAccessAttribute(this);
+  roadAccess = new RoadAccessModule(this);
 
   constructor(x, y) {
     super(x, y);
