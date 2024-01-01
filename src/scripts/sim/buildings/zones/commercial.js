@@ -1,7 +1,7 @@
 import { City } from '../../city.js';
 import { Zone } from './zone.js';
-import { JobsAttribute } from '../attributes/jobs.js';
-import { BuildingType } from '../buildingFactory.js';
+import { JobsModule } from '../../../modules/jobs.js';
+import { BuildingType } from '../building.js';
 
 export class CommercialZone extends Zone {
   constructor(x, y) {
@@ -11,9 +11,9 @@ export class CommercialZone extends Zone {
     this.type = BuildingType.commercial;
 
     /**
-     * @type {JobsAttribute}
+     * @type {JobsModule}
      */
-    this.jobs = new JobsAttribute(this);
+    this.jobs = new JobsModule(this);
   }
 
   /**

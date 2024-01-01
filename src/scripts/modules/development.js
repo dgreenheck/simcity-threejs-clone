@@ -1,6 +1,6 @@
-import config from '../../../config.js';
-import { City } from '../../city.js';
-import { Zone } from '../zones/zone.js';
+import config from '../config.js';
+import { City } from '../sim/city.js';
+import { Zone } from '../sim/buildings/zones/zone.js';
 
 export const DevelopmentState = {
   abandoned: 'abandoned',
@@ -9,7 +9,7 @@ export const DevelopmentState = {
   undeveloped: 'undeveloped',
 };
 
-export class DevelopmentAttribute {
+export class DevelopmentModule {
   #zone;
 
   /**
