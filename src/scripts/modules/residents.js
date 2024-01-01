@@ -35,7 +35,7 @@ export class ResidentsModule {
    * @returns {number}
    */
   get maximum() {
-    return Math.pow(config.zone.maxResidents, this.#zone.development.level);
+    return Math.pow(config.modules.residents.maxResidents, this.#zone.development.level);
   }
 
   /**
@@ -47,7 +47,7 @@ export class ResidentsModule {
       this.evictAll();
     } else if (this.#zone.development.state === DevelopmentState.developed) {
       // Move in new residents if there is room
-      if (this.#residents.length < this.maximum && Math.random() < config.zone.residentMoveInChance) {
+      if (this.#residents.length < this.maximum && Math.random() < config.modules.residents.residentMoveInChance) {
         this.#residents.push(new Citizen(this.#zone));
       }
     }

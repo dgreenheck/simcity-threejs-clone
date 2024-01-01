@@ -28,7 +28,7 @@ export class JobsModule {
     if (this.#zone.development.state !== DevelopmentState.developed) {
       return 0;
     } else {
-      return Math.pow(config.zone.maxWorkers, this.#zone.development.level);
+      return Math.pow(config.modules.jobs.maxWorkers, this.#zone.development.level);
     }
   }
 
