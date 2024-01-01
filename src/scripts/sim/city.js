@@ -130,7 +130,6 @@ export class City extends THREE.Group {
       this.getTile(x, y - 1)?.updateMesh(this);
       this.getTile(x, y + 1)?.updateMesh(this);
 
-      // TODO REMOVE THIS LINE
       if (tile.building.type === BuildingType.road) {
         this.vehicleGraph.updateTile(x, y, tile.building);
       }
@@ -146,8 +145,6 @@ export class City extends THREE.Group {
     const tile = this.getTile(x, y);
 
     if (tile.building) {
-      // TODO: REMOVE THIS LINE
-      // Move vehicle graph tile into an attribute, rename VehicleGraph to VehicleManager
       if (tile.building.type === BuildingType.road) {
         this.vehicleGraph.updateTile(x, y, null);
       }
