@@ -150,6 +150,7 @@ h1 {
 /* INFO PANEL */
 
 #info-panel {
+  visibility: hidden;
   position: fixed;
   top: 64px;
   right: 0px;

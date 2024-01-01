@@ -60,7 +60,7 @@ export class ResidentsAttribute {
   /**
    * Evicts all residents from the building
    */
-  evictAll() {
+  #evictAll() {
     for (const resident of this.#residents) {
       resident.dispose();
     }
@@ -71,7 +71,7 @@ export class ResidentsAttribute {
    * Handles any clean up needed before a building is removed
    */
   dispose() {
-    this.evictAll();
+    this.#evictAll();
   }
 
   /**

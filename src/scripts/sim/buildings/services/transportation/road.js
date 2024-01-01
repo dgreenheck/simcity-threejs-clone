@@ -1,11 +1,12 @@
-import { Building } from './building.js';
-import { City } from '../city.js';
+import { Building } from '../../building.js';
+import { City } from '../../../city.js';
+import { DEG2RAD } from 'three/src/math/MathUtils.js';
 
 export class Road extends Building {
   constructor(x, y) {
     super(x, y);
-    this.name = 'Two-Lane Road';
     this.type = 'road';
+    this.name = 'Road';
     this.style = 'straight';
     this.hideTerrain = true;
   }
@@ -14,7 +15,7 @@ export class Road extends Building {
    * Updates the road mesh based on which adjacent tiles are roads as well
    * @param {City} city 
    */
-  refresh(city) {
+  updateMesh(city) {
     // Check which adjacent tiles are roads
     let top = (city.getTile(this.x, this.y - 1)?.building?.type === this.type) ?? false;
     let bottom = (city.getTile(this.x, this.y + 1)?.building?.type === this.type) ?? false;
@@ -25,56 +26,59 @@ export class Road extends Building {
     // Four-way intersection
     if (top && bottom && left && right) {
       this.style = 'four-way';
-      this.rotation = 0;
+      this.rotation.y = 0;
     // T intersection
     } else if (!top && bottom && left && right) { // bottom-left-right
       this.style = 'three-way';
-      this.rotation = 0;
+      this.rotation.y  = 0;
     } else if (top && !bottom && left && right) { // top-left-right
       this.style = 'three-way';
-      this.rotation = 180;
+      this.rotation.y  = 180 * DEG2RAD;
     } else if (top && bottom && !left && right) { // top-bottom-right
       this.style = 'three-way';
-      this.rotation = 90;
+      this.rotation.y  = 90 * DEG2RAD;
     } else if (top && bottom && left && !right) { // top-bottom-left
       this.style = 'three-way';
-      this.rotation = 270;
+      this.rotation.y  = 270 * DEG2RAD;
     // Corner
     } else if (top && !bottom && left && !right) { // top-left
       this.style = 'corner';
-      this.rotation = 180;
+      this.rotation.y  = 180 * DEG2RAD;
     } else if (top && !bottom && !left && right) { // top-right
       this.style = 'corner';
-      this.rotation = 90;
+      this.rotation.y  = 90 * DEG2RAD;
     } else if (!top && bottom && left && !right) { // bottom-left
       this.style = 'corner';
-      this.rotation = 270;
+      this.rotation.y  = 270 * DEG2RAD;
     } else if (!top && bottom && !left && right) { // bottom-right
       this.style = 'corner';
-      this.rotation = 0;
+      this.rotation.y  = 0;
     // Straight
     } else if (top && bottom && !left && !right) { // top-bottom
       this.style = 'straight';
-      this.rotation = 0;
+      this.rotation.y  = 0;
     } else if (!top && !bottom && left && right) { // left-right
       this.style = 'straight';
-      this.rotation = 90;
+      this.rotation.y  = 90 * DEG2RAD;
     // Dead end
     } else if (top && !bottom && !left && !right) { // top
       this.style = 'end';
-      this.rotation = 180;
+      this.rotation.y  = 180 * DEG2RAD;
     } else if (!top && bottom && !left && !right) { // bottom
       this.style = 'end';
-      this.rotation = 0;
+      this.rotation.y  = 0;
     } else if (!top && !bottom && left && !right) { // left
       this.style = 'end';
-      this.rotation = 270;
+      this.rotation.y  = 270 * DEG2RAD;
     } else if (!top && !bottom && !left && right) { // right
       this.style = 'end';
-      this.rotation = 90;
+      this.rotation.y  = 90 * DEG2RAD;
     }
 
-    this.isMeshOutOfDate = true;
+    const mesh = window.assetManager.createInstance(`road-${this.style}`, this);
+
+    this.setMesh(mesh);
+    city.vehicleGraph.updateTile(this.x, this.y, this);
   }
 
   /**

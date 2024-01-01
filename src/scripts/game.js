@@ -1,163 +1,245 @@
-import { City } from './sim/city.js';
-import { Building } from './sim/buildings/building.js';
-import { Tile } from './sim/tiles/tile.js';
-import { SceneManager } from './scene/sceneManager.js';
+import * as THREE from 'three';
 import { AssetManager } from './assets/assetManager.js';
+import { CameraManager } from './camera.js';
+import { InputManager } from './input.js';
+import { City } from './sim/city.js';
+import { SimObject } from './sim/simObject.js';
 
+/** 
+ * Manager for the Three.js scene. Handles rendering of a `City` object
+ */
 export class Game {
-  selectedControl = document.getElementById('button-select');
-  activeToolId = 'select';
-  isPaused = false;
-
   /**
-   * The current focused object
-   * @type {Building | Tile}
+   * @type {City}
+   */
+  city;
+  /**
+   * Object that currently hs focus
+   * @type {SimObject | null}
    */
   focusedObject = null;
-  // Last time mouse was moved
-  lastMove = new Date();
+  /**
+   * Class for managing user input
+   * @type {InputManager}
+   */
+  inputManager;
+  /**
+   * Object that is currently selected
+   * @type {SimObject | null}
+   */
+  selectedObject = null;
 
-  constructor() {
-    /**
-     * The city data model
-     * @type {City}
-     */
-    this.city = new City(16);
+  constructor(city) {
+    this.city = city;
 
-    /**
-     * The 3D game scene
-     */
-    this.sceneManager = new SceneManager(this.city);
+    this.renderer = new THREE.WebGLRenderer({ 
+      antialias: true
+    });
+    this.scene = new THREE.Scene();
 
-    // Hookup event listeners
-    this.sceneManager.gameWindow.addEventListener('wheel', this.sceneManager.cameraManager.onMouseScroll.bind(this.sceneManager.cameraManager), false);
-    this.sceneManager.gameWindow.addEventListener('mousedown', this.#onMouseDown.bind(this), false);
-    this.sceneManager.gameWindow.addEventListener('mousemove', this.#onMouseMove.bind(this), false);
+    this.inputManager = new InputManager(window.ui.gameWindow);
+    this.cameraManager = new CameraManager(window.ui.gameWindow);
 
-    // Prevent context menu from popping up
-    this.sceneManager.gameWindow.addEventListener('contextmenu', (event) => event.preventDefault(), false);
+    // Configure the renderer
+    this.renderer.setSize(window.ui.gameWindow.clientWidth, window.ui.gameWindow.clientHeight);
+    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    // Add the renderer to the DOM
+    window.ui.gameWindow.appendChild(this.renderer.domElement);
+
+    // Variables for object selection
+    this.raycaster = new THREE.Raycaster();
 
     /**
      * Global instance of the asset manager
      */
     window.assetManager = new AssetManager(() => {
       console.log('assets loaded');
-      document.getElementById('loading').remove();
-      this.sceneManager.initialize(this.city);
-      this.sceneManager.start();
+      window.ui.hideLoadingText();
+
+      this.city = new City(16);
+      this.initialize(this.city);
+      this.start();
+
       setInterval(this.simulate.bind(this), 1000);
     });
+
+    window.addEventListener('resize', this.onResize.bind(this), false);
   }
 
   /**
-   * Main update method for the game
+   * Initalizes the scene, clearing all existing assets
+   */
+  initialize(city) {
+    this.scene.clear();
+    this.scene.add(city);
+    this.#setupLights();
+    this.#setupGrid(city);
+    console.log('scene loaded');
+  }
+
+  #setupGrid(city) {
+    // Add the grid
+    const gridMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0x000000,
+      map: window.assetManager.textures['grid'],
+      transparent: true,
+      opacity: 0.2
+    });
+    gridMaterial.map.repeat = new THREE.Vector2(city.size, city.size);
+    gridMaterial.map.wrapS = city.size;
+    gridMaterial.map.wrapT = city.size;
+
+    const grid = new THREE.Mesh(
+      new THREE.BoxGeometry(city.size, 0.1, city.size),
+      gridMaterial
+    );
+    grid.position.set(city.size / 2 - 0.5, -0.04, city.size / 2 - 0.5);
+    this.scene.add(grid);
+  }
+
+  /**
+   * Setup the lights for the scene
+   */
+  #setupLights() {
+    const sun = new THREE.DirectionalLight(0xffffff, 2)
+    sun.position.set(10, 20, 20);
+    sun.castShadow = true;
+    sun.shadow.camera.left = -10;
+    sun.shadow.camera.right = 10;
+    sun.shadow.camera.top = 10;
+    sun.shadow.camera.bottom = -10;
+    sun.shadow.mapSize.width = 2048;
+    sun.shadow.mapSize.height = 2048;
+    sun.shadow.camera.near = 10;
+    sun.shadow.camera.far = 50;
+    sun.shadow.normalBias = 0.01;
+    this.scene.add(sun);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  }
+  
+  /**
+   * Starts the renderer
+   */
+  start() {
+    this.renderer.setAnimationLoop(this.draw.bind(this));
+  }
+
+  /**
+   * Stops the renderer
+   */
+  stop() {
+    this.renderer.setAnimationLoop(null);
+  }
+
+  /**
+   * Render the contents of the scene
+   */
+  draw() {
+    this.city.draw();
+    this.updateFocusedObject();
+
+    if (this.inputManager.isLeftMouseDown) {
+      this.useTool();
+    }
+
+    this.renderer.render(this.scene, this.cameraManager.camera);
+  }
+
+  /**
+   * Moves the simulation forward by one step
    */
   simulate() {
     if (this.isPaused) return;
+
     // Update the city data model first, then update the scene
-    this.city.simulate();
-    this.sceneManager.applyChanges(this.city);
+    this.city.simulate(1);
 
-    this.#updateTitleBar();
-    this.#updateInfoPanel();
+    window.ui.updateTitleBar(this);
+    window.ui.updateInfoPanel(this.selectedObject);
   }
 
   /**
-   * 
-   * @param {*} event 
+   * Uses the currently active tool
    */
-  onToolSelected(event) {
-    // Deselect previously selected button and selected this one
-    if (this.selectedControl) {
-      this.selectedControl.classList.remove('selected');
+  useTool() {
+    switch (window.ui.activeToolId) {
+      case 'select':
+        this.updateSelectedObject();
+        window.ui.updateInfoPanel(this.selectedObject);
+        break;
+      case 'bulldoze':
+        if (this.focusedObject) {
+          const { x, y } = this.focusedObject;
+          this.city.bulldoze(x, y);
+        }
+        break;
+      default:
+        if (this.focusedObject) {
+          const { x, y } = this.focusedObject;
+          this.city.placeBuilding(x, y, window.ui.activeToolId);
+        }
+        break;
     }
-    this.selectedControl = event.target;
-    this.selectedControl.classList.add('selected');
-
-    this.activeToolId = this.selectedControl.getAttribute('data-type');
-    console.log(this.activeToolId);
+  }
+  
+  /**
+   * Sets the currently selected object and highlights it
+   */
+  updateSelectedObject() {
+    this.selectedObject?.setSelected(false);
+    this.selectedObject = this.focusedObject;
+    this.selectedObject?.setSelected(true);
   }
 
   /**
-   * Toggles the pause state of the game
+   * Sets the object that is currently highlighted
    */
-  togglePause() {
-    this.isPaused = !this.isPaused;
-    console.log(`Is Paused: ${this.isPaused}`);
-    if (this.isPaused) {
-      document.getElementById('pause-button-icon').src = '/icons/play.png';
+  updateFocusedObject() {  
+    this.focusedObject?.setFocused(false);
+    const newObject = this.#raycast();
+    if (newObject !== this.focusedObject) {
+      this.focusedObject = this.#raycast();
+    }
+    this.focusedObject?.setFocused(true);
+  }
+
+  /**
+   * Gets the mesh currently under the the mouse cursor. If there is nothing under
+   * the the mouse cursor, returns null
+   * @param {MouseEvent} event Mouse event
+   * @returns {THREE.Mesh | null}
+   */
+  #raycast() {
+    var coords = {
+      x: (this.inputManager.mouse.x / this.renderer.domElement.clientWidth) * 2 - 1,
+      y: -(this.inputManager.mouse.y / this.renderer.domElement.clientHeight) * 2 + 1
+    };
+
+    this.raycaster.setFromCamera(coords, this.cameraManager.camera);
+
+    let intersections = this.raycaster.intersectObjects(this.city.root.children, true);
+    if (intersections.length > 0) {
+      // The SimObject attached to the mesh is stored in the user data
+      const selectedObject = intersections[0].object.userData;
+      return selectedObject;
     } else {
-      document.getElementById('pause-button-icon').src = '/icons/pause.png';
+      return null;
     }
   }
 
   /**
-   * Event handler for `mousedown` event
-   * @param {MouseEvent} event 
+   * Resizes the renderer to fit the current game window
    */
-  #onMouseDown(event) {
-    // Check if left mouse button pressed
-    if (event.button === 0) {
-      const selectedObject = this.sceneManager.getSelectedObject(event);
-      this.#useActiveTool(selectedObject);
-    }
-
-    this.sceneManager.cameraManager.onMouseMove(event);
+  onResize() {
+    this.cameraManager.resize(window.ui.gameWindow);
+    this.renderer.setSize(window.ui.gameWindow.clientWidth, window.ui.gameWindow.clientHeight);
   }
+}
 
-  /**
-   * Event handler for 'mousemove' event
-   * @param {MouseEvent} event 
-   */
-  #onMouseMove(event) {
-    // Throttle event handler so it doesn't kill the browser
-    if (Date.now() - this.lastMove < (1 / 60.0)) return;
-    this.lastMove = Date.now();
-
-    // Get the object the mouse is currently hovering over
-    const hoverObject = this.sceneManager.getSelectedObject(event);
-
-    this.sceneManager.setHighlightedMesh(hoverObject);
-
-    // If left mouse-button is down, use the tool as well
-    if (hoverObject && event.buttons & 1) {
-      this.#useActiveTool(hoverObject);
-    }
-
-    this.sceneManager.cameraManager.onMouseMove(event);
-  }
-
-  #useActiveTool(object) {
-    // If no object is selected, clear the info panel
-    if (!object) {
-      this.#updateInfoPanel(null);
-      return;
-    } else {
-      const tile = object.userData;
-      if (this.activeToolId === 'select') {
-        this.sceneManager.setActiveObject(object);
-        this.focusedObject = tile;
-        this.#updateInfoPanel();
-      } else if (this.activeToolId === 'bulldoze') {
-        this.city.bulldoze(tile.x, tile.y);
-        this.sceneManager.applyChanges(this.city);
-      } else if (!tile.building) {
-        const buildingType = this.activeToolId;
-        this.city.placeBuilding(tile.x, tile. y, buildingType);
-        this.sceneManager.applyChanges(this.city);
-      }
-    }
-  }
-
-  #updateInfoPanel() {
-    if (this.focusedObject?.toHTML) {
-      document.getElementById('info-details').innerHTML = this.focusedObject.toHTML();
-    } else {
-      document.getElementById('info-details').innerHTML = '';
-    }
-  }
-
-  #updateTitleBar() {
-    document.getElementById('population-counter').innerHTML = this.city.population;
-  }
+// Create a new game when the window is loaded
+window.onload = () => {
+  window.game = new Game();
 }

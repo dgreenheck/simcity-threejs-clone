@@ -1,62 +1,16 @@
-export class Building {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
+import { SimObject } from '../simObject';
 
-    /**
-     * Unique identifier for this building
-     * @type {string}
-     */
-    this.id = crypto.randomUUID();
-
-    /**
-     * Name of the building
-     * @type {string}
-     */
-    this.name = 'Untitled';
-
-    /**
-     * The building type
-     * @type {string}
-     */
-    this.type = 'building';
-
-    /**
-     * True if the mesh is out of date and needs to be regenerated
-     * @type {boolean}
-     */
-    this.isMeshOutOfDate = true;
-
-    /**
-     * True if the terrain should not be rendered with this building type
-     */
-    this.hideTerrain = false;
-
-    /**
-     * Custom rotation angle for this tile
-     */
-    this.rotation = 0;
-  }
-
+export class Building extends SimObject {
   /**
-   * Performs a full refresh of the building
-   * @param {City} city 
+   * The building type
+   * @type {string}
    */
-  refresh(city) {
-  }
-
+  type = 'building';
   /**
-   * Updates the state of this building by one simulation step
-   * @param {City} city 
+   * True if the terrain should not be rendered with this building type
+   * @type {boolean}
    */
-  simulate(city) {
-  }
-
-  /**
-   * Handles any clean up needed before a building is removed
-   */
-  dispose() {
-  }
+  hideTerrain = false;
 
   /**
    * Returns an HTML representation of this object

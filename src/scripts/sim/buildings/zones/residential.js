@@ -3,12 +3,13 @@ import { City } from '../../city.js';
 import config from '../../../config.js';
 import { Zone } from './zone.js';
 import { ResidentsAttribute } from '../attributes/residents.js';
+import { BuildingType } from '../buildingFactory.js';
 
 export class ResidentialZone extends Zone {
   constructor(x, y) {
     super(x, y);
     this.name = generateBuildingName();
-    this.type = 'residential';
+    this.type = BuildingType.residential;
     
     /**
      * @type {ResidentsAttribute}

@@ -3,7 +3,7 @@ import { VehicleGraphTile } from './vehicleGraphTile.js';
 import { VehicleGraphHelper } from './vehicleGraphHelper.js';
 import config from '../../config.js';
 import { Vehicle } from './vehicle.js';
-import { Road } from '../buildings/road.js';
+import { Road } from '../buildings/services/transportation/road.js';
 
 export class VehicleGraph extends THREE.Group {
   constructor(size) {
@@ -34,7 +34,7 @@ export class VehicleGraph extends THREE.Group {
       this.tiles.push(column);
     }
 
-    this.helper.refresh(this);
+    this.helper.updateMesh(this);
 
     setInterval(this.spawnVehicle.bind(this), config.vehicle.spawnInterval);
   }
@@ -66,7 +66,7 @@ export class VehicleGraph extends THREE.Group {
     bottomTile?.getWorldTopSide()?.out?.disconnectAll();
     
     if (road) {
-      const tile = VehicleGraphTile.create(x, y, road.rotation, road.style);
+      const tile = VehicleGraphTile.create(x, y, road.rotation.y, road.style);
 
       // Connect tile to adjacent tiles
       if (leftTile) {
@@ -93,7 +93,7 @@ export class VehicleGraph extends THREE.Group {
     }
 
     // Update the vehicle graph visualization
-    this.helper.refresh(this);
+    this.helper.updateMesh(this);
   }
 
   /**
