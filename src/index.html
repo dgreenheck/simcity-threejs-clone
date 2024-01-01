@@ -13,6 +13,16 @@
   <div id="root-window">
     <!-- Three.js adds a `canvas` element to this element-->
     <div id="render-target"></div>
+    <div id="loading" class="text-overlay">
+      <div>
+        LOADING...
+      </div>
+    </div>
+    <div id="paused-text" class="text-overlay" style="visibility: hidden;">
+      <div>
+        PAUSED
+      </div>
+    </div>
     <div id="ui">
       <div id="title-bar">
         <div class="title-bar-left-items title-bar-items">
@@ -65,10 +75,8 @@
         PAN - Control + Right Mouse<br>
         ZOOM - Scroll
       </div>
-      <div id="loading">
-        <div>
-          LOADING...
-        </div>
+      <div id="version">
+        v1.1.1
       </div>
     </div>
   </div>
