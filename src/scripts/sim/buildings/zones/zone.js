@@ -28,8 +28,8 @@ export class Zone extends Building {
   updateMesh(city) {
     let modelName;
     switch (this.development.state) {
-      case DevelopmentState.underConstruction,
-           DevelopmentState.undeveloped:
+      case DevelopmentState.underConstruction:
+      case DevelopmentState.undeveloped:
         modelName = 'under-construction';
         break;
       default:
