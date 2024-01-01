@@ -36,6 +36,14 @@ h1 {
   margin: 8px;
 }
 
+#version {
+  position: absolute;
+  color: white;
+  right: 0;
+  bottom: 0;
+  margin: 8px;
+}
+
 .text-overlay {
   position: absolute;
   top: 0;
