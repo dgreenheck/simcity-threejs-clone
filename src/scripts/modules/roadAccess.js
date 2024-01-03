@@ -1,17 +1,19 @@
 import config from '../config.js';
 import { City } from '../sim/city.js';
 import { Tile } from '../sim/tile.js';
+import { SimModule } from './simModule.js';
 
 /**
- * Logic for controlling building abandonment
+ * Logic for determining whether or not a tile has road access
  */
-export class RoadAccessModule {
+export class RoadAccessModule extends SimModule {
   /**
    * @type {Tile}
    */
   #tile;
 
   constructor(tile) {
+    super();
     this.#tile = tile;
   }
 

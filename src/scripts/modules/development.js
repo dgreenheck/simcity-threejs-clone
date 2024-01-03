@@ -1,6 +1,7 @@
 import config from '../config.js';
 import { City } from '../sim/city.js';
 import { Zone } from '../sim/buildings/zones/zone.js';
+import { SimModule } from './simModule.js';
 
 export const DevelopmentState = {
   abandoned: 'abandoned',
@@ -9,7 +10,7 @@ export const DevelopmentState = {
   undeveloped: 'undeveloped',
 };
 
-export class DevelopmentModule {
+export class DevelopmentModule extends SimModule {
   #zone;
 
   /**
@@ -43,6 +44,7 @@ export class DevelopmentModule {
    * @param {Zone} zone 
    */
   constructor(zone) {
+    super();
     this.#zone = zone;
   }
 

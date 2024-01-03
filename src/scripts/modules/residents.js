@@ -1,12 +1,16 @@
 import config from '../config.js';
 import { Citizen } from '../sim/citizen.js';
 import { City } from '../sim/city.js';
-import { Zone } from '../sim/buildings/zones/zone.js';
+import { Zone as ResidentialZone } from '../sim/buildings/zones/zone.js';
 import { DevelopmentState } from './development.js';
+import { SimModule } from './simModule.js';
 
-export class ResidentsModule {
+/**
+ * Logic for residents moving into and out of a building
+ */
+export class ResidentsModule extends SimModule {
   /**
-   * @type {Zone}
+   * @type {ResidentialZone}
    */
   #zone;
 
@@ -16,9 +20,10 @@ export class ResidentsModule {
   #residents = [];
 
   /**
-   * @param {Zone} zone 
+   * @param {ResidentialZone} zone 
    */
   constructor(zone) {
+    super();
     this.#zone = zone;
   }
 
