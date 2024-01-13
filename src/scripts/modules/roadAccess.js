@@ -8,6 +8,13 @@ import { SimModule } from './simModule.js';
  */
 export class RoadAccessModule extends SimModule {
   /**
+   * Whether or not the tile has access to a road
+   * @type {boolean}
+   */
+  value;
+
+  /**
+   * Reference to the tile instance that contains this module
    * @type {Tile}
    */
   #tile;
