@@ -1,12 +1,5 @@
 import { SimObject } from '../simObject';
 
-export const BuildingType = {
-  residential: 'residential',
-  commercial: 'commercial',
-  industrial: 'industrial',
-  road: 'road'
-}
-
 export class Building extends SimObject {
   /**
    * The building type
@@ -18,7 +11,29 @@ export class Building extends SimObject {
    * @type {boolean}
    */
   hideTerrain = false;
+  /**
+   * Whether or not this building has access to a road
+   */
+  hasRoadAccess = false;
+  /**
+   * Amount of power supplied to this building (if powerRequired > 0)
+   */
+  powerSupplied = 0;
 
+  /**
+   * Returns true if this building's power requirements are met
+   */
+  get isPowered() {
+    return this.powerSupplied >= this.powerRequired;
+  }
+
+  /**
+   * Amount of power this building needs
+   */
+  get powerRequired() {
+    return 0;
+  }
+  
   /**
    * Returns an HTML representation of this object
    * @returns {string}
@@ -31,6 +46,12 @@ export class Building extends SimObject {
       <br>
       <span class="info-label">Type </span>
       <span class="info-value">${this.type}</span>
+      <br>
+      <span class="info-label">Power </span>
+      <span class="info-value">${this.isPowered}</span>
+      <br>
+      <span class="info-label">Road Access </span>
+      <span class="info-value">${this.hasRoadAccess}</span>
       <br>
     `;
     return html;

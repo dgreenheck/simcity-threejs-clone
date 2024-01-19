@@ -82,7 +82,7 @@ export default {
   },
   "industrial-B1": {
     "type": "zone",
-    "filename": "industry-factory-old.glb"
+    "filename": "industry-refinery.glb"
   },
   "industrial-C1": {
     "type": "zone",
@@ -94,7 +94,7 @@ export default {
   },
   "industrial-B2": {
     "type": "zone",
-    "filename": "industry-factory-old.glb"
+    "filename": "industry-refinery.glb"
   },
   "industrial-C2": {
     "type": "zone",
@@ -106,11 +106,15 @@ export default {
   },
   "industrial-B3": {
     "type": "zone",
-    "filename": "industry-factory-old.glb"
+    "filename": "industry-refinery.glb"
   },
   "industrial-C3": {
     "type": "zone",
     "filename": "industry-warehouse.glb"
+  },
+  "power-plant": {
+    "type": "power",
+    "filename": "industry-factory-old.glb"
   },
   "road-straight": {
     "type": "road",

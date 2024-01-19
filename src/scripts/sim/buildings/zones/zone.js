@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { DEG2RAD } from 'three/src/math/MathUtils.js';
-import { DevelopmentModule, DevelopmentState } from '../../../modules/development.js';
+import { DevelopmentModule, DevelopmentState } from '../modules/development.js';
 import { Building } from '../building.js';
 
 /**
@@ -26,6 +26,10 @@ export class Zone extends Building {
     this.development = new DevelopmentModule(this);
   }
 
+  get powerRequired() {
+    return 1;
+  }
+  
   updateMesh(city) {
     let modelName;
     switch (this.development.state) {

@@ -1,6 +1,6 @@
 import { City } from '../../city.js';
-import { JobsModule } from '../../../modules/jobs.js';
-import { BuildingType } from '../building.js';
+import { JobsModule } from '../modules/jobs.js';
+import { BuildingType } from '../buildingType.js';
 import { Zone } from './zone.js';
 
 export class IndustrialZone extends Zone {

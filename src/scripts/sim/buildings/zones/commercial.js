@@ -1,7 +1,7 @@
 import { City } from '../../city.js';
 import { Zone } from './zone.js';
-import { JobsModule } from '../../../modules/jobs.js';
-import { BuildingType } from '../building.js';
+import { JobsModule } from '../modules/jobs.js';
+import { BuildingType } from '../buildingType.js';
 
 export class CommercialZone extends Zone {
   constructor(x, y) {

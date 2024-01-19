@@ -3,7 +3,7 @@ import { VehicleGraphTile } from './vehicleGraphTile.js';
 import { VehicleGraphHelper } from './vehicleGraphHelper.js';
 import config from '../../config.js';
 import { Vehicle } from './vehicle.js';
-import { Road } from '../buildings/services/transportation/road.js';
+import { Road } from '../buildings/transportation/road.js';
 
 export class VehicleGraph extends THREE.Group {
   constructor(size) {

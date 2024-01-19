@@ -1,5 +1,5 @@
-import { Building } from '../../building.js';
-import { City } from '../../../city.js';
+import { Building } from '../building.js';
+import { City } from '../../city.js';
 import { DEG2RAD } from 'three/src/math/MathUtils.js';
 
 export class Road extends Building {

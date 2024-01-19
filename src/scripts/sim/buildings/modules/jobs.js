@@ -1,7 +1,7 @@
-import config from '../config.js';
-import { Citizen } from '../sim/citizen.js';
-import { City } from '../sim/city.js';
-import { Zone } from '../sim/buildings/zones/zone.js';
+import config from '../../../config.js';
+import { Citizen } from '../../citizen.js';
+import { City } from '../../city.js';
+import { Zone } from '../../buildings/zones/zone.js';
 import { DevelopmentState } from './development.js';
 import { SimModule } from './simModule.js';
 

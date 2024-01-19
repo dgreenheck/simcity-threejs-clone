@@ -1,7 +1,7 @@
 import { City } from '../../city.js';
 import { Zone } from './zone.js';
-import { ResidentsModule } from '../../../modules/residents.js';
-import { BuildingType } from '../building.js';
+import { ResidentsModule } from '../modules/residents.js';
+import { BuildingType } from '../buildingType.js';
 
 export class ResidentialZone extends Zone {
   constructor(x, y) {

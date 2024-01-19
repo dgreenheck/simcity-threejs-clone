@@ -1,6 +1,6 @@
-import config from '../config.js';
-import { City } from '../sim/city.js';
-import { Zone } from '../sim/buildings/zones/zone.js';
+import config from '../../../config.js';
+import { City } from '../../city.js';
+import { Zone } from '../../buildings/zones/zone.js';
 import { SimModule } from './simModule.js';
 
 export const DevelopmentState = {
@@ -68,11 +68,11 @@ export class DevelopmentModule extends SimModule {
    * @param {City} city 
    */
   simulate(city) {
-    this.#checkAbandonmentCriteria(city);
+    this.#checkAbandonmentCriteria();
 
     switch (this.state) {
       case DevelopmentState.undeveloped:
-        if (this.#checkDevelopmentCriteria(city) &&
+        if (this.#checkDevelopmentCriteria() &&
           Math.random() < config.modules.development.redevelopChance) {
           this.state = DevelopmentState.underConstruction;
           this.#zone.updateMesh(city);
@@ -115,10 +115,8 @@ export class DevelopmentModule extends SimModule {
    * @param {City} city 
    * @returns 
    */
-  #checkDevelopmentCriteria(city) {
-    const { x, y } = this.#zone;
-
-    if (city.getTile(x, y).roadAccess.value) {
+  #checkDevelopmentCriteria() {
+    if (this.#zone.hasRoadAccess) {
       return true;
     } else {
       return false;
@@ -129,10 +127,8 @@ export class DevelopmentModule extends SimModule {
    * @param {City} city 
    * @returns 
    */
-  #checkAbandonmentCriteria(city) {
-    const { x, y } = this.#zone;
-
-    if (!city.getTile(x, y).roadAccess.value) {
+  #checkAbandonmentCriteria() {
+    if (!this.#zone.hasRoadAccess) {
       this.#abandonmentCounter++;
     } else {
       this.#abandonmentCounter = 0;

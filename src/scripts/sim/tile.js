@@ -1,4 +1,3 @@
-import { RoadAccessModule } from '../modules/roadAccess.js';
 import { Building } from './buildings/building.js';
 import { SimObject } from './simObject.js';
 
@@ -13,11 +12,6 @@ export class Tile extends SimObject {
    * @type {Building?}
    */
   #building = null;
-  /**
-   * True if this tile has access to a road
-   * @type {RoadAccessModule}
-   */
-  roadAccess = new RoadAccessModule(this);
 
   constructor(x, y) {
     super(x, y);
@@ -61,7 +55,6 @@ export class Tile extends SimObject {
   }
 
   simulate(city) {
-    this.roadAccess.simulate(city);
     this.building?.simulate(city);
   }
 
@@ -86,9 +79,6 @@ export class Tile extends SimObject {
       <br>
       <span class="info-label">Terrain </span>
       <span class="info-value">${this.terrain}</span>
-      <br>
-      <span class="info-label">Road Access </span>
-      <span class="info-value">${this.roadAccess.value}</span>
       <br>
     `;
 

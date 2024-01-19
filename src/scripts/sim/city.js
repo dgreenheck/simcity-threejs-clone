@@ -1,7 +1,11 @@
 import * as THREE from 'three';
-import { BuildingType, createBuilding } from './buildings/buildingFactory.js';
+import { BuildingType } from './buildings/buildingType.js';
+import { createBuilding } from './buildings/buildingFactory.js';
 import { Tile } from './tile.js';
 import { VehicleGraph } from './vehicles/vehicleGraph.js';
+import { PowerService } from './services/power.js';
+import { RoadAccessService } from './services/roadAccess.js';
+import { SimService } from './services/simService.js';
 
 export class City extends THREE.Group {
   /**
@@ -15,6 +19,11 @@ export class City extends THREE.Group {
    * @type {THREE.Group}
    */
   root = new THREE.Group();
+  /**
+   * List of services for the city
+   * @type {SimService}
+   */
+  services = [];
   /**
    * The size of the city in tiles
    * @type {number}
@@ -56,6 +65,10 @@ export class City extends THREE.Group {
       this.tiles.push(column);
     }
 
+    this.services = [];
+    this.services.push(new RoadAccessService());
+    this.services.push(new PowerService());
+    
     this.vehicleGraph = new VehicleGraph(this.size);
     this.debugMeshes.add(this.vehicleGraph);
   }
@@ -98,6 +111,9 @@ export class City extends THREE.Group {
   simulate(steps = 1) {
     let count = 0;
     while (count++ < steps) {
+      // Update services
+      this.services.forEach((service) => service.simulate(this));
+
       // Update each building
       for (let x = 0; x < this.size; x++) {
         for (let y = 0; y < this.size; y++) {

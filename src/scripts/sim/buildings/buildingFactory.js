@@ -1,15 +1,10 @@
+import { BuildingType } from './buildingType.js';
 import { CommercialZone } from './zones/commercial.js';
 import { ResidentialZone } from './zones/residential.js';
 import { IndustrialZone } from './zones/industrial.js';
-import { Road } from './services/transportation/road.js';
+import { Road } from './transportation/road.js';
 import { Building } from './building.js';
-
-export const BuildingType = {
-  residential: 'residential',
-  commercial: 'commercial',
-  industrial: 'industrial',
-  road: 'road'
-}
+import { PowerPlant } from './power/powerPlant.js';
 
 /**
  * Creates a new building object
@@ -28,6 +23,8 @@ export function createBuilding(x, y, type) {
       return new IndustrialZone();
     case BuildingType.road: 
       return new Road();
+    case BuildingType.powerPlant:
+      return new PowerPlant();
     default:
       console.error(`${type} is not a recognized building type.`);
   }

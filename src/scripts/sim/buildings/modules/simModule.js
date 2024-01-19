@@ -1,4 +1,4 @@
-import { City } from '../sim/city.js';
+import { City } from '../../city.js';
 
 export class SimModule {
   /**
