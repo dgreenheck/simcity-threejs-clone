@@ -1,3 +1,4 @@
+import { BuildingType } from '../buildings/buildingType.js';
 import { City } from '../city.js';
 
 export class PowerService {
@@ -5,84 +6,93 @@ export class PowerService {
    * @param {City} city 
    */
   simulate(city) {
-    // In order to update power allocation for the entire city, the following steps take place
-    // 1. Locate all of the power plants in the city and reset their power consumption
-    // 2. For each power plant, add an entry to the 'search map', where the power plant
-    //    is the key and an array initialized to power plant's tile
-    // 3. Iterate over each entry in the map, performing breadth first search for each
-    //    power plant one building at a time. This is done to evenly spread the load
-    //    across each power plant.
-    // 4. For each building that requires power, increment the power plant's power consumption
-    //    and mark that building as powered.
-
-    // Find all power plants in the city and build the search map
-    const powerPlantMap = {};
+    // Find all power plants in the city
+    const powerPlantList = [];
     for (let x = 0; x < city.size; x++) {
       for (let y = 0; y < city.size; y++) {
         const tile = city.getTile(x, y);
         const building = city.getTile(x, y).building;
-        if (building?.type === 'power-plant') {
-          const powerPlant = building;
-          powerPlant.powerConsumed = 0;
-          powerPlantMap[powerPlant] = [tile];
-        } else {
-          // Reset supplier power for each building
-          building.powerSupplied = 0;
+        if (building) {
+          if (building.type === BuildingType.powerPlant) {
+            const powerPlant = building;
+            // Reset power consumption for each power plant
+            powerPlant.powerConsumed = 0;
+            // Create an object with the power plant, the search frontier, and a visited array
+            powerPlantList.push({
+              powerPlant,
+              frontier: [tile],
+              visited: []
+            });
+          } else {
+            // Reset supplier power for each building
+            building.powerSupplied = 0;
+          }
         }
       }
     }
 
-    if (Object.entries(powerPlantMap).length > 0) {
-      let searching = true;
-      while (searching) {
-        searching = false;
+    // If there are no power plants, return early
+    if (powerPlantList.length === 0) {
+      return;
+    }
 
-        // Iterate over each power plant
-        for (const [powerPlant, frontier] of Object.entries(powerPlantMap)) {
-          if (powerPlant.powerAvailable === 0) continue;
+    // Power is allocated by performing a BFS starting at each power plants and
+    // distributing power to buildings that require power. The search frontier
+    // for each power plant is expanded simultaneously so the load is shared
+    // as evenly as possible between poewr plants. Search is terminated when
+    // all buildings have been visited or the power plant has no power remaining.
 
-          // If power plant has power available, find the next building on the search frontier
-          if (frontier.length > 0) {
-            searching = true;
+    let searching = true;
+    while (searching) {
+      searching = false;
 
-            const tile = frontier.shift();
-            const building = tile.building;
+      // Iterate over each power plant
+      for (const item of powerPlantList) {
+        const { powerPlant, frontier, visited } = item;
 
-            if (building) {
-              // If this building has power requirements, supply power to it up to the amount
-              // of power remaining for the power plant
-              if (building.powerRequired > 0) {
-                const powerSupplied = min(powerPlant.powerAvailable, building.powerRequired);
-                powerPlant.powerConsumed += powerSupplied;
-                building.powerSupplied = powerSupplied;
-              }
+        // If power plant has no power left to give, ignore it
+        if (powerPlant.powerAvailable === 0) continue;
 
+        // If power plant has power available, find the next building on the search frontier
+        if (frontier.length > 0) {
+          searching = true;
 
-              //TODO
-              // Need to figure out how to handle multiple power plants
-              // Really need to do BFS from each one independently
-              // The trouble is knowing when to terminate the search
-              // Can't go based off of whether or not building is powered
-              // because there might be a building beyond that which didn't get power
-              // from another power plant
+          // Get the next tile
+          const tile = frontier.shift();
+          const building = tile.building;
+          visited.push(tile);
 
+          // Does this building need power?
+          if (building.powerSupplied < building.powerRequired) {
+            const powerSupplied = Math.min(powerPlant.powerAvailable, building.powerRequired);
+            powerPlant.powerConsumed += powerSupplied;
+            building.powerSupplied = powerSupplied;
+          }
 
+          // Add adjacent buildings to the search frontier
+          const { x, y } = tile;
 
-              // Add adjacent buildings to the search frontier
-              const { x, y } = tile.position;
-              if (city.getTile(x - 1, y)?.building) {
-                frontier.push(city.getTile(x - 1, y));
-              }
-              if (city.getTile(x + 1, y)?.building) {
-                frontier.push(city.getTile(x + 1, y));
-              }
-              if (city.getTile(x, y - 1)?.building) {
-                frontier.push(city.getTile(x, y - 1));
-              }
-              if (city.getTile(x, y + 1)?.building) {
-                frontier.push(city.getTile(x, y + 1));
-              }
-            }
+          // Add neighboring tiles to search if
+          // 1) They haven't already been visited
+          // 2) The tile has a building (power can pass through non-powered buildings)
+          const shouldVisit = (tile) => tile && !visited.includes(tile) && tile.building;
+
+          let left = city.getTile(x - 1, y);
+          let right = city.getTile(x + 1, y);
+          let top = city.getTile(x, y - 1);
+          let bottom = city.getTile(x, y + 1);
+
+          if (shouldVisit(left)) {
+            frontier.push(left);
+          }
+          if (shouldVisit(right)) {
+            frontier.push(right);
+          }
+          if (shouldVisit(top)) {
+            frontier.push(top);
+          }            
+          if (shouldVisit(bottom)) {
+            frontier.push(bottom);
           }
         }
       }

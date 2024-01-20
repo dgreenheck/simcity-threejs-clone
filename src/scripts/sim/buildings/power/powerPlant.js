@@ -7,7 +7,7 @@ export class PowerPlant extends Building {
   /**
    * Available units of power
    */
-  powerCapacity = 100;
+  powerCapacity = 10;
 
   /**
    * Consumed units of power

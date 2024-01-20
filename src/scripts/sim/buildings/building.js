@@ -47,13 +47,16 @@ export class Building extends SimObject {
       <span class="info-label">Type </span>
       <span class="info-value">${this.type}</span>
       <br>
-      <span class="info-label">Power </span>
-      <span class="info-value">${this.isPowered}</span>
-      <br>
       <span class="info-label">Road Access </span>
       <span class="info-value">${this.hasRoadAccess}</span>
-      <br>
-    `;
+      <br>`;
+
+    if (this.powerRequired > 0) {
+      html += `
+        <span class="info-label">Power </span>
+        <span class="info-value">${this.powerSupplied}/${this.powerRequired}</span>
+        <br>`;
+    } 
     return html;
   }
 }
