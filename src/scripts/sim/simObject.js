@@ -10,10 +10,6 @@ export class SimObject extends THREE.Object3D {
    */
   #mesh = null;
   /**
-   * @type {SimModule[]}
-   */
-  modules = {};
-  /**
    * World position of the object
    * @type {THREE.Vector3}
    */
@@ -47,14 +43,6 @@ export class SimObject extends THREE.Object3D {
     return this.#mesh;
   } 
 
-  /**
-   * Adds a new simulation module to this object as a property
-   * @param {SimModule} module 
-   */
-  addModule(module) {
-    this[module.name] = module;
-  }
-  
   /**
    * @type {THREE.Mesh} value
    */
