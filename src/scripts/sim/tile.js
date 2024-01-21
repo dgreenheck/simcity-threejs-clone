@@ -43,12 +43,12 @@ export class Tile extends SimObject {
     }
   }
 
-  updateMesh(city) {
-    this.building?.updateMesh(city);
+  refreshView(city) {
+    this.building?.refreshView(city);
     if (this.building?.hideTerrain) {
       this.setMesh(null);
     } else {
-      const mesh = window.assetManager.createInstance(this.terrain, this);
+      const mesh = window.assetManager.getModel(this.terrain, this);
       mesh.name = this.terrain;
       this.setMesh(mesh);
     }

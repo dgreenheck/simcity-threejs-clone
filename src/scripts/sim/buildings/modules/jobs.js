@@ -22,6 +22,13 @@ export class JobsModule extends SimModule {
   }
 
   /**
+   * @type {string}
+   */
+  get name() { 
+    return 'jobs' 
+  };
+
+  /**
    * Maximuim number of workers that can work at this building
    * @returns {number}
    */
@@ -58,7 +65,7 @@ export class JobsModule extends SimModule {
     // If building is abandoned, all workers are laid off and no
     // more workers are allowed to work here
     if (this.#zone.development.state === DevelopmentState.abandoned) {
-      this.layOffWorkers();
+      this.#layOffWorkers();
     }
   }
 

@@ -15,7 +15,7 @@ export class Road extends Building {
    * Updates the road mesh based on which adjacent tiles are roads as well
    * @param {City} city 
    */
-  updateMesh(city) {
+  refreshView(city) {
     // Check which adjacent tiles are roads
     let top = (city.getTile(this.x, this.y - 1)?.building?.type === this.type) ?? false;
     let bottom = (city.getTile(this.x, this.y + 1)?.building?.type === this.type) ?? false;
@@ -75,7 +75,7 @@ export class Road extends Building {
       this.rotation.y  = 90 * DEG2RAD;
     }
 
-    const mesh = window.assetManager.createInstance(`road-${this.style}`, this);
+    const mesh = window.assetManager.getModel(`road-${this.style}`, this);
 
     this.setMesh(mesh);
     city.vehicleGraph.updateTile(this.x, this.y, this);

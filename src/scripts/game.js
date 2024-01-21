@@ -105,10 +105,10 @@ export class Game {
     const sun = new THREE.DirectionalLight(0xffffff, 2)
     sun.position.set(10, 20, 20);
     sun.castShadow = true;
-    sun.shadow.camera.left = -10;
-    sun.shadow.camera.right = 10;
-    sun.shadow.camera.top = 10;
-    sun.shadow.camera.bottom = -10;
+    sun.shadow.camera.left = -20;
+    sun.shadow.camera.right = 20;
+    sun.shadow.camera.top = 20;
+    sun.shadow.camera.bottom = -20;
     sun.shadow.mapSize.width = 2048;
     sun.shadow.mapSize.height = 2048;
     sun.shadow.camera.near = 10;
@@ -199,7 +199,7 @@ export class Game {
     this.focusedObject?.setFocused(false);
     const newObject = this.#raycast();
     if (newObject !== this.focusedObject) {
-      this.focusedObject = this.#raycast();
+      this.focusedObject = newObject;
     }
     this.focusedObject?.setFocused(true);
   }

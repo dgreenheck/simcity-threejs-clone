@@ -34,7 +34,7 @@ export class VehicleGraph extends THREE.Group {
       this.tiles.push(column);
     }
 
-    this.helper.updateMesh(this);
+    this.helper.refreshView(this);
 
     setInterval(this.spawnVehicle.bind(this), config.vehicle.spawnInterval);
   }
@@ -93,7 +93,7 @@ export class VehicleGraph extends THREE.Group {
     }
 
     // Update the vehicle graph visualization
-    this.helper.updateMesh(this);
+    this.helper.refreshView(this);
   }
 
   /**

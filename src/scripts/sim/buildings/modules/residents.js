@@ -28,6 +28,13 @@ export class ResidentsModule extends SimModule {
   }
 
   /**
+   * @type {string}
+   */
+  get name() { 
+    return 'residents';
+  }
+
+  /**
    * Returns the number of residents
    * @type {number}
    */

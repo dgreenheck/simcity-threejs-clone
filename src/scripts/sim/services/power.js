@@ -25,7 +25,7 @@ export class PowerService {
             });
           } else {
             // Reset supplier power for each building
-            building.powerSupplied = 0;
+            building.power.supplied = 0;
           }
         }
       }
@@ -63,10 +63,10 @@ export class PowerService {
           visited.push(tile);
 
           // Does this building need power?
-          if (building.powerSupplied < building.powerRequired) {
-            const powerSupplied = Math.min(powerPlant.powerAvailable, building.powerRequired);
+          if (building.power.supplied < building.power.required) {
+            const powerSupplied = Math.min(powerPlant.powerAvailable, building.power.required);
             powerPlant.powerConsumed += powerSupplied;
-            building.powerSupplied = powerSupplied;
+            building.power.supplied = powerSupplied;
           }
 
           // Add adjacent buildings to the search frontier

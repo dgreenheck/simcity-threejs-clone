@@ -48,20 +48,29 @@ export class DevelopmentModule extends SimModule {
     this.#zone = zone;
   }
 
+  /**
+   * @type {string}
+   */
+  get name() { 
+    return 'development' 
+  };
+
   get level() {
     return this.#level;
   }
 
   set level(value) {
     this.#level = value;
-    this.#zone.isMeshOutOfDate = true;
+    this.#zone.refreshView();
   }
+
   get state() {
     return this.#state;
   }
 
   set state(value) {
     this.#state = value;
+    this.#zone.refreshView();
   }
 
   /**
@@ -75,14 +84,12 @@ export class DevelopmentModule extends SimModule {
         if (this.#checkDevelopmentCriteria() &&
           Math.random() < config.modules.development.redevelopChance) {
           this.state = DevelopmentState.underConstruction;
-          this.#zone.updateMesh(city);
           this.#constructionCounter = 0;
         }
         break;
       case DevelopmentState.underConstruction:
         if (++this.#constructionCounter === config.modules.development.constructionTime) {
           this.state = DevelopmentState.developed;
-          this.#zone.updateMesh(city);
           this.level = 1;
           this.#constructionCounter = 0;
         }
@@ -91,12 +98,10 @@ export class DevelopmentModule extends SimModule {
         if (this.#abandonmentCounter > config.modules.development.abandonThreshold) {
           if (Math.random() < config.modules.development.abandonChance) {
             this.state = DevelopmentState.abandoned;
-            this.#zone.updateMesh(city);
           }
         } else {
           if (this.level < this.maxLevel && Math.random() < config.modules.development.levelUpChance) {
             this.level++;
-            this.#zone.updateMesh(city);
           }
         }
         break;
@@ -104,7 +109,6 @@ export class DevelopmentModule extends SimModule {
         if (this.#abandonmentCounter == 0) {
           if (Math.random() < config.modules.development.redevelopChance) {
             this.state = DevelopmentState.developed;
-            this.#zone.updateMesh(city);
           }
         }
         break;
@@ -116,11 +120,10 @@ export class DevelopmentModule extends SimModule {
    * @returns 
    */
   #checkDevelopmentCriteria() {
-    if (this.#zone.hasRoadAccess) {
-      return true;
-    } else {
-      return false;
-    }
+    return (
+      this.#zone.roadAccess.value && 
+      this.#zone.isPowered
+    );
   }
 
   /**
@@ -128,7 +131,7 @@ export class DevelopmentModule extends SimModule {
    * @returns 
    */
   #checkAbandonmentCriteria() {
-    if (!this.#zone.hasRoadAccess) {
+    if (!this.#checkDevelopmentCriteria()) {
       this.#abandonmentCounter++;
     } else {
       this.#abandonmentCounter = 0;

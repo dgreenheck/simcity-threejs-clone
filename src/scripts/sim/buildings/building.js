@@ -1,4 +1,8 @@
+import * as THREE from 'three';
 import { SimObject } from '../simObject';
+import { BuildingStatus } from './buildingStatus';
+import { PowerModule } from './modules/power';
+import { RoadAccessModule } from './modules/roadAccess';
 
 export class Building extends SimObject {
   /**
@@ -12,26 +16,73 @@ export class Building extends SimObject {
    */
   hideTerrain = false;
   /**
-   * Whether or not this building has access to a road
+   * @type {PowerModule}
    */
-  hasRoadAccess = false;
+  power = new PowerModule(this);
   /**
-   * Amount of power supplied to this building (if powerRequired > 0)
+   * @type {RoadAccessModule}
    */
-  powerSupplied = 0;
+  roadAccess = new RoadAccessModule(this);
+  /**
+   * The current status of the building
+   * @type {string}
+   */
+  status = BuildingStatus.Ok;
+  /**
+   * Icon displayed when building status
+   * @type {Sprite}
+   */
+  #statusIcon = new THREE.Sprite();
 
+  constructor() {
+    super();
+    this.#statusIcon.visible = false;
+    this.#statusIcon.material = new THREE.SpriteMaterial({ depthTest: false })
+    this.#statusIcon.layers.set(1);
+    this.#statusIcon.scale.set(0.5, 0.5, 0.5);
+    this.add(this.#statusIcon);
+  }
+  
   /**
-   * Returns true if this building's power requirements are met
+   * 
+   * @param {*} status 
    */
-  get isPowered() {
-    return this.powerSupplied >= this.powerRequired;
+  setStatus(status) {
+    if (status !== this.status) {
+      switch(status) {
+        case BuildingStatus.NoPower:
+          this.#statusIcon.visible = true;
+          this.#statusIcon.material.map = window.assetManager.statusIcons[BuildingStatus.NoPower];
+          break;
+        case BuildingStatus.NoRoadAccess:
+          this.#statusIcon.visible = true;
+          this.#statusIcon.material.map = window.assetManager.statusIcons[BuildingStatus.NoRoadAccess];
+          break;
+        default:
+          this.#statusIcon.visible = false;
+      }
+    }
   }
 
-  /**
-   * Amount of power this building needs
-   */
-  get powerRequired() {
-    return 0;
+  simulate(city) {
+    super.simulate(city);
+    
+    this.power.simulate(city);
+    this.roadAccess.simulate(city);
+
+    if (!this.power.isFullyPowered) {
+      this.setStatus(BuildingStatus.NoPower);
+    } else if (!this.roadAccess.value) {
+      this.setStatus(BuildingStatus.NoRoadAccess);
+    } else {
+      this.setStatus(null);
+    }
+  }
+
+  dispose() {
+    this.power.dispose();
+    this.roadAccess.dispose();
+    super.dispose();
   }
   
   /**
@@ -48,13 +99,13 @@ export class Building extends SimObject {
       <span class="info-value">${this.type}</span>
       <br>
       <span class="info-label">Road Access </span>
-      <span class="info-value">${this.hasRoadAccess}</span>
+      <span class="info-value">${this.roadAccess.value}</span>
       <br>`;
 
-    if (this.powerRequired > 0) {
+    if (this.power.required > 0) {
       html += `
-        <span class="info-label">Power </span>
-        <span class="info-value">${this.powerSupplied}/${this.powerRequired}</span>
+        <span class="info-label">Power (kwH)</span>
+        <span class="info-value">${this.power.supplied}/${this.power.required}</span>
         <br>`;
     } 
     return html;

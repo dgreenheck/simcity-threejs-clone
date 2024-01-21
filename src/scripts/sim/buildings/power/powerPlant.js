@@ -5,9 +5,9 @@ import { BuildingType } from '../buildingType.js';
 export class PowerPlant extends Building {
 
   /**
-   * Available units of power
+   * Available units of power (kW)
    */
-  powerCapacity = 10;
+  powerCapacity = 100;
 
   /**
    * Consumed units of power
@@ -26,8 +26,8 @@ export class PowerPlant extends Building {
     return this.powerCapacity - this.powerConsumed;
   }
 
-  updateMesh(city) {
-    let mesh = window.assetManager.createInstance(this.type, this);
+  refreshView() {
+    let mesh = window.assetManager.getModel(this.type, this);
     this.setMesh(mesh);
   }
 
@@ -42,10 +42,10 @@ export class PowerPlant extends Building {
       <span class="info-label">Power Capacity </span>
       <span class="info-value">${this.powerCapacity}</span>
       <br>
-      <span class="info-label">Power Consumed </span>
+      <span class="info-label">Power Consumed (kwH)</span>
       <span class="info-value">${this.powerConsumed}</span>
       <br>
-      <span class="info-label">Power Available </span>
+      <span class="info-label">Power Available (kwH)</span>
       <span class="info-value">${this.powerAvailable}</span>
       <br>
     `;

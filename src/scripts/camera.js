@@ -28,7 +28,8 @@ export class CameraManager {
       (CAMERA_SIZE * aspect) / 2,
       CAMERA_SIZE / 2,
       CAMERA_SIZE / -2, 1, 1000);
-      
+    this.camera.layers.enable(1);
+    
     this.cameraOrigin = new THREE.Vector3(8, 0, 8);
     this.cameraRadius = 0.5;
     this.cameraAzimuth = 225;
