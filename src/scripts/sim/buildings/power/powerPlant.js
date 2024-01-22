@@ -1,4 +1,3 @@
-import { City } from '../../city.js';
 import { Building } from '../building.js';
 import { BuildingType } from '../buildingType.js';
 

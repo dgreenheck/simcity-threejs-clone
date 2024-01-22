@@ -12,6 +12,10 @@ export class RoadAccessModule extends SimModule {
    */
   building;
   /**
+   * @type {boolean}
+   */
+  enabled = true;
+  /**
    * Whether or not the tile has access to a road
    * @type {boolean}
    */
@@ -30,11 +34,15 @@ export class RoadAccessModule extends SimModule {
    * @param {City} city 
    */
   simulate(city) {
-    const road = city.findTile(
-      this.building, 
-      (tile) => tile.building?.type === 'road', 
-      config.modules.roadAccess.searchDistance);
+    if (!this.enabled) {
+      this.value = true;
+    } else {
+      const road = city.findTile(
+        this.building, 
+        (tile) => tile.building?.type === 'road', 
+        config.modules.roadAccess.searchDistance);
 
-    this.value = (road !== null);
+      this.value = (road !== null);
+    }
   }
 }

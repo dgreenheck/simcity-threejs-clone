@@ -116,6 +116,10 @@ export default {
     "type": "power",
     "filename": "industry-factory-old.glb"
   },
+  "power-line": {
+    "type": "power",
+    "filename": "power_line_pole_modified.glb"
+  },
   "road-straight": {
     "type": "road",
     "filename": "tile-road-straight.glb",

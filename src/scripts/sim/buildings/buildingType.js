@@ -3,5 +3,6 @@ export const BuildingType = {
   commercial: 'commercial',
   industrial: 'industrial',
   road: 'road',
-  powerPlant: 'power-plant'
+  powerPlant: 'power-plant',
+  powerLine: 'power-line'
 }
