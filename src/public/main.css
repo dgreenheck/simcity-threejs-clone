@@ -139,6 +139,10 @@ h1 {
   font-size: 1.5em;
 }
 
+.title-bar-items.title-bar-center-items {
+  font-size: 2em;
+}
+
 #population-icon {
   position: relative;
   width: 32px;
@@ -157,7 +161,8 @@ h1 {
   position: fixed;
   top: 64px;
   right: 0px;
-  padding: 12px; 
+  padding: 0; 
+  padding-bottom: 16px;
   width: 300px;
 
   background-color: #00000048;
@@ -166,12 +171,19 @@ h1 {
 .info-heading {
   text-align: center;
   font-size: 1em;
-  margin: 8px 0px;
-  background-color: #191a21b1;
-  box-shadow: 0 2px 0 0px #000000b0;
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  background-color: #00000060;
+
+  box-shadow: 0px 0px 1px black;
+
   color: white;
-  border-radius: 16px;
   padding: 4px;
+}
+
+.info-heading:first-of-type {
+  margin-top: 0px;
 }
 
 .info-label {
