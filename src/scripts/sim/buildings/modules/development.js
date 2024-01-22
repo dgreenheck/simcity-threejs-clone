@@ -11,33 +11,42 @@ export const DevelopmentState = {
 };
 
 export class DevelopmentModule extends SimModule {
-  #zone;
-
-  /**
-   * The zone's current state of development
-   */
-  #state = DevelopmentState.undeveloped;
-
-  /**
-   * Level of development
-   */
-  #level = 1;
-
-  /**
-   * Maximum level of development
-   */
-  maxLevel = 3;
-
   /**
    * Number of simulation steps that building has met abandonment criteria
    * If abandonment criteria are not met, value is zero
+   * @type {number}
    */
   #abandonmentCounter = 0;
 
   /**
    * Counter for days under construction
+   * @type {number}
    */
   #constructionCounter = 0;
+
+  /**
+   * Level of development
+   * @type {number}
+   */
+  #level = 1;
+
+  /**
+   * Maximum level of development
+   * @type {number}
+   */
+  maxLevel = 3;
+
+  /**
+   * The zone's current state of development
+   * @type {string}
+   */
+  #state = DevelopmentState.undeveloped;
+
+  /**
+   * The parent zone object
+   * @type {Zone}
+   */
+  #zone;
 
   /**
    * 

@@ -18,7 +18,7 @@ export class PowerLine extends Building {
     this.type = BuildingType.powerLine;
     this.roadAccess.enabled = false;
   }
-a
+
   refreshView(city) {
     let group = new THREE.Group();
     
