@@ -25,13 +25,6 @@ export class PowerModule extends SimModule {
   }
 
   /**
-   * @type {string}
-   */
-  get name() { 
-    return 'power' 
-  };
-
-  /**
    * Returns true if building is fully powered
    * @type {boolean}
    */

@@ -22,13 +22,6 @@ export class JobsModule extends SimModule {
   }
 
   /**
-   * @type {string}
-   */
-  get name() { 
-    return 'jobs' 
-  };
-
-  /**
    * Maximuim number of workers that can work at this building
    * @returns {number}
    */

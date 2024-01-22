@@ -48,13 +48,6 @@ export class DevelopmentModule extends SimModule {
     this.#zone = zone;
   }
 
-  /**
-   * @type {string}
-   */
-  get name() { 
-    return 'development' 
-  };
-
   get level() {
     return this.#level;
   }

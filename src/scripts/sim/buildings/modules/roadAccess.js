@@ -26,13 +26,6 @@ export class RoadAccessModule extends SimModule {
   }
 
   /**
-   * @type {string}
-   */
-  get name() { 
-    return 'road' 
-  };
-
-  /**
    * Updates the state of this attribute
    * @param {City} city 
    */

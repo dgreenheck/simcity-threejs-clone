@@ -2,13 +2,6 @@ import { City } from '../../city.js';
 
 export class SimModule {
   /**
-   * @type {string}
-   */
-  get name() { 
-    return 'SimModule' 
-  };
-
-  /**
    * Simulates one day passing
    * @param {City} city 
    */
