@@ -122,7 +122,7 @@ export class DevelopmentModule extends SimModule {
   #checkDevelopmentCriteria() {
     return (
       this.#zone.roadAccess.value && 
-      this.#zone.isPowered
+      this.#zone.power.isFullyPowered
     );
   }
 

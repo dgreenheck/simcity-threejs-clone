@@ -200,5 +200,10 @@ export default {
     "type": "vehicle",
     "filename": "car-truck-dump.glb",
     "rotation": 90
+  },
+  "car-truck-armored-truck": {
+    "type": "vehicle",
+    "filename": "armored-truck.glb",
+    "rotation": 90
   }
 }

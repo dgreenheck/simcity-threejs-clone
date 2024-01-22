@@ -23,7 +23,12 @@ export class PowerPlant extends Building {
    * Gets the amount of power available
    */
   get powerAvailable() {
-    return this.powerCapacity - this.powerConsumed;
+    // Power plant must have road access in order to provide power
+    if (this.roadAccess.value) {
+      return this.powerCapacity - this.powerConsumed;
+    } else {
+      return 0;
+    }
   }
 
   refreshView() {

@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { Building } from './buildings/building.js';
 import { SimObject } from './simObject.js';
 
@@ -48,6 +49,9 @@ export class Tile extends SimObject {
     if (this.building?.hideTerrain) {
       this.setMesh(null);
     } else {
+      /**
+       * @type {THREE.Mesh}
+       */
       const mesh = window.assetManager.getModel(this.terrain, this);
       mesh.name = this.terrain;
       this.setMesh(mesh);
