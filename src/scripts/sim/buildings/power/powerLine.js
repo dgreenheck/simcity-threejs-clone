@@ -9,7 +9,7 @@ const Side = {
   Bottom: 'bottom'
 }
 
-const powerLineMaterial = new THREE.LineBasicMaterial({ color: 0x404040 });
+const powerLineMaterial = new THREE.LineBasicMaterial({ color: 0 });
 
 export class PowerLine extends Building {
 
@@ -70,16 +70,22 @@ export class PowerLine extends Building {
         break;
     }
   }
+  
   /**
    * Creates a new power line between the start/stop points
    * @returns 
    */
   #createPowerLine(x1, y1, z1, x2, y2, z2) {
-    const points = [ new THREE.Vector3(x1, y1, z1), new THREE.Vector3(x2, y2, z2) ];
+    const points = [ 
+      new THREE.Vector3(x1, y1, z1), 
+      new THREE.Vector3(x2, y2, z2)
+    ];
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const powerLine = new THREE.Line(geometry, powerLineMaterial);
     // Put in layer 1 so it doesn't interact with raycaster
     powerLine.layers.set(1);
     return powerLine;
   }
+
+
 }

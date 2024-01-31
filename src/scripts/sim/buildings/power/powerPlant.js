@@ -43,13 +43,13 @@ export class PowerPlant extends Building {
     let html = super.toHTML();
     html += `
       <div class="info-heading">Power</div>
-      <span class="info-label">Power Capacity </span>
+      <span class="info-label">Power Capacity (kW)</span>
       <span class="info-value">${this.powerCapacity}</span>
       <br>
-      <span class="info-label">Power Consumed (kwH)</span>
+      <span class="info-label">Power Consumed (kW)</span>
       <span class="info-value">${this.powerConsumed}</span>
       <br>
-      <span class="info-label">Power Available (kwH)</span>
+      <span class="info-label">Power Available (kW)</span>
       <span class="info-value">${this.powerAvailable}</span>
       <br>
     `;

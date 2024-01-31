@@ -104,7 +104,7 @@ export class Building extends SimObject {
 
     if (this.power.required > 0) {
       html += `
-        <span class="info-label">Power (kwH)</span>
+        <span class="info-label">Power (kW)</span>
         <span class="info-value">${this.power.supplied}/${this.power.required}</span>
         <br>`;
     } 
