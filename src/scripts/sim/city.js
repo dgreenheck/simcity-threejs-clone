@@ -1,7 +1,10 @@
 import * as THREE from 'three';
-import { BuildingType, createBuilding } from './buildings/buildingFactory.js';
+import { BuildingType } from './buildings/buildingType.js';
+import { createBuilding } from './buildings/buildingFactory.js';
 import { Tile } from './tile.js';
 import { VehicleGraph } from './vehicles/vehicleGraph.js';
+import { PowerService } from './services/power.js';
+import { SimService } from './services/simService.js';
 
 export class City extends THREE.Group {
   /**
@@ -15,6 +18,11 @@ export class City extends THREE.Group {
    * @type {THREE.Group}
    */
   root = new THREE.Group();
+  /**
+   * List of services for the city
+   * @type {SimService}
+   */
+  services = [];
   /**
    * The size of the city in tiles
    * @type {number}
@@ -49,13 +57,16 @@ export class City extends THREE.Group {
       const column = [];
       for (let y = 0; y < this.size; y++) {
         const tile = new Tile(x, y);
-        tile.updateMesh(this);
+        tile.refreshView(this);
         this.root.add(tile);
         column.push(tile);
       }
       this.tiles.push(column);
     }
 
+    this.services = [];
+    this.services.push(new PowerService());
+    
     this.vehicleGraph = new VehicleGraph(this.size);
     this.debugMeshes.add(this.vehicleGraph);
   }
@@ -98,6 +109,9 @@ export class City extends THREE.Group {
   simulate(steps = 1) {
     let count = 0;
     while (count++ < steps) {
+      // Update services
+      this.services.forEach((service) => service.simulate(this));
+
       // Update each building
       for (let x = 0; x < this.size; x++) {
         for (let y = 0; y < this.size; y++) {
@@ -121,14 +135,14 @@ export class City extends THREE.Group {
     // If the tile doesnt' already have a building, place one there
     if (tile && !tile.building) {
       tile.setBuilding(createBuilding(x, y, buildingType));
-      tile.updateMesh(this);
+      tile.refreshView(this);
       
       // Update buildings on adjacent tile in case they need to
       // change their mesh (e.g. roads)
-      this.getTile(x - 1, y)?.updateMesh(this);
-      this.getTile(x + 1, y)?.updateMesh(this);
-      this.getTile(x, y - 1)?.updateMesh(this);
-      this.getTile(x, y + 1)?.updateMesh(this);
+      this.getTile(x - 1, y)?.refreshView(this);
+      this.getTile(x + 1, y)?.refreshView(this);
+      this.getTile(x, y - 1)?.refreshView(this);
+      this.getTile(x, y + 1)?.refreshView(this);
 
       if (tile.building.type === BuildingType.road) {
         this.vehicleGraph.updateTile(x, y, tile.building);
@@ -151,13 +165,13 @@ export class City extends THREE.Group {
 
       tile.building.dispose();
       tile.setBuilding(null);
-      tile.updateMesh(this);
+      tile.refreshView(this);
 
       // Update neighboring tiles in case they need to change their mesh (e.g. roads)
-      this.getTile(x - 1, y)?.updateMesh(this);
-      this.getTile(x + 1, y)?.updateMesh(this);
-      this.getTile(x, y - 1)?.updateMesh(this);
-      this.getTile(x, y + 1)?.updateMesh(this);
+      this.getTile(x - 1, y)?.refreshView(this);
+      this.getTile(x + 1, y)?.refreshView(this);
+      this.getTile(x, y - 1)?.refreshView(this);
+      this.getTile(x, y + 1)?.refreshView(this);
     }
   }
 

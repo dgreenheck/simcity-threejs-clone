@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { SimModule } from './buildings/modules/simModule';
 
 const SELECTED_COLOR = 0xaaaa55;
 const HIGHLIGHTED_COLOR = 0x555555;
@@ -55,17 +56,9 @@ export class SimObject extends THREE.Object3D {
     this.#mesh = value;
 
     // Add to scene graph
-    if (value) {
+    if (this.#mesh) {
       this.add(this.#mesh);
     }
-  }
-
-  /**
-   * Performs a full refresh of the object
-   * @param {City} city 
-   */
-  updateMesh(city) {
-    // Override in subclass
   }
 
   /**

@@ -59,17 +59,15 @@ h1 {
 
 .container {
   background-color: #00000048;
-  padding: 8px;
-  margin: 16px;
-  border-radius: 16px;
-
-  box-shadow: 0 2px 0 0px #023a71;
+  padding: 12px;
 }
 
 #ui-toolbar {
   position: absolute;
-  height: auto;
   top: 64px;
+  bottom: 0px;
+
+  box-shadow: 0px 0px 1px black;
 
   display: flex;
   flex-direction: column;
@@ -93,8 +91,8 @@ h1 {
 }
 
 .ui-button.selected {
-  background-color: #121622d3;
-  outline: 2px solid rgb(227, 227, 227);
+  background-color: #3a3f50d3;
+  outline: 2px solid rgb(101, 101, 135);
 }
 
 .ui-button:not(.selected):hover {
@@ -107,10 +105,9 @@ h1 {
 }
 
 .toolbar-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   pointer-events: none;
-  filter: brightness(0) invert(1);
 }
 
 /* TITLE BAR */
@@ -119,17 +116,15 @@ h1 {
   position: fixed;
 
   top: 0;
-  left: 0;
+  left: 0px;
   right: 0;
-  height: 32px;
+  height: 48px;
 
   background-color: #00000048;
-  border-radius: 16px;
   color: white;
   padding: 8px;
-  margin: 16px;
 
-  box-shadow: 0 2px 0 0px #023a71;
+  box-shadow: 0px 0px 1px black;
 
   display: flex;
   justify-content: space-evenly;
@@ -142,6 +137,10 @@ h1 {
   justify-content: center;
   align-items: center;
   font-size: 1.5em;
+}
+
+.title-bar-items.title-bar-center-items {
+  font-size: 2em;
 }
 
 #population-icon {
@@ -162,8 +161,8 @@ h1 {
   position: fixed;
   top: 64px;
   right: 0px;
-  margin: 16px;
-  padding: 12px; 
+  padding: 0; 
+  padding-bottom: 16px;
   width: 300px;
 
   background-color: #00000048;
@@ -172,12 +171,19 @@ h1 {
 .info-heading {
   text-align: center;
   font-size: 1em;
-  margin: 8px 0px;
-  background-color: #191a21b1;
-  box-shadow: 0 2px 0 0px #000000b0;
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  background-color: #00000060;
+
+  box-shadow: 0px 0px 1px black;
+
   color: white;
-  border-radius: 16px;
   padding: 4px;
+}
+
+.info-heading:first-of-type {
+  margin-top: 0px;
 }
 
 .info-label {

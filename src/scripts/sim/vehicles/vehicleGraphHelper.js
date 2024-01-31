@@ -21,7 +21,7 @@ export class VehicleGraphHelper extends THREE.Group {
    * 
    * @param {VehicleGraph} graph 
    */
-  updateMesh(graph) {
+  refreshView(graph) {
     this.clear();
 
     for (let x = 0; x < graph.size; x++) {

@@ -1,6 +1,6 @@
-import config from '../config.js';
-import { City } from '../sim/city.js';
-import { Zone } from '../sim/buildings/zones/zone.js';
+import config from '../../../config.js';
+import { City } from '../../city.js';
+import { Zone } from '../../buildings/zones/zone.js';
 import { SimModule } from './simModule.js';
 
 export const DevelopmentState = {
@@ -11,33 +11,42 @@ export const DevelopmentState = {
 };
 
 export class DevelopmentModule extends SimModule {
-  #zone;
-
-  /**
-   * The zone's current state of development
-   */
-  #state = DevelopmentState.undeveloped;
-
-  /**
-   * Level of development
-   */
-  #level = 1;
-
-  /**
-   * Maximum level of development
-   */
-  maxLevel = 3;
-
   /**
    * Number of simulation steps that building has met abandonment criteria
    * If abandonment criteria are not met, value is zero
+   * @type {number}
    */
   #abandonmentCounter = 0;
 
   /**
    * Counter for days under construction
+   * @type {number}
    */
   #constructionCounter = 0;
+
+  /**
+   * Level of development
+   * @type {number}
+   */
+  #level = 1;
+
+  /**
+   * Maximum level of development
+   * @type {number}
+   */
+  maxLevel = 3;
+
+  /**
+   * The zone's current state of development
+   * @type {string}
+   */
+  #state = DevelopmentState.undeveloped;
+
+  /**
+   * The parent zone object
+   * @type {Zone}
+   */
+  #zone;
 
   /**
    * 
@@ -54,35 +63,35 @@ export class DevelopmentModule extends SimModule {
 
   set level(value) {
     this.#level = value;
-    this.#zone.isMeshOutOfDate = true;
+    this.#zone.refreshView();
   }
+
   get state() {
     return this.#state;
   }
 
   set state(value) {
     this.#state = value;
+    this.#zone.refreshView();
   }
 
   /**
    * @param {City} city 
    */
   simulate(city) {
-    this.#checkAbandonmentCriteria(city);
+    this.#checkAbandonmentCriteria();
 
     switch (this.state) {
       case DevelopmentState.undeveloped:
-        if (this.#checkDevelopmentCriteria(city) &&
+        if (this.#checkDevelopmentCriteria() &&
           Math.random() < config.modules.development.redevelopChance) {
           this.state = DevelopmentState.underConstruction;
-          this.#zone.updateMesh(city);
           this.#constructionCounter = 0;
         }
         break;
       case DevelopmentState.underConstruction:
         if (++this.#constructionCounter === config.modules.development.constructionTime) {
           this.state = DevelopmentState.developed;
-          this.#zone.updateMesh(city);
           this.level = 1;
           this.#constructionCounter = 0;
         }
@@ -91,12 +100,10 @@ export class DevelopmentModule extends SimModule {
         if (this.#abandonmentCounter > config.modules.development.abandonThreshold) {
           if (Math.random() < config.modules.development.abandonChance) {
             this.state = DevelopmentState.abandoned;
-            this.#zone.updateMesh(city);
           }
         } else {
           if (this.level < this.maxLevel && Math.random() < config.modules.development.levelUpChance) {
             this.level++;
-            this.#zone.updateMesh(city);
           }
         }
         break;
@@ -104,7 +111,6 @@ export class DevelopmentModule extends SimModule {
         if (this.#abandonmentCounter == 0) {
           if (Math.random() < config.modules.development.redevelopChance) {
             this.state = DevelopmentState.developed;
-            this.#zone.updateMesh(city);
           }
         }
         break;
@@ -115,24 +121,19 @@ export class DevelopmentModule extends SimModule {
    * @param {City} city 
    * @returns 
    */
-  #checkDevelopmentCriteria(city) {
-    const { x, y } = this.#zone;
-
-    if (city.getTile(x, y).roadAccess.value) {
-      return true;
-    } else {
-      return false;
-    }
+  #checkDevelopmentCriteria() {
+    return (
+      this.#zone.roadAccess.value && 
+      this.#zone.power.isFullyPowered
+    );
   }
 
   /**
    * @param {City} city 
    * @returns 
    */
-  #checkAbandonmentCriteria(city) {
-    const { x, y } = this.#zone;
-
-    if (!city.getTile(x, y).roadAccess.value) {
+  #checkAbandonmentCriteria() {
+    if (!this.#checkDevelopmentCriteria()) {
       this.#abandonmentCounter++;
     } else {
       this.#abandonmentCounter = 0;

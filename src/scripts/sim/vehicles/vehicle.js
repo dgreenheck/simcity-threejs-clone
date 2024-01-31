@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { VehicleGraphNode } from './vehicleGraphNode.js';
 import config from '../../config.js';
 import { SimObject } from '../simObject.js';
-import models from '../../assets/assets.js';
+import models from '../../assets/models.js';
 
 const FORWARD = new THREE.Vector3(1, 0, 0);
 
@@ -36,7 +36,7 @@ export class Vehicle extends SimObject {
 
     const i = Math.floor(types.length * Math.random());
 
-    this.setMesh(window.assetManager.createInstance(types[i], this, true));
+    this.setMesh(window.assetManager.getModel(types[i], this, true));
   }
 
   /**

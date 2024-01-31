@@ -1,17 +1,18 @@
 import { City } from '../../city.js';
-import { JobsModule } from '../../../modules/jobs.js';
-import { BuildingType } from '../building.js';
+import { JobsModule } from '../modules/jobs.js';
+import { BuildingType } from '../buildingType.js';
 import { Zone } from './zone.js';
 
 export class IndustrialZone extends Zone {
+  /**
+   * @type {JobsModule}
+   */
+  jobs = new JobsModule(this);
+
   constructor(x, y) {
     super(x, y);
-
     this.name = generateBusinessName();
     this.type = BuildingType.industrial;
-
-    // Citizens that work here
-    this.jobs = new JobsModule(this);
   }
 
   /**
