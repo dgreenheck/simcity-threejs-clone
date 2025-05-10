@@ -13,7 +13,6 @@ export interface IAssetMeta {
   rotation?: number;
 }
 
-const DEG2RAD = THREE.MathUtils.DEG2RAD;
 const ZERO_VECTOR = new THREE.Vector3(0, 0, 0);
 const IDENTITY_QUATERNION = new THREE.Quaternion();
 const HIDE_MATRIX = new THREE.Matrix4().compose(
@@ -262,6 +261,11 @@ export interface IFastMesh {
   rotation: number;
 }
 
+export interface IAssetOptions {
+  zOffset: number;
+
+}
+
 export class AssetManager {
   textureLoader = new THREE.TextureLoader();
   modelLoader = new GLTFLoader();
@@ -300,10 +304,11 @@ export class AssetManager {
 
   }
 
-  addFastMesh(modelName: ModelName, x: number, y: number, z: number, rotation: number): IFastMesh {
+  addFastMesh(modelName: ModelName, x: number, y: number, z: number, rotation: number, options?: IAssetOptions): IFastMesh {
     let fastMeshes = this.fastMeshes[modelName];
     if (!fastMeshes) {
-      fastMeshes = this.#createFastMesh(modelName, fastMeshes);
+      fastMeshes = this.#createFastMesh(modelName, fastMeshes, options);
+
     }
     if (fastMeshes.index >= fastMeshes.count) {
       this.#growFastMesh(fastMeshes);
@@ -332,7 +337,7 @@ export class AssetManager {
     fastMeshes.count -= 1;
   }
 
-  #createFastMesh(modelName: ModelName, fastMeshes: IFastMeshes) {
+  #createFastMesh(modelName: ModelName, fastMeshes: IFastMeshes, options?: IAssetOptions) {
     let originalMesh = this.models[modelName];
     let actualMesh = originalMesh as any;
     let { geometry, material } = actualMesh;
@@ -343,7 +348,9 @@ export class AssetManager {
       geometry = merged.geometry;
       material = merged.materials;
     }
-
+    if (options && options.zOffset) {
+      geometry.translate(0,0,options.zOffset);
+    }
 
     let count = appConstants.MeshInstancesMin;
     fastMeshes = {
@@ -386,7 +393,7 @@ export class AssetManager {
   moveFastMesh(fastMesh: IFastMesh, x: number, y: number = 0, z: number, rotation?: number) {
     const matrix = new THREE.Matrix4();
     const pos = new THREE.Vector3(x, y, z);
-    const rot = rotation ? new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), DEG2RAD * rotation) : new THREE.Quaternion();
+    const rot = rotation ? new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotation) : new THREE.Quaternion();
     matrix.compose(pos, rot, new THREE.Vector3(1, 1, 1));
     fastMesh.parent.instancedMesh.setMatrixAt(fastMesh.index, matrix);
     fastMesh.parent.instancedMesh.instanceMatrix.needsUpdate = true;

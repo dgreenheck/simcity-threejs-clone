@@ -147,8 +147,6 @@ export class Scene3D {
             }
 
             const texture = new THREE.DataTexture(data, pw, ph, THREE.RGBAFormat);
-            //texture.magFilter = THREE.NearestFilter;
-            //texture.minFilter = THREE.NearestFilter;
             texture.needsUpdate = true;
 
             const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
@@ -156,7 +154,7 @@ export class Scene3D {
             const overlay = new THREE.Mesh(geometry, material);
             this.overlay = overlay;
 
-            overlay.position.set(width / 2 - 0.5, 0.01, height / 2 - 0.5);
+            overlay.position.set(width / 2 - 0.5, -0.5, height / 2 - 0.5);
             overlay.rotation.x = -Math.PI / 2; // à plat au sol
 
             function getPixel(x: number, y: number): boolean {
@@ -202,16 +200,15 @@ export class Scene3D {
         this.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
     }
 
-    drawFrame(delta: number) {
-        if (delta > 100) delta = 100;
-        //this.city.draw();
+
+    drawFrame(now: number) {
         this.updateFocusedObject();
 
         if (this.inputManager.isLeftMouseDown) {
             //this.useTool();
         }
-        this.cars3D.drawFrame(delta)
-        this.tiles3D.drawFrame(delta)
+        this.cars3D.drawFrame(now)
+        this.tiles3D.drawFrame(now)
         this.renderer.render(this.scene, this.cameraManager.camera);
     }
 

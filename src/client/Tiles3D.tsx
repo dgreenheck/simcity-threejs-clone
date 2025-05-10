@@ -39,7 +39,7 @@ export class Tiles3D {
     constructor(readonly scene: Scene3D) {
     }
 
-    drawFrame(_delta: number) {
+    drawFrame(_now: number) {
     }
 
 

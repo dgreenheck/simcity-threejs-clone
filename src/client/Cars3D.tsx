@@ -12,10 +12,9 @@ export class Cars3D extends THREE.Group {
         super();
     }
 
-    drawFrame(delta: number) {
+    drawFrame(now: number) {
         for (let car of this.#cars) {
-
-            car.drawFrame(this.scene, delta)
+            car.drawFrame(this.scene, now)
         }
     }
 
@@ -32,7 +31,7 @@ export class Cars3D extends THREE.Group {
                 id: car.id,
                 model: car.model ?? random(cars),
                 path: Cars3D.fixPath(car.path),
-                motion: 'forward-and-backward'
+                motion: 'loop'
             }
             car3D = new Car3D(this.scene, carInfo);
             this.#cars[car.id] = car3D;
@@ -51,7 +50,7 @@ export class Cars3D extends THREE.Group {
             speed = p.speed ?? speed;
             x = p.x ?? x;
             z = p.z ?? z;
-            return { speed, x, z };
+            return { speed, x, z, tile: undefined as any };
         })
 
         fixed = fixed.filter((p, i, arr) => {

@@ -89,7 +89,7 @@ export interface ICarInfo {
     id: number,
     model: ModelName,
     path: ICarPath[],
-    motion: 'forward' | 'loop' | 'forward-and-backward'
+    motion: 'forward' | 'loop';
     startTime?: number;
 }
 
@@ -105,5 +105,5 @@ export type ICarChangedWithId = { id: number } & ICarChanged
 export interface ICarPath {
     x: number;
     z: number;
-    speed: number;
+    speed?: number;
 }

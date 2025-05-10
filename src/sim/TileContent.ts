@@ -1,6 +1,7 @@
 import { commercialBuildings, industrialBuildings, ModelName, residentialBuildings } from "../client/AssetManager";
 import { ITileChange, SimTile } from "./SimTiles";
 import { random } from "./Rng";
+import { DEG_90, DEG_180, DEG_270, DEG_0 } from "./utils";
 
 
 export abstract class TileContent {
@@ -47,32 +48,32 @@ export class SimRoad extends TileContent {
             case 3:
                 this.floor = 'road-three-way';
                 this.orientation =
-                    !south ? 0 :
-                        !west ? 90 :
-                            !north ? 180 :
-                                /*!east*/ 270;
+                    !south ? DEG_0 :
+                        !west ? DEG_90 :
+                            !north ? DEG_180 :
+                                /*!east*/ DEG_270;
                 break;
             case 2:
                 if (north && south || east && west) {
                     this.floor = 'road-straight';
-                    if (north && south) this.orientation = 0;
-                    else /*east && west*/ this.orientation = 90;
+                    if (north && south) this.orientation = DEG_0;
+                    else /*east && west*/ this.orientation = DEG_90;
                 }
                 else {
                     this.floor = 'road-corner';
                     if (north && east) this.orientation = 0;
-                    else if (south && east) this.orientation = 90;
-                    else if (south && west) this.orientation = 180;
-                    else /*north && west*/ this.orientation = 270;
+                    else if (south && east) this.orientation = DEG_90;
+                    else if (south && west) this.orientation = DEG_180;
+                    else /*north && west*/ this.orientation = DEG_270;
                 }
                 break;
             case 1:
                 this.floor = 'road-end';
                 this.orientation =
-                    north ? 0 :
-                        east ? 90 :
-                            south ? 180 :
-                                /*west*/ 270;
+                    north ? DEG_0 :
+                        east ? DEG_90 :
+                            south ? DEG_180 :
+                                /*west*/ DEG_270;
                 break;
             default:
                 this.floor = 'grass';

@@ -4,6 +4,10 @@ export interface IPoint2D {
     z: number;
 }
 
+export interface IHeading extends IPoint2D {
+    angle: number; 
+    speed: number;
+}
 
 export function tileFloor(position: IPoint2D): IPoint2D {
     return {
